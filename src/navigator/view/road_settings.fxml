@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.effect.DropShadow?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:id="roadSettings"
+            fx:controller="navigator.controller.RoadSettingsController"
+            layoutX="400.0" layoutY="150.0" prefHeight="243.0" prefWidth="248.0" minHeight="243.0" minWidth="248.0" maxHeight="243.0" maxWidth="248.0" style="-fx-background-color: #FFFFFF;" visible="false">
+
+        <effect><DropShadow/></effect>
+
+        <Label alignment="CENTER" prefHeight="31.0" prefWidth="218.0" style="-fx-background-color: #e0e0e0;" text="Параметры дороги" />
+        <Button fx:id="closeButton" layoutX="218.0" prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: #FF0000DD; -fx-background-radius: 0.0;" text="Х" textFill="WHITE">
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </Button>
+
+        <Label layoutX="14.0" layoutY="46.0" text="Улица" />
+        <ComboBox fx:id="streetNameComboBox" layoutX="65.0" layoutY="41.0" prefHeight="27.0" prefWidth="170.0" promptText="Московское шоссе" />
+
+        <Label layoutX="14.0" layoutY="80.0" text="Направление" />
+        <ComboBox fx:id="directionComboBox" layoutX="112.0" layoutY="75.0" prefHeight="27.0" prefWidth="123.0" />
+
+        <Label layoutX="14.0" layoutY="114.0" text="Длина" />
+        <TextField fx:id="lengthTextField" disable="true" editable="false" focusTraversable="false" layoutX="112.0" layoutY="109.0" prefHeight="27.0" prefWidth="100.0" text="500">
+            <cursor>
+                <Cursor fx:constant="DEFAULT" />
+            </cursor>
+        </TextField>
+        <Label layoutX="220.0" layoutY="114.0" text="м" />
+
+        <Label layoutX="14.0" layoutY="148.0" text="Огр.скорости" />
+        <ComboBox fx:id="speedLimitComboBox" layoutX="112.0" layoutY="143.0" prefHeight="27.0" prefWidth="123.0"/>
+
+        <Label layoutX="14.0" layoutY="182.0" text="Тип покрытия" />
+        <ComboBox fx:id="roadSurfaceComboBox" layoutX="112.0" layoutY="177.0" prefHeight="27.0" prefWidth="123.0" promptText="Шоссе" />
+
+        <Button fx:id="saveButton" layoutY="215.0" prefHeight="27.0" prefWidth="124.0" style="-fx-background-color: #00DD00DD; -fx-background-radius: 0.0;" text="Сохранить" textFill="WHITE">
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </Button>
+        <Button fx:id="deleteButton" layoutX="124.0" layoutY="215.0" prefHeight="27.0" prefWidth="124.0" style="-fx-background-color: #FF0000DD; -fx-background-radius: 0.0;" text="Удалить" textFill="WHITE">
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </Button>
+
+</AnchorPane>
