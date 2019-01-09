@@ -291,18 +291,31 @@ public class MapEditorController {
         }
     }
 
+    /**
+     * @return текущая загруженная карта
+     */
     public Map getMap() {
         return map;
     }
 
+    /**
+     * @return контейнер для отрисовки карты
+     */
     public Pane getMapArea() {
         return mapArea;
     }
 
+    /**
+     * Изменить состояние блокиратора перетаскивания карты
+     * @param junctionDragging новое состояние блокиратора
+     */
     public void setJunctionDragging(boolean junctionDragging) {
         isJunctionDragging = junctionDragging;
     }
 
+    /**
+     * @return эффект тени
+     */
     public DropShadow getDropShadow() {
         return dropShadow;
     }
