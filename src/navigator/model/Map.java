@@ -59,7 +59,11 @@ public class Map {
             j.setRadius(4.5 * (scale + 1.5) + 1);
             j.updateLocation();
         }
-        for (Road r : roadList) r.updateLocation();
+        for (Road r : roadList) {
+            r.updateLocation();
+            r.updateWidth();
+            r.updateTranslate();
+        }
     }
 
     /**
@@ -109,7 +113,7 @@ public class Map {
     }
 
     /**
-     * Добавить перекрёсток
+     * Добавить дорогу
      */
     void addRoad(Road road) {
         roadList.add(road);

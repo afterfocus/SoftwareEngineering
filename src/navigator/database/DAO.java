@@ -115,9 +115,13 @@ public class DAO {
                 });
 
                 //Перемещение перекрёстка
-                j.setOnMouseDragged(event -> {
-                    j.setScreenXY(event.getX(), event.getY());
-                    for (Road r : j.getRoads()) r.updateLocation();
+                j.setOnMouseDragged(e -> {
+                    j.setScreenXY(e.getX(), e.getY());
+                    for (Road r : j.getRoads()) {
+                        r.updateLocation();
+                        r.updateTranslate();
+                        r.updateLength();
+                    }
                 });
                 j.setOnMouseReleased(event -> controller.setJunctionDragging(false));
             }

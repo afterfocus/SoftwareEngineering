@@ -44,15 +44,16 @@ public class Road {
         length = (int)(Math.sqrt(Math.pow(end.getX() - start.getX(), 2) + Math.pow(end.getY() - start.getY(), 2)) / 5) * 5;
         speedLimit = 60;
 
-        start.addRoad(this);
-        end.addRoad(this);
-
         forward = new Line(start.getCenterX(), start.getCenterY(), end.getCenterX(), end.getCenterY());
         backward = new Line(end.getCenterX(), end.getCenterY(), start.getCenterX(), start.getCenterY());
 
-        calcTranslate(forward);
-        calcTranslate(backward);
         setRoadSurface(DAO.getRoadSurfaces()[2]);
+        updateTranslate();
+        updateWidth();
+        updateLength();
+
+        start.addRoad(this);
+        end.addRoad(this);
     }
 
     /**
@@ -65,16 +66,10 @@ public class Road {
         this.name = name;
         length = (int)(Math.sqrt(Math.pow(end.getX() - start.getX(), 2) + Math.pow(end.getY() - start.getY(), 2)) / 5) * 5;
 
-        start.addRoad(this);
-        end.addRoad(this);
-
         forward = new Line(start.getCenterX(), start.getCenterY(), end.getCenterX(), end.getCenterY());
         backward = new Line(end.getCenterX(), end.getCenterY(), start.getCenterX(), start.getCenterY());
         forward.setEffect(dropShadow);
         backward.setEffect(dropShadow);
-
-        calcTranslate(forward);
-        calcTranslate(backward);
 
         map.addRoad(this);
         mapArea.getChildren().add(0, forward);
@@ -83,6 +78,12 @@ public class Road {
         setDirection(direction);
         setRoadSurface(roadSurface);
         setSpeedLimit(speedLimit);
+        updateTranslate();
+        updateLength();
+        updateWidth();
+
+        start.addRoad(this);
+        end.addRoad(this);
     }
 
     /**
@@ -225,19 +226,28 @@ public class Road {
         forward.setStartY(start.getCenterY());
         forward.setEndX(end.getCenterX());
         forward.setEndY(end.getCenterY());
-        forward.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
         backward.setStartX(end.getCenterX());
         backward.setStartY(end.getCenterY());
         backward.setEndX(start.getCenterX());
         backward.setEndY(start.getCenterY());
+    }
+
+    void updateWidth() {
+        forward.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
         backward.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
-        calcTranslate(forward);
-        calcTranslate(backward);
+    }
+
+    public void updateLength() {
         length = (int)(Math.sqrt(Math.pow(end.getX() - start.getX(), 2) + Math.pow(end.getY() - start.getY(), 2)) / 5) * 5;
     }
 
+    public void updateTranslate(){
+        calcTranslate(forward);
+        calcTranslate(backward);
+    }
+
     /**
-     * Вычислить смещение дороги
+     * Вычислить смещение линий дороги
      */
     private void calcTranslate(Line line) {
         double a = line.getEndY() - line.getStartY();

@@ -179,10 +179,14 @@ public class MapEditorController {
                                     else showJunctionSettings(junction);
                                 });
 
-                                //Перемещение перекрэстка
+                                //Перемещение перекрёстка
                                 junction.setOnMouseDragged(event -> {
                                     junction.setScreenXY(event.getX(), event.getY());
-                                    for (Road r : junction.getRoads()) r.updateLocation();
+                                    for (Road r : junction.getRoads()) {
+                                        r.updateLocation();
+                                        r.updateLength();
+                                        r.updateTranslate();
+                                    }
                                 });
                                 junction.setOnMouseReleased(event -> isJunctionDragging = false);
 
