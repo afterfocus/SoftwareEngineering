@@ -90,7 +90,7 @@ public class Map {
     /**
      * Добавить перекрёсток
      */
-    public void addJunction(Junction junction) {
+    void addJunction(Junction junction) {
         junctionList.add(junction);
     }
 
@@ -111,7 +111,7 @@ public class Map {
     /**
      * Добавить перекрёсток
      */
-    public void addRoad(Road road) {
+    void addRoad(Road road) {
         roadList.add(road);
     }
 
