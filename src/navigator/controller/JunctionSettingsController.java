@@ -107,7 +107,7 @@ public class JunctionSettingsController {
      * @param buttons кнопки подтверждения/отмены
      * @return окно подтверждения
      */
-    static Alert getAlert(ButtonType... buttons) {
+    private Alert getAlert(ButtonType... buttons) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Подтверждение");
         alert.setHeaderText("Подтвердите удаление");

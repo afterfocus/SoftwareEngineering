@@ -45,7 +45,7 @@ public class RoadSettingsController {
         //Инициализация окна подтверждения
         ButtonType delete = new ButtonType("Удалить");
         ButtonType cancel = new ButtonType("Отменить");
-        alert = JunctionSettingsController.getAlert(delete, cancel);
+        alert = getAlert(delete, cancel);
 
         //Кнопка закрыть
         closeButton.setOnMouseClicked(e -> roadSettings.setVisible(false));
@@ -87,5 +87,20 @@ public class RoadSettingsController {
         lengthTextField.setText("" + road.getLength());
         speedLimitComboBox.getSelectionModel().select(road.getSpeedLimit());
         roadSurfaceComboBox.getSelectionModel().select(road.getRoadSurface());
+    }
+
+    /**
+     * Инициализация окна подтверждения
+     * @param buttons кнопки подтверждения/отмены
+     * @return окно подтверждения
+     */
+    private Alert getAlert(ButtonType... buttons) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Подтверждение");
+        alert.setHeaderText("Подтвердите удаление");
+        alert.setContentText("Вы действительно хотите удалить дорогу?");
+        alert.getButtonTypes().clear();
+        alert.getButtonTypes().addAll(buttons);
+        return alert;
     }
 }

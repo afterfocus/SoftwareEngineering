@@ -33,7 +33,7 @@ public class Junction extends Circle {
      * @param screenY экранная координата Y перекрёстка
      */
     Junction(Map map, int id, double screenX, double screenY) {
-        super(screenX, screenY, 5 * (map.getScale() + 1.5) + 1, map.getJunctionColor());
+        super(screenX, screenY, 4.5 * (map.getScale() + 1.5) + 1, map.getJunctionColor());
 
         x = (getCenterX() - map.getOffsetX()) / map.getScale() - map.getTranslationX();
         y = (getCenterY() - map.getOffsetY()) / map.getScale() - map.getTranslationY();
@@ -54,7 +54,7 @@ public class Junction extends Circle {
     public Junction (Map map, Pane mapArea, int id, double x, double y, boolean isTrafficLights, int redPhase, int greenPhase) {
         super(  (x + map.getTranslationX()) * map.getScale() + map.getOffsetX(),
                 (y + map.getTranslationY()) * map.getScale() + map.getOffsetY(),
-                5 * (map.getScale() + 1.5) + 1, map.getJunctionColor());
+                4.5 * (map.getScale() + 1.5) + 1, map.getJunctionColor());
 
         this.map = map;
         this.id = id;
@@ -79,12 +79,12 @@ public class Junction extends Circle {
         if(!isPicked) {
              isPicked = true;
              setFill(Color.RED);
-             setRadius(7 * (map.getScale() + 1.5) + 1);
+             setRadius(6 * (map.getScale() + 1.5) + 1);
         }
         else {
             isPicked = false;
             setFill(map.getJunctionColor());
-            setRadius(5 * (map.getScale() + 1.5) + 1);
+            setRadius(4.5 * (map.getScale() + 1.5) + 1);
         }
         return isPicked;
     }
@@ -203,6 +203,7 @@ public class Junction extends Circle {
      * Удалить себя
      */
     public void dispose() {
+        if (trafficLight != null) trafficLight.dispose();
         Object[] roadList = roads.toArray();
         for (Object r: roadList) ((Road)r).dispose();
         map.removeJunction(this);

@@ -56,7 +56,7 @@ public class Map {
     public void setScale(double scale) {
         this.scale = scale;
         for (Junction j : junctionList) {
-            j.setRadius(5 * (scale + 1.5) + 1);
+            j.setRadius(4.5 * (scale + 1.5) + 1);
             j.updateLocation();
         }
         for (Road r : roadList) r.updateLocation();

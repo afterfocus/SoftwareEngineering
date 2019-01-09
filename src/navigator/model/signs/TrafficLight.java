@@ -21,19 +21,21 @@ public class TrafficLight {
      */
     public TrafficLight(Junction junction) {
 
-        body = new Rectangle(10, 22, Color.rgb(35,35,35));
-        body.xProperty().bind(junction.centerXProperty().add(junction.radiusProperty().multiply(0.5)));
+        body = new Rectangle(12, 26, Color.rgb(25,25,25));
+        body.setArcHeight(6);
+        body.setArcWidth(6);
+        body.xProperty().bind(junction.centerXProperty().add(junction.radiusProperty().multiply(0.4)));
         body.yProperty().bind(junction.centerYProperty().subtract(junction.radiusProperty().multiply(2.2)));
 
-        red = new Circle(3, Color.RED);
-        red.centerXProperty().bind(body.xProperty().add(5));
-        red.centerYProperty().bind(body.yProperty().add(5));
-        yellow = new Circle(3, Color.YELLOW);
-        yellow.centerXProperty().bind(body.xProperty().add(5));
-        yellow.centerYProperty().bind(body.yProperty().add(11));
-        green = new Circle(3, Color.GREEN);
-        green.centerXProperty().bind(body.xProperty().add(5));
-        green.centerYProperty().bind(body.yProperty().add(17));
+        red = new Circle(3, Color.rgb(255, 0, 0));
+        red.centerXProperty().bind(body.xProperty().add(6));
+        red.centerYProperty().bind(body.yProperty().add(6));
+        yellow = new Circle(3, Color.rgb(230, 220, 0));
+        yellow.centerXProperty().bind(body.xProperty().add(6));
+        yellow.centerYProperty().bind(body.yProperty().add(13));
+        green = new Circle(3, Color.rgb(0, 220, 0));
+        green.centerXProperty().bind(body.xProperty().add(6));
+        green.centerYProperty().bind(body.yProperty().add(20));
 
         ((Pane)junction.getParent()).getChildren().addAll(body, red, yellow, green);
     }

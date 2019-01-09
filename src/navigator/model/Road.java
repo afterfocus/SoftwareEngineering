@@ -4,6 +4,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import navigator.database.DAO;
 import navigator.model.signs.NoWaySign;
 import navigator.model.signs.SpeedLimitSign;
 
@@ -42,19 +43,16 @@ public class Road {
         direction = '↔';
         length = (int)(Math.sqrt(Math.pow(end.getX() - start.getX(), 2) + Math.pow(end.getY() - start.getY(), 2)) / 5) * 5;
         speedLimit = 60;
-        roadSurface = new RoadSurface("Асфальт", 0.8);
 
         start.addRoad(this);
         end.addRoad(this);
 
         forward = new Line(start.getCenterX(), start.getCenterY(), end.getCenterX(), end.getCenterY());
-        forward.setStroke(Color.rgb((int) (220 - 120 * roadSurface.getCoefficient()), (int) (170 * roadSurface.getCoefficient() + 50), 0));
-        forward.setStrokeWidth(2 * (map.getScale() + 2));
         backward = new Line(end.getCenterX(), end.getCenterY(), start.getCenterX(), start.getCenterY());
-        backward.setStroke(Color.rgb((int) (220 - 120 * roadSurface.getCoefficient()), (int) (170 * roadSurface.getCoefficient() + 50), 0));
-        backward.setStrokeWidth(2 * (map.getScale() + 2));
+
         calcTranslate(forward);
         calcTranslate(backward);
+        setRoadSurface(DAO.getRoadSurfaces()[2]);
     }
 
     /**
@@ -71,10 +69,8 @@ public class Road {
         end.addRoad(this);
 
         forward = new Line(start.getCenterX(), start.getCenterY(), end.getCenterX(), end.getCenterY());
-        forward.setStrokeWidth(2 * (map.getScale() + 2));
-        forward.setEffect(dropShadow);
         backward = new Line(end.getCenterX(), end.getCenterY(), start.getCenterX(), start.getCenterY());
-        backward.setStrokeWidth(2 * (map.getScale() + 2));
+        forward.setEffect(dropShadow);
         backward.setEffect(dropShadow);
 
         calcTranslate(forward);
@@ -132,6 +128,8 @@ public class Road {
             noWaySign = null;
             setSpeedLimit(speedLimit);
         }
+        forward.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
+        backward.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
     }
 
     /**
@@ -227,12 +225,12 @@ public class Road {
         forward.setStartY(start.getCenterY());
         forward.setEndX(end.getCenterX());
         forward.setEndY(end.getCenterY());
-        forward.setStrokeWidth(2 * (map.getScale() + 2));
+        forward.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
         backward.setStartX(end.getCenterX());
         backward.setStartY(end.getCenterY());
         backward.setEndX(start.getCenterX());
         backward.setEndY(start.getCenterY());
-        backward.setStrokeWidth(2 * (map.getScale() + 2));
+        backward.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
         calcTranslate(forward);
         calcTranslate(backward);
         length = (int)(Math.sqrt(Math.pow(end.getX() - start.getX(), 2) + Math.pow(end.getY() - start.getY(), 2)) / 5) * 5;
@@ -253,6 +251,8 @@ public class Road {
      * Удалить себя
      */
     public void dispose() {
+        if (noWaySign != null) noWaySign.dispose();
+        if (speedLimitSign != null) speedLimitSign.dispose();
         start.removeRoad(this);
         end.removeRoad(this);
         map.removeRoad(this);
