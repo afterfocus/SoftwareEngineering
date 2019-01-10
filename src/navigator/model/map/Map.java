@@ -1,4 +1,4 @@
-package navigator.model;
+package navigator.model.map;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;

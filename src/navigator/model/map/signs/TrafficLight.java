@@ -1,10 +1,10 @@
-package navigator.model.signs;
+package navigator.model.map.signs;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import navigator.model.Junction;
+import navigator.model.map.Junction;
 
 /**
  * Класс светофора

@@ -3,7 +3,11 @@ package navigator.database;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import navigator.model.*;
+import navigator.model.entities.RoadSurface;
+import navigator.model.map.Junction;
+import navigator.model.map.LabelType;
+import navigator.model.map.Map;
+import navigator.model.map.Road;
 
 import java.io.*;
 

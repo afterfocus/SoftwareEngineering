@@ -1,9 +1,9 @@
-package navigator.model;
+package navigator.model.map;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import navigator.model.signs.TrafficLight;
+import navigator.model.map.signs.TrafficLight;
 
 import java.util.LinkedList;
 import java.util.List;

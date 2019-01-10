@@ -1,4 +1,4 @@
-package navigator.model;
+package navigator.model.map;
 
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
@@ -8,8 +8,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import navigator.database.DAO;
-import navigator.model.signs.NoWaySign;
-import navigator.model.signs.SpeedLimitSign;
+import navigator.model.entities.RoadSurface;
+import navigator.model.map.signs.NoWaySign;
+import navigator.model.map.signs.SpeedLimitSign;
 
 /**
  * Класс дороги

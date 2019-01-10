@@ -10,10 +10,10 @@ import javafx.scene.paint.Color;
 import navigator.controller.properties.JunctionPropertiesController;
 import navigator.controller.properties.RoadPropertiesController;
 import navigator.database.DAO;
-import navigator.model.Junction;
-import navigator.model.LabelType;
-import navigator.model.Map;
-import navigator.model.Road;
+import navigator.model.map.Junction;
+import navigator.model.map.LabelType;
+import navigator.model.map.Map;
+import navigator.model.map.Road;
 
 public class SearchRouteController {
 

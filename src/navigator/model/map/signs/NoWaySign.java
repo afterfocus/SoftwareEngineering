@@ -1,10 +1,10 @@
-package navigator.model.signs;
+package navigator.model.map.signs;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import navigator.model.Road;
+import navigator.model.map.Road;
 
 /**
  * Класс знака ограничения скорости

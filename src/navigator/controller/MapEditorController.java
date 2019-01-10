@@ -11,7 +11,10 @@ import javafx.scene.shape.Line;
 import navigator.controller.settings.JunctionSettingsController;
 import navigator.controller.settings.RoadSettingsController;
 import navigator.database.DAO;
-import navigator.model.*;
+import navigator.model.map.Junction;
+import navigator.model.map.LabelType;
+import navigator.model.map.Map;
+import navigator.model.map.Road;
 
 /**
  * Контроллер для редактора карт

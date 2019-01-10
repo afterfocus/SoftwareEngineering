@@ -1,4 +1,4 @@
-package navigator.model;
+package navigator.model.entities;
 
 /**
  * Класс дорожного покрытия
