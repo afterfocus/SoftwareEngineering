@@ -2,10 +2,8 @@ package navigator.database;
 
 import javafx.scene.control.Alert;
 import javafx.scene.layout.Pane;
-import navigator.model.Junction;
-import navigator.model.Map;
-import navigator.model.Road;
-import navigator.model.RoadSurface;
+import javafx.scene.paint.Color;
+import navigator.model.*;
 
 import java.io.*;
 
@@ -90,11 +88,15 @@ public class DAO {
 
     /**
      * Загрузить карту из файла
-     *
-     * @param map      контроллер для доступа к родительским компонентам
      * @param filename имя файла
+     * @param mapArea контейнер для отрисовки карты
+     * @param color цвет перекрёстков
      */
-    public static void readMapFromFile(Map map, Pane mapArea, String filename) {
+    public static Map readMapFromFile(String filename, Pane mapArea, Color color) {
+        Map map = new Map(LabelType.NAME, color);
+        map.setOffsetX(mapArea.getWidth() / 2);
+        map.setOffsetY(mapArea.getHeight() / 2);
+
         try (FileInputStream fis = new FileInputStream(filename)) {
             ObjectInputStream ois = new ObjectInputStream(fis);
 
@@ -121,5 +123,6 @@ public class DAO {
             Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
             alert.show();
         }
+        return map;
     }
 }

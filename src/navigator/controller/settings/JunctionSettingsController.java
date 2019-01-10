@@ -52,8 +52,8 @@ public class JunctionSettingsController {
         });
 
         //Длительность фаз
-        redPhaseSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 100, 30));
-        greenPhaseSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 100, 30));
+        redPhaseSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 120, 30));
+        greenPhaseSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 120, 30));
     }
 
     /**

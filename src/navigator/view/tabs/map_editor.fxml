@@ -12,61 +12,50 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane minHeight="300.0" minWidth="300.0" prefHeight="700.0" prefWidth="1100.0"
-            style="-fx-background-color: #191E27;" xmlns="http://javafx.com/javafx/8.0.121"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="navigator.controller.MapEditorController">
+<AnchorPane minHeight="300.0" minWidth="300.0" prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #191E27;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="navigator.controller.MapEditorController">
 
-    <Pane fx:id="mapArea" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="180.0"
-          AnchorPane.topAnchor="0.0"/>
+    <Pane fx:id="mapArea" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="180.0" AnchorPane.topAnchor="0.0" />
 
-    <Slider fx:id="zoomSlider" blockIncrement="1.0" layoutX="14.0" layoutY="14.0" majorTickUnit="1.0" max="2.0"
-            min="0.2" minorTickCount="2" onMouseClicked="#sliderClicked" onMouseDragged="#sliderDragged"
-            orientation="VERTICAL" showTickMarks="true" value="1.0">
+    <Slider fx:id="zoomSlider" blockIncrement="1.0" layoutX="14.0" layoutY="14.0" majorTickUnit="1.0" max="2.0" min="0.2" minorTickCount="2" onMouseClicked="#sliderClicked" onMouseDragged="#sliderDragged" orientation="VERTICAL" showTickMarks="true" value="1.0">
         <effect>
-            <Reflection/>
+            <Reflection />
         </effect>
     </Slider>
-    <Button layoutX="45.0" layoutY="14.0" onMouseClicked="#zoomInButtonClicked" scaleZ="3.0" text="+"
-            textAlignment="CENTER"/>
-    <Button layoutX="46.0" layoutY="127.0" onMouseClicked="#zoomOutButtonClicked" scaleZ="3.0" text="-"/>
-    <Label fx:id="scaleLabel" layoutX="176.0" layoutY="13.0" text="200 м" textFill="#ffffffd9"/>
-    <Separator layoutX="95.0" layoutY="35.0" prefWidth="200.0"/>
-    <Separator layoutX="92.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0"/>
-    <Separator layoutX="292.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0"/>
-    <CheckBox fx:id="streetNamesCheckBox" layoutX="312.0" layoutY="14.0" mnemonicParsing="false" prefHeight="3.0"
-              prefWidth="132.0" text="Названия улиц" textFill="#eeeeee" textOverrun="CLIP" wrapText="true"/>
+    <Button layoutX="45.0" layoutY="14.0" onMouseClicked="#zoomInButtonClicked" scaleZ="3.0" text="+" textAlignment="CENTER" />
+    <Button layoutX="46.0" layoutY="127.0" onMouseClicked="#zoomOutButtonClicked" scaleZ="3.0" text="-" />
+    <Label fx:id="scaleLabel" layoutX="176.0" layoutY="13.0" text="200 м" textFill="#ffffffd9" />
+    <Separator layoutX="95.0" layoutY="35.0" prefWidth="200.0" />
+    <Separator layoutX="92.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0" />
+    <Separator layoutX="292.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0" />
+    <CheckBox fx:id="streetNamesCheckBox" layoutX="312.0" layoutY="14.0" prefHeight="3.0" prefWidth="132.0" selected="true" text="Названия улиц" textFill="#eeeeee" textOverrun="CLIP" wrapText="true" />
 
-    <Pane layoutX="904.0" maxWidth="190.0" minWidth="190.0" prefWidth="190.0"
-          style="-fx-background-color: #131720E3; -fx-border-width: 1.0; -fx-border-color: #FFFFFF40;" translateZ="1.0"
-          AnchorPane.bottomAnchor="-1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="-1.0">
-        <ToggleButton layoutX="13.0" layoutY="56.0" prefWidth="165.0" text="Добавить дорогу"
-                      userData="addRoad">
+    <Pane layoutX="904.0" maxWidth="190.0" minWidth="190.0" prefWidth="190.0" style="-fx-background-color: #131720E3; -fx-border-width: 1.0; -fx-border-color: #FFFFFF40;" translateZ="1.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="-1.0">
+        <ToggleButton layoutX="13.0" layoutY="56.0" prefWidth="165.0" text="Добавить дорогу" userData="addRoad">
             <toggleGroup>
-                <ToggleGroup fx:id="toggleGroup"/>
+                <ToggleGroup fx:id="toggleGroup" />
             </toggleGroup>
             <cursor>
-                <Cursor fx:constant="HAND"/>
+                <Cursor fx:constant="HAND" />
             </cursor>
         </ToggleButton>
-        <ToggleButton layoutX="13.0" layoutY="14.0" prefWidth="165.0"
-                      text="Добавить перекрёсток" toggleGroup="$toggleGroup" userData="addJunction">
+        <ToggleButton layoutX="13.0" layoutY="14.0" prefWidth="165.0" text="Добавить перекрёсток" toggleGroup="$toggleGroup" userData="addJunction">
             <cursor>
-                <Cursor fx:constant="HAND"/>
+                <Cursor fx:constant="HAND" />
             </cursor>
         </ToggleButton>
 
-        <Button fx:id="saveButton" onMouseClicked="#saveMap" layoutX="13.0" prefWidth="165.0" text="Сохранить в файл"/>
+        <Button fx:id="saveButton" layoutX="13.0" onMouseClicked="#saveMap" prefWidth="165.0" text="Сохранить в файл" />
+        <Button fx:id="loadButton" layoutX="13.0" onMouseClicked="#loadMap" prefWidth="165.0" text="Загрузить из файла" />
         <cursor>
-            <Cursor fx:constant="HAND"/>
+            <Cursor fx:constant="HAND" />
         </cursor>
-        <Button fx:id="loadButton" onMouseClicked="#loadMap" layoutX="13.0" prefWidth="165.0" text="Загрузить из файла"/>
         <cursor>
-            <Cursor fx:constant="HAND"/>
+            <Cursor fx:constant="HAND" />
         </cursor>
 
     </Pane>
 
-    <fx:include fx:id="junctionSettings" source="../settings/junction_settings.fxml"/>
-    <fx:include fx:id="roadSettings" source="../settings/road_settings.fxml"/>
+    <fx:include fx:id="junctionSettings" source="../settings/junction_settings.fxml" />
+    <fx:include fx:id="roadSettings" source="../settings/road_settings.fxml" />
 
 </AnchorPane>

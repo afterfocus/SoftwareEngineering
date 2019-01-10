@@ -56,6 +56,7 @@ public class MapEditorController {
     private double deltaY;
 
     private DropShadow dropShadow = new DropShadow();
+    private Color junctionColor = Color.BURLYWOOD;
 
     /**
      * Инициализация формы
@@ -64,7 +65,7 @@ public class MapEditorController {
     public void initialize() {
 
         //Инициализация карты
-        map = new Map(LabelType.NAME, Color.BURLYWOOD);
+        map = new Map(LabelType.NAME, junctionColor);
         pickedJunction = null;
 
         //Выбор шаблона
@@ -122,14 +123,13 @@ public class MapEditorController {
      */
     @FXML
     private void loadMap() {
-        map.clear();
         mapArea.getChildren().clear();
         translationX = 0;
         translationY = 0;
         scale = 1;
         zoomSlider.setValue(1);
 
-        DAO.readMapFromFile(map, mapArea, "samara.map");
+        map = DAO.readMapFromFile("samara.map", mapArea, junctionColor);
 
         for (Junction j : map.getJunctionList()) {
             j.setEffect(dropShadow);

@@ -46,6 +46,7 @@ public class SearchRouteController {
     private double deltaY;
 
     private DropShadow dropShadow = new DropShadow();
+    private Color junctionColor = Color.BURLYWOOD;
 
     /**
      * Инициализация формы
@@ -54,7 +55,7 @@ public class SearchRouteController {
     public void initialize() {
 
         //Инициализация карты
-        map = new Map(LabelType.NAME, Color.BURLYWOOD);
+        map = new Map(LabelType.NAME, junctionColor);
 
         //Изменение размеров окна
         mapArea.widthProperty().addListener(e -> map.setOffsetX(mapArea.getWidth() / 2));
@@ -94,10 +95,9 @@ public class SearchRouteController {
      */
     @FXML
     private void loadMap() {
-        map.clear();
-        mapArea.getChildren().clear();
 
-        DAO.readMapFromFile(map, mapArea,"samara.map");
+        mapArea.getChildren().clear();
+        map = DAO.readMapFromFile("samara.map", mapArea, junctionColor);
 
         //Нажатие на перекрёсток
         for (Junction j: map.getJunctionList()) j.setOnMousePressed(event -> showJunctionProperties(j));

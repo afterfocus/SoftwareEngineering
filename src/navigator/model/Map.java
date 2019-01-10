@@ -22,7 +22,7 @@ public class Map {
     private double scale;
     private double translationX;
     private double translationY;
-    private boolean labelsVisible;
+    private boolean isLabelsVisible;
     private LabelType labelType;
 
     private Color junctionColor;
@@ -43,6 +43,7 @@ public class Map {
         this.scale = 1;
         this.translationX = 0;
         this.translationY = 0;
+        this.isLabelsVisible = true;
         this.labelType = labelType;
         this.junctionColor = junctionColor;
     }
@@ -152,14 +153,6 @@ public class Map {
         return null;
     }
 
-    /**
-     * Удалить все объекты с карты
-     */
-    public void clear() {
-        junctionList.clear();
-        roadList.clear();
-    }
-
 
     //==================================== Методы, связанные с отображением карты =====================================
 
@@ -221,7 +214,6 @@ public class Map {
         }
     }
 
-
     /**
      * Получить сдвиг по X
      * @return сдвиг карты по X
@@ -251,7 +243,7 @@ public class Map {
     }
 
     boolean isLabelsVisible() {
-        return labelsVisible;
+        return isLabelsVisible;
     }
 
     /**
@@ -259,7 +251,7 @@ public class Map {
      * @param labelsVisible true - отобразить надписи
      */
     public void setLabelsVisible(boolean labelsVisible) {
-        this.labelsVisible = labelsVisible;
+        this.isLabelsVisible = labelsVisible;
         for (Road r: roadList) r.notifyLabelVisibilityChanged();
     }
 
