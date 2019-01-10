@@ -9,8 +9,8 @@ import navigator.model.Road;
 /**
  * Класс знака ограничения скорости
  */
-public class NoWaySign {
-    private Circle outerCircle;
+public class NoWaySign extends Circle {
+
     private Circle innerCircle;
     private Rectangle rect;
 
@@ -20,25 +20,28 @@ public class NoWaySign {
      */
     public NoWaySign(Road road) {
 
-        outerCircle = new Circle(15, Color.WHITE);
-        outerCircle.centerXProperty().bind(road.getStart().centerXProperty().add(road.getEnd().centerXProperty()).divide(2));
-        outerCircle.centerYProperty().bind(road.getStart().centerYProperty().add(road.getEnd().centerYProperty()).divide(2));
+        super(15, Color.WHITE);
+        centerXProperty().bind(road.getStart().centerXProperty().add(road.getEnd().centerXProperty()).divide(2));
+        centerYProperty().bind(road.getStart().centerYProperty().add(road.getEnd().centerYProperty()).divide(2));
         innerCircle = new Circle(14, Color.RED);
-        innerCircle.centerXProperty().bind(outerCircle.centerXProperty());
-        innerCircle.centerYProperty().bind(outerCircle.centerYProperty());
+        innerCircle.centerXProperty().bind(centerXProperty());
+        innerCircle.centerYProperty().bind(centerYProperty());
 
         rect = new Rectangle(19, 5, Color.WHITE);
-        rect.xProperty().bind(outerCircle.centerXProperty().subtract(9.5));
-        rect.yProperty().bind(outerCircle.centerYProperty().subtract(2.5));
+        rect.xProperty().bind(centerXProperty().subtract(9.5));
+        rect.yProperty().bind(centerYProperty().subtract(2.5));
 
-        ((Pane)road.getForwardLine().getParent()).getChildren().addAll(outerCircle, innerCircle, rect);
+        ((Pane)road.getForwardLine().getParent()).getChildren().addAll(this, innerCircle, rect);
+
+        setMouseTransparent(true);
+        innerCircle.setMouseTransparent(true);
+        rect.setMouseTransparent(true);
     }
 
     /**
      * Уничтожение объекта
      */
     public void dispose() {
-        Pane pane = (Pane)outerCircle.getParent();
-        pane.getChildren().removeAll(rect, outerCircle, innerCircle);
+        ((Pane)getParent()).getChildren().removeAll(rect, this, innerCircle);
     }
 }

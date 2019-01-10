@@ -4,6 +4,9 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import navigator.database.DAO;
 import navigator.model.signs.NoWaySign;
 import navigator.model.signs.SpeedLimitSign;
@@ -23,10 +26,11 @@ public class Road {
     private int speedLimit;
     private RoadSurface roadSurface;
 
-    private Line forward;
-    private Line backward;
+    private Line forwardLine;
+    private Line backwardLine;
     private SpeedLimitSign speedLimitSign;
     private NoWaySign noWaySign;
+    private Text nameLabel;
 
     /**
      * Инициализация дороги
@@ -44,8 +48,8 @@ public class Road {
         length = (int)(Math.sqrt(Math.pow(end.getX() - start.getX(), 2) + Math.pow(end.getY() - start.getY(), 2)) / 5) * 5;
         speedLimit = 60;
 
-        forward = new Line(start.getCenterX(), start.getCenterY(), end.getCenterX(), end.getCenterY());
-        backward = new Line(end.getCenterX(), end.getCenterY(), start.getCenterX(), start.getCenterY());
+        forwardLine = new Line(start.getCenterX(), start.getCenterY(), end.getCenterX(), end.getCenterY());
+        backwardLine = new Line(end.getCenterX(), end.getCenterY(), start.getCenterX(), start.getCenterY());
 
         setRoadSurface(DAO.getRoadSurfaces()[2]);
         updateTranslate();
@@ -66,14 +70,14 @@ public class Road {
         this.name = name;
         length = (int)(Math.sqrt(Math.pow(end.getX() - start.getX(), 2) + Math.pow(end.getY() - start.getY(), 2)) / 5) * 5;
 
-        forward = new Line(start.getCenterX(), start.getCenterY(), end.getCenterX(), end.getCenterY());
-        backward = new Line(end.getCenterX(), end.getCenterY(), start.getCenterX(), start.getCenterY());
-        forward.setEffect(dropShadow);
-        backward.setEffect(dropShadow);
+        forwardLine = new Line(start.getCenterX(), start.getCenterY(), end.getCenterX(), end.getCenterY());
+        backwardLine = new Line(end.getCenterX(), end.getCenterY(), start.getCenterX(), start.getCenterY());
+        forwardLine.setEffect(dropShadow);
+        backwardLine.setEffect(dropShadow);
 
         map.addRoad(this);
-        mapArea.getChildren().add(0, forward);
-        mapArea.getChildren().add(0, backward);
+        mapArea.getChildren().add(0, forwardLine);
+        mapArea.getChildren().add(0, backwardLine);
 
         setDirection(direction);
         setRoadSurface(roadSurface);
@@ -99,6 +103,10 @@ public class Road {
      */
     public void setName(String name) {
         this.name = name;
+        if (nameLabel != null) {
+            nameLabel.setText(name);
+            nameLabel.xProperty().bind(start.centerXProperty().add(end.centerXProperty()).divide(2).subtract(nameLabel.getLayoutBounds().getWidth() / 2));
+        }
     }
 
     /**
@@ -115,22 +123,23 @@ public class Road {
     public void setRoadSurface(RoadSurface roadSurface) {
         this.roadSurface = roadSurface;
         if (roadSurface.getCoefficient() < 0.01) {
-            forward.setStroke(Color.rgb(25, 25, 25));
-            backward.setStroke(Color.rgb(25, 25, 25));
+            forwardLine.setStroke(Color.rgb(25, 25, 25));
+            backwardLine.setStroke(Color.rgb(25, 25, 25));
 
             if (noWaySign == null) noWaySign = new NoWaySign(this);
             speedLimitSign = null;
 
         } else {
-            forward.setStroke(Color.rgb((int) (220 - 120 * roadSurface.getCoefficient()), (int) (170 * roadSurface.getCoefficient() + 50), 0));
-            backward.setStroke(Color.rgb((int) (220 - 120 * roadSurface.getCoefficient()), (int) (170 * roadSurface.getCoefficient() + 50), 0));
+            forwardLine.setStroke(Color.rgb((int) (220 - 120 * roadSurface.getCoefficient()), (int) (170 * roadSurface.getCoefficient() + 50), 0));
+            backwardLine.setStroke(Color.rgb((int) (220 - 120 * roadSurface.getCoefficient()), (int) (170 * roadSurface.getCoefficient() + 50), 0));
 
             if (noWaySign != null) noWaySign.dispose();
             noWaySign = null;
             setSpeedLimit(speedLimit);
         }
-        forward.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
-        backward.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
+        forwardLine.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
+        backwardLine.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
+        if (nameLabel != null) nameLabel.yProperty().bind(start.centerYProperty().add(end.centerYProperty()).divide(2).add(speedLimitSign == null && noWaySign == null ? 3 : 24));
     }
 
     /**
@@ -147,12 +156,56 @@ public class Road {
     public void setSpeedLimit(int speedLimit) {
         this.speedLimit = speedLimit;
         if (speedLimit == 60) {
-            if(speedLimitSign != null) speedLimitSign.dispose();
-            speedLimitSign = null;
+            if (speedLimitSign != null) {
+                speedLimitSign.dispose();
+                speedLimitSign = null;
+            }
         }
         else if (roadSurface.getCoefficient() > 0.01) {
-            if(speedLimitSign == null) speedLimitSign = new SpeedLimitSign(this);
-            else speedLimitSign.setSpeedLimit(speedLimit);
+            if (speedLimitSign == null) speedLimitSign = new SpeedLimitSign(this);
+            else speedLimitSign.setSpeed(speedLimit);
+        }
+        if (nameLabel != null) nameLabel.yProperty().bind(start.centerYProperty().add(end.centerYProperty()).divide(2).add(speedLimitSign == null && noWaySign == null ? 3 : 24));
+    }
+
+    /**
+     *
+     */
+    void setNameLabelVisible(boolean visible) {
+        if (visible && nameLabel == null) {
+            nameLabel = new Text(name);
+            nameLabel.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+            nameLabel.setFill(Color.WHITE);
+            nameLabel.setEffect(new DropShadow());
+            nameLabel.xProperty().bind(start.centerXProperty().add(end.centerXProperty()).divide(2).subtract(nameLabel.getLayoutBounds().getWidth() / 2));
+            nameLabel.yProperty().bind(start.centerYProperty().add(end.centerYProperty()).divide(2).add(speedLimitSign == null && noWaySign == null ? 3 : 24));
+            ((Pane) forwardLine.getParent()).getChildren().add(nameLabel);
+            nameLabel.setMouseTransparent(true);
+
+        }
+        else if (nameLabel != null) {
+            ((Pane) nameLabel.getParent()).getChildren().remove(nameLabel);
+            nameLabel = null;
+        }
+    }
+
+    /**
+     * Изменить направление дороги
+     * @param direction новое направление дороги
+     */
+    public void setDirection(char direction) {
+        this.direction = direction;
+        if (direction == '↔') {
+            forwardLine.setVisible(true);
+            backwardLine.setVisible(true);
+        }
+        else if (direction == '→') {
+            forwardLine.setVisible(true);
+            backwardLine.setVisible(false);
+        }
+        else {
+            forwardLine.setVisible(false);
+            backwardLine.setVisible(true);
         }
     }
 
@@ -185,56 +238,37 @@ public class Road {
     }
 
     /**
-     * Изменить направление дороги
-     * @param direction новое направление дороги
-     */
-    public void setDirection(char direction) {
-        this.direction = direction;
-        if (direction == '↔') {
-            forward.setVisible(true);
-            backward.setVisible(true);
-        }
-        else if (direction == '→') {
-            forward.setVisible(true);
-            backward.setVisible(false);
-        }
-        else {
-            forward.setVisible(false);
-            backward.setVisible(true);
-        }
-    }
-
-    /**
      * @return линия - графическое представление направления движения дороги
      */
     public Line getForwardLine() {
-        return forward;
+        return forwardLine;
     }
 
     /**
      * @return линия - графическое представление направления движения дороги
      */
     public Line getBackwardLine() {
-        return backward;
+        return backwardLine;
     }
+
 
     /**
      * Пересчитать экранные координаты дороги
      */
     public void updateLocation() {
-        forward.setStartX(start.getCenterX());
-        forward.setStartY(start.getCenterY());
-        forward.setEndX(end.getCenterX());
-        forward.setEndY(end.getCenterY());
-        backward.setStartX(end.getCenterX());
-        backward.setStartY(end.getCenterY());
-        backward.setEndX(start.getCenterX());
-        backward.setEndY(start.getCenterY());
+        forwardLine.setStartX(start.getCenterX());
+        forwardLine.setStartY(start.getCenterY());
+        forwardLine.setEndX(end.getCenterX());
+        forwardLine.setEndY(end.getCenterY());
+        backwardLine.setStartX(end.getCenterX());
+        backwardLine.setStartY(end.getCenterY());
+        backwardLine.setEndX(start.getCenterX());
+        backwardLine.setEndY(start.getCenterY());
     }
 
     void updateWidth() {
-        forward.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
-        backward.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
+        forwardLine.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
+        backwardLine.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
     }
 
     public void updateLength() {
@@ -242,8 +276,8 @@ public class Road {
     }
 
     public void updateTranslate(){
-        calcTranslate(forward);
-        calcTranslate(backward);
+        calcTranslate(forwardLine);
+        calcTranslate(backwardLine);
     }
 
     /**
@@ -258,11 +292,12 @@ public class Road {
     }
 
     /**
-     * Удалить себя
+     * Уничтожение объекта
      */
     public void dispose() {
         if (noWaySign != null) noWaySign.dispose();
         if (speedLimitSign != null) speedLimitSign.dispose();
+        if (nameLabel != null) ((Pane)nameLabel.getParent()).getChildren().remove(nameLabel);
         start.removeRoad(this);
         end.removeRoad(this);
         map.removeRoad(this);

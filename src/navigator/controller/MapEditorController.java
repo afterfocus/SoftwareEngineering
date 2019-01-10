@@ -28,6 +28,8 @@ public class MapEditorController {
     private Button saveButton = new Button();
     @FXML
     private Button loadButton = new Button();
+    @FXML
+    private CheckBox streetNamesCheckBox = new CheckBox();
 
     @FXML
     private Pane junctionSettings;
@@ -105,6 +107,10 @@ public class MapEditorController {
             else zoomSlider.setValue(zoomSlider.getValue() - 0.1);
             sliderDragged();
         });
+
+        streetNamesCheckBox.selectedProperty().addListener(e ->
+            map.setNamesVisible(streetNamesCheckBox.isSelected())
+        );
 
         //Кнопки сохранить и загрузить
         saveButton.setOnMouseClicked(e -> DAO.writeMapToFile(map, "samara.map"));

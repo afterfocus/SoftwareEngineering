@@ -22,6 +22,7 @@ public class Map {
     private double scale;
     private double translationX;
     private double translationY;
+    private boolean isNamesVisible;
 
     private Color junctionColor;
 
@@ -108,6 +109,7 @@ public class Map {
         first.pick();
         second.pick();
         Road road = new Road(this, first, second);
+        road.setNameLabelVisible(isNamesVisible);
         if (roadList.add(road)) return road;
         else return null;
     }
@@ -116,6 +118,7 @@ public class Map {
      * Добавить дорогу
      */
     void addRoad(Road road) {
+        road.setNameLabelVisible(isNamesVisible);
         roadList.add(road);
     }
 
@@ -239,6 +242,11 @@ public class Map {
      */
     public void setIdCounter(int idCounter) {
         this.idCounter = idCounter;
+    }
+
+    public void setNamesVisible(boolean namesVisible) {
+        isNamesVisible = namesVisible;
+        for (Road r: roadList) r.setNameLabelVisible(isNamesVisible);
     }
 
     /**

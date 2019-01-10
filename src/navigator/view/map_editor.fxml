@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
@@ -17,7 +18,7 @@
         <Insets />
     </opaqueInsets>
 
-    <Pane fx:id="mapArea" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="180.0" AnchorPane.topAnchor="0.0" />
+    <Pane fx:id="mapArea" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="180.0" AnchorPane.topAnchor="0.0"/>
 
     <Slider fx:id="zoomSlider" blockIncrement="1.0" layoutX="14.0" layoutY="14.0" majorTickUnit="1.0" max="2.0" min="0.2" minorTickCount="2" onMouseClicked="#sliderClicked" onMouseDragged="#sliderDragged" orientation="VERTICAL" showTickMarks="true" value="1.0">
         <effect>
@@ -30,6 +31,7 @@
     <Separator layoutX="95.0" layoutY="35.0" prefWidth="200.0" />
     <Separator layoutX="92.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0" />
     <Separator layoutX="292.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0" />
+    <CheckBox fx:id="streetNamesCheckBox" layoutX="312.0" layoutY="14.0" mnemonicParsing="false" prefHeight="3.0" prefWidth="132.0" text="Названия улиц" textFill="#ffffffd9" textOverrun="CLIP" wrapText="true" />
 
     <Pane layoutX="904.0" maxWidth="190.0" minWidth="190.0" prefWidth="190.0" style="-fx-background-color: #131720E3; -fx-border-width: 1.0; -fx-border-color: #FFFFFF40;" translateZ="1.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="-1.0">
         <ToggleButton layoutX="13.0" layoutY="56.0" mnemonicParsing="false" prefWidth="165.0" text="Добавить дорогу" userData="addRoad">
