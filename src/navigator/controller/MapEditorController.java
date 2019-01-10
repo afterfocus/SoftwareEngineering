@@ -27,11 +27,11 @@ public class MapEditorController {
     @FXML
     private ToggleGroup toggleGroup = new ToggleGroup();
     @FXML
+    private ToggleGroup radioGroup = new ToggleGroup();
+    @FXML
     private Button saveButton = new Button();
     @FXML
     private Button loadButton = new Button();
-    @FXML
-    private CheckBox streetNamesCheckBox = new CheckBox();
 
     @FXML
     private Pane junctionSettings;
@@ -106,8 +106,14 @@ public class MapEditorController {
             sliderDragged();
         });
 
-        //Отображение названий улиц
-        streetNamesCheckBox.selectedProperty().addListener(e -> map.setLabelsVisible(streetNamesCheckBox.isSelected()));
+        //Отображение надписей
+        radioGroup.selectedToggleProperty().addListener(e -> {
+            switch (((RadioButton)radioGroup.getSelectedToggle()).getText()) {
+                case "Нет": map.setLabelsType(LabelType.NONE); break;
+                case "Название улицы": map.setLabelsType(LabelType.NAME); break;
+                case "Протяженность": map.setLabelsType(LabelType.LENGTH); break;
+            }
+        });
     }
 
     /**
@@ -132,7 +138,6 @@ public class MapEditorController {
         map = DAO.readMapFromFile("samara.map", mapArea, junctionColor);
 
         for (Junction j : map.getJunctionList()) {
-            j.setEffect(dropShadow);
 
             //Нажатие на перекрёсток
             j.setOnMousePressed(event -> {

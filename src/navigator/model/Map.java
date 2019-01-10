@@ -22,7 +22,6 @@ public class Map {
     private double scale;
     private double translationX;
     private double translationY;
-    private boolean isLabelsVisible;
     private LabelType labelType;
 
     private Color junctionColor;
@@ -43,7 +42,6 @@ public class Map {
         this.scale = 1;
         this.translationX = 0;
         this.translationY = 0;
-        this.isLabelsVisible = true;
         this.labelType = labelType;
         this.junctionColor = junctionColor;
     }
@@ -242,24 +240,15 @@ public class Map {
         for (Road r : roadList) r.notifyLocationChanged();
     }
 
-    boolean isLabelsVisible() {
-        return isLabelsVisible;
-    }
+    LabelType getLabelsType() {return labelType;}
 
     /**
      * Изменить отображение надписей дорог
-     * @param labelsVisible true - отобразить надписи
+     * @param labelType тип надписей
      */
-    public void setLabelsVisible(boolean labelsVisible) {
-        this.isLabelsVisible = labelsVisible;
-        for (Road r: roadList) r.notifyLabelVisibilityChanged();
-    }
-
-    LabelType getLabelsType() {return labelType;}
-
     public void setLabelsType(LabelType labelType) {
         this.labelType = labelType;
-        for (Road r: roadList) r.notifyLabelTextChanged();
+        for (Road r: roadList) r.notifyLabelTypeChanged();
     }
 
     /**

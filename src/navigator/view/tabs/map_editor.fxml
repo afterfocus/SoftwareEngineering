@@ -2,8 +2,8 @@
 
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.ToggleButton?>
@@ -27,9 +27,8 @@
     <Separator layoutX="95.0" layoutY="35.0" prefWidth="200.0" />
     <Separator layoutX="92.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0" />
     <Separator layoutX="292.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0" />
-    <CheckBox fx:id="streetNamesCheckBox" layoutX="312.0" layoutY="14.0" prefHeight="3.0" prefWidth="132.0" selected="true" text="Названия улиц" textFill="#eeeeee" textOverrun="CLIP" wrapText="true" />
 
-    <Pane layoutX="904.0" maxWidth="190.0" minWidth="190.0" prefWidth="190.0" style="-fx-background-color: #131720E3; -fx-border-width: 1.0; -fx-border-color: #FFFFFF40;" translateZ="1.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="-1.0">
+    <Pane prefWidth="190.0" style="-fx-background-color: #131720E3; -fx-border-width: 1.0; -fx-border-color: #FFFFFF40;" AnchorPane.bottomAnchor="-1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="-1.0">
         <ToggleButton layoutX="13.0" layoutY="56.0" prefWidth="165.0" text="Добавить дорогу" userData="addRoad">
             <toggleGroup>
                 <ToggleGroup fx:id="toggleGroup" />
@@ -44,14 +43,25 @@
             </cursor>
         </ToggleButton>
 
-        <Button fx:id="saveButton" layoutX="13.0" onMouseClicked="#saveMap" prefWidth="165.0" text="Сохранить в файл" />
-        <Button fx:id="loadButton" layoutX="13.0" onMouseClicked="#loadMap" prefWidth="165.0" text="Загрузить из файла" />
-        <cursor>
-            <Cursor fx:constant="HAND" />
-        </cursor>
-        <cursor>
-            <Cursor fx:constant="HAND" />
-        </cursor>
+        <Label layoutX="14.0" layoutY="215.0" text="Отображать подписи:" textFill="WHITE" />
+        <RadioButton layoutX="18.0" layoutY="240.0" text="Нет" textFill="WHITE">
+            <toggleGroup>
+                <ToggleGroup fx:id="radioGroup" />
+            </toggleGroup>
+        </RadioButton>
+        <RadioButton selected="true" layoutX="18.0" layoutY="265.0" text="Название улицы" toggleGroup="$radioGroup" textFill="WHITE"/>
+        <RadioButton layoutX="18.0" layoutY="290.0" text="Протяженность" toggleGroup="$radioGroup" textFill="WHITE"/>
+
+        <Button fx:id="saveButton" layoutX="13.0" onMouseClicked="#saveMap" prefWidth="165.0" text="Сохранить в файл">
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </Button>
+        <Button fx:id="loadButton" layoutX="13.0" onMouseClicked="#loadMap" prefWidth="165.0" text="Загрузить из файла">
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </Button>
 
     </Pane>
 

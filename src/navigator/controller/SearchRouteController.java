@@ -1,7 +1,6 @@
 package navigator.controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.effect.DropShadow;
@@ -24,8 +23,7 @@ public class SearchRouteController {
     private Slider zoomSlider;
     @FXML
     private Label scaleLabel;
-    @FXML
-    private CheckBox streetNamesCheckBox;
+
     @FXML
     private Pane roadProperties;
     @FXML
@@ -85,9 +83,6 @@ public class SearchRouteController {
             else zoomSlider.setValue(zoomSlider.getValue() - 0.04);
             sliderDragged();
         });
-
-        //Отображение названий улиц
-        streetNamesCheckBox.selectedProperty().addListener(e -> map.setLabelsVisible(streetNamesCheckBox.isSelected()));
     }
 
     /**

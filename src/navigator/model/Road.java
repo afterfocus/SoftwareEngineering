@@ -54,7 +54,7 @@ public class Road {
         setRoadSurface(DAO.getRoadSurfaces()[2]);
         notifyScaleChanged();
         notifyLengthChanged();
-        notifyLabelVisibilityChanged();
+        notifyLabelTypeChanged();
 
         start.addRoad(this);
         end.addRoad(this);
@@ -81,7 +81,7 @@ public class Road {
         setSpeedLimit(speedLimit);
         notifyLengthChanged();
         notifyScaleChanged();
-        notifyLabelVisibilityChanged();
+        notifyLabelTypeChanged();
 
         start.addRoad(this);
         end.addRoad(this);
@@ -276,18 +276,20 @@ public class Road {
     /**
      * Изменить отображение надписей
      */
-    void notifyLabelVisibilityChanged() {
-        if (map.isLabelsVisible() && label == null) {
-            label = new Text();
-            notifyLabelTextChanged();
-            label.setFont(Font.font("Arial", FontWeight.BOLD,10));
-            label.setFill(Color.WHITE);
-            label.setEffect(new DropShadow());
-            label.xProperty().bind(start.centerXProperty().add(end.centerXProperty()).divide(2).subtract(label.getLayoutBounds().getWidth() / 2));
-            label.yProperty().bind(start.centerYProperty().add(end.centerYProperty()).divide(2).add(speedLimitSign != null || noWaySign != null ? 24 : 3));
-            ((Pane) start.getParent()).getChildren().add(label);
-            label.setMouseTransparent(true);
-
+    void notifyLabelTypeChanged() {
+        if (map.getLabelsType() != LabelType.NONE) {
+            if(label == null) {
+                label = new Text();
+                notifyLabelTextChanged();
+                label.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+                label.setFill(Color.WHITE);
+                label.setEffect(new DropShadow());
+                label.xProperty().bind(start.centerXProperty().add(end.centerXProperty()).divide(2).subtract(label.getLayoutBounds().getWidth() / 2));
+                label.yProperty().bind(start.centerYProperty().add(end.centerYProperty()).divide(2).add(speedLimitSign != null || noWaySign != null ? 24 : 3));
+                ((Pane) start.getParent()).getChildren().add(label);
+                label.setMouseTransparent(true);
+            }
+            else notifyLabelTextChanged();
         } else if (label != null) {
             ((Pane) label.getParent()).getChildren().remove(label);
             label = null;
@@ -297,7 +299,7 @@ public class Road {
     /**
      * Обновить текст надписи
      */
-    void notifyLabelTextChanged() {
+    private void notifyLabelTextChanged() {
         if (label != null) {
             switch (map.getLabelsType()) {
                 case NAME:

@@ -1,5 +1,5 @@
 package navigator.model;
 
 public enum LabelType {
-    NAME, LENGTH, TIME, FUEL
+    NONE, NAME, LENGTH, TIME, FUEL
 }
