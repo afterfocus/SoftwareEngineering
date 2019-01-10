@@ -8,7 +8,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import navigator.database.DAO;
-import navigator.model.entities.RoadSurface;
+import navigator.database.RoadSurface;
 import navigator.model.map.signs.NoWaySign;
 import navigator.model.map.signs.SpeedLimitSign;
 

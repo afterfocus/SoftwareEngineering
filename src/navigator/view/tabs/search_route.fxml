@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
@@ -30,8 +29,6 @@
     <Separator layoutX="95.0" layoutY="35.0" prefWidth="200.0"/>
     <Separator layoutX="92.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0"/>
     <Separator layoutX="292.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0"/>
-    <CheckBox fx:id="streetNamesCheckBox" layoutX="312.0" layoutY="14.0" prefHeight="3.0"
-              prefWidth="132.0" text="Названия улиц" textFill="#eeeeee" textOverrun="CLIP" wrapText="true"/>
 
     <Pane layoutX="904.0" maxWidth="190.0" minWidth="190.0" prefWidth="190.0"
           style="-fx-background-color: #131720E3; -fx-border-width: 1.0; -fx-border-color: #FFFFFF40;" translateZ="1.0"

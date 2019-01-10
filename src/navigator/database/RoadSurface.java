@@ -1,12 +1,12 @@
-package navigator.model.entities;
+package navigator.database;
 
 /**
  * Класс дорожного покрытия
  */
 public class RoadSurface {
 
+    private int id;
     private String name;
-
     private double decelerationCoefficient;
 
     /**
@@ -14,15 +14,20 @@ public class RoadSurface {
      * @param name название дорожного покрытия
      * @param decelerationCoefficient коэфиициент торможения
      */
-    public RoadSurface(String name, double decelerationCoefficient) {
+    RoadSurface(int id, String name, double decelerationCoefficient) {
+        this.id = id;
         this.name = name;
         this.decelerationCoefficient = decelerationCoefficient;
+    }
+
+    public int getId() {
+        return id;
     }
 
     /**
      * @return название покрытия
      */
-    public String getName() {
+    String getName() {
         return name;
     }
 

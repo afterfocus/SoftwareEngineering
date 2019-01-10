@@ -56,7 +56,6 @@ public class Junction extends Circle {
                 (y + map.getTranslationY()) * map.getScale() + map.getOffsetY(),
                 4.5 * (map.getScale() + 1.5) + 1, map.getJunctionColor());
 
-
         this.map = map;
         this.id = id;
         this.x = x;

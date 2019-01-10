@@ -3,7 +3,6 @@ package navigator.database;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import navigator.model.entities.RoadSurface;
 import navigator.model.map.Junction;
 import navigator.model.map.LabelType;
 import navigator.model.map.Map;
@@ -28,6 +27,60 @@ public class DAO {
                 "Ташкентская", "Фадеева"};
     }
 
+    public static Driver[] getDrivers() {
+        return new Driver [] {
+                new Driver(1, "Голов Максим"),
+                new Driver(3, "Иванов Дмитрий"),
+                new Driver(4,"Филатова Евгения"),
+                new Driver(2, "Шепелев Фёдор")
+        };
+    }
+
+    /**
+     * Получить доступные водителю автомобили
+     * @param driverId идентификатор водителя
+     * @return массив названий улиц
+     */
+    public static Car[] getCars(int driverId) {
+        switch (driverId) {
+            case 1: {
+                return new Car[] {
+                        new Car(1, "Datsun On-Do", 165,2,9.4),
+                        new Car(2, "Lada Granta I", 166,2,9.0),
+                        new Car(3, "Lada Kalina I", 160,1,9.8),
+                        new Car(4, "Lada Vesta", 182,1,9.3),
+                        new Car(5, "Lada Vesta CNG", 170,5,6.3),
+                };
+            }
+            case 2: {
+                return new Car[] {
+                        new Car(10, "Беларус 892", 34,4,15.5),
+                        new Car(11, "МАЗ 103", 72,4,29),
+                        new Car(12, "Лиаз 525 CNG", 90,5,38),
+                };
+            }
+            case 3: {
+                return new Car[] {
+                        new Car(6, "Toyota Camry 3.5", 220,3,12.5),
+                        new Car(7, "Toyota Land Cruiser 4.0", 180,2,14.7),
+                        new Car(8, "Toyota Tundra II 5.7", 185,2,18.1),
+                        new Car(9, "Volkswagen Tiguan 2.0 TDI", 190,4,7.6),
+                };
+            }
+            default: return new Car[] { };
+        }
+    }
+
+    public static Fuel[] getFuels() {
+        return new Fuel[] {
+                new Fuel(1, "АИ-92", 40.5),
+                new Fuel(2, "АИ-95", 43.6),
+                new Fuel(3, "АИ-98", 47.25),
+                new Fuel(4, "ДТ",  44.65),
+                new Fuel(5, "Метан", 23.5)
+        };
+    }
+
     /**
      * Получить дорожные покрытия из БД
      *
@@ -35,14 +88,14 @@ public class DAO {
      */
     public static RoadSurface[] getRoadSurfaces() {
         return new RoadSurface[]{
-                new RoadSurface("Шоссе", 1.0),
-                new RoadSurface("Гладкий асфальт", 0.8),
-                new RoadSurface("Асфальт", 0.7),
-                new RoadSurface("Внутриквартальная дорога", 0.5),
-                new RoadSurface("Разбитый асфальт", 0.4),
-                new RoadSurface("Проселочная дорога", 0.3),
-                new RoadSurface("Грунт", 0.2),
-                new RoadSurface("Перекрыто", 0.001)
+                new RoadSurface(1, "Шоссе", 1.0),
+                new RoadSurface(2, "Гладкий асфальт", 0.8),
+                new RoadSurface(3, "Асфальт", 0.7),
+                new RoadSurface(4, "Внутриквартальная дорога", 0.5),
+                new RoadSurface(5, "Разбитый асфальт", 0.4),
+                new RoadSurface(6, "Проселочная дорога", 0.3),
+                new RoadSurface(7, "Грунт", 0.2),
+                new RoadSurface(8, "Перекрыто", 0.001)
         };
     }
 
@@ -92,9 +145,10 @@ public class DAO {
 
     /**
      * Загрузить карту из файла
+     *
      * @param filename имя файла
-     * @param mapArea контейнер для отрисовки карты
-     * @param color цвет перекрёстков
+     * @param mapArea  контейнер для отрисовки карты
+     * @param color    цвет перекрёстков
      */
     public static Map readMapFromFile(String filename, Pane mapArea, Color color) {
         Map map = new Map(LabelType.NAME, color);
@@ -117,7 +171,7 @@ public class DAO {
                         map.getJunctionById(ois.readInt()),
                         map.getJunctionById(ois.readInt()),
                         (String) ois.readObject(), ois.readChar(), ois.readInt(),
-                        new RoadSurface((String) ois.readObject(), ois.readDouble()));
+                        new RoadSurface(-1, (String) ois.readObject(), ois.readDouble()));
 
             //Чтение счетчика
             map.setIdCounter(ois.readInt());
