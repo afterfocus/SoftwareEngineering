@@ -28,13 +28,10 @@ public class RoadSettingsController {
     private ComboBox<RoadSurface> roadSurfaceComboBox;
     @FXML
     private Button closeButton;
-    @FXML
-    private Button saveButton;
-    @FXML
-    private Button deleteButton;
 
     private Alert alert;
     private Road road;
+    private ButtonType delete;
 
     /**
      * Инициализация
@@ -43,9 +40,7 @@ public class RoadSettingsController {
     public void initialize() {
 
         //Инициализация окна подтверждения
-        ButtonType delete = new ButtonType("Удалить");
-        ButtonType cancel = new ButtonType("Отменить");
-        alert = getAlert(delete, cancel);
+        alert = getAlert();
 
         //Кнопка закрыть
         closeButton.setOnMouseClicked(e -> roadSettings.setVisible(false));
@@ -56,24 +51,6 @@ public class RoadSettingsController {
         directionComboBox.setItems(FXCollections.observableArrayList('↔', '→', '←'));
         speedLimitComboBox.setItems(FXCollections.observableArrayList(10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110));
         roadSurfaceComboBox.setItems(FXCollections.observableArrayList(DAO.getRoadSurfaces()));
-
-        //Кнопка сохранить
-        saveButton.setOnMouseClicked(e -> {
-            road.setName(streetNameComboBox.getSelectionModel().getSelectedItem());
-            road.setDirection(directionComboBox.getSelectionModel().getSelectedItem());
-            road.setSpeedLimit(speedLimitComboBox.getSelectionModel().getSelectedItem());
-            road.setRoadSurface(roadSurfaceComboBox.getSelectionModel().getSelectedItem());
-            roadSettings.setVisible(false);
-        });
-
-        //Кнопка удалить
-        deleteButton.setOnMouseClicked(e -> {
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == delete) {
-                roadSettings.setVisible(false);
-                road.dispose();
-            }
-        });
     }
 
     /**
@@ -90,17 +67,42 @@ public class RoadSettingsController {
     }
 
     /**
+     * Нажатие на кнопку сохранить устанавливает новые значения параметров дороги и закрывает окно настроек
+     */
+    @FXML
+    void save() {
+        road.setName(streetNameComboBox.getSelectionModel().getSelectedItem());
+        road.setDirection(directionComboBox.getSelectionModel().getSelectedItem());
+        road.setSpeedLimit(speedLimitComboBox.getSelectionModel().getSelectedItem());
+        road.setRoadSurface(roadSurfaceComboBox.getSelectionModel().getSelectedItem());
+        roadSettings.setVisible(false);
+    }
+
+    /**
+     * Нажатие на кнопку удалить удаляет дорогу в случае подтверждения удаления
+     */
+    @FXML
+    void delete() {
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == delete) {
+            roadSettings.setVisible(false);
+            road.dispose();
+        }
+    }
+
+    /**
      * Инициализация окна подтверждения
-     * @param buttons кнопки подтверждения/отмены
      * @return окно подтверждения
      */
-    private Alert getAlert(ButtonType... buttons) {
+    private Alert getAlert() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Подтверждение");
         alert.setHeaderText("Подтвердите удаление");
         alert.setContentText("Вы действительно хотите удалить дорогу?");
         alert.getButtonTypes().clear();
-        alert.getButtonTypes().addAll(buttons);
+        delete = new ButtonType("Удалить");
+        ButtonType cancel = new ButtonType("Отменить");
+        alert.getButtonTypes().addAll(delete, cancel);
         return alert;
     }
 }

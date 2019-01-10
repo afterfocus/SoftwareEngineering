@@ -45,8 +45,8 @@ public class MapEditorController {
     private Map map;
     private Junction pickedJunction;
 
-    private double offsetX;
-    private double offsetY;
+    private double offsetX = 0;
+    private double offsetY = 0;
     private double scale = 1;
     private double translationX = 0;
     private double translationY = 0;
@@ -62,11 +62,13 @@ public class MapEditorController {
     @FXML
     public void initialize() {
 
+        //Инициализация карты
         map = new Map(offsetX, offsetY, scale, translationX, translationY, Color.BURLYWOOD);
 
         dropShadow = new DropShadow();
         pickedJunction = null;
 
+        //Выбор шаблона
         toggleGroup.selectedToggleProperty().addListener(getChangeListener());
 
         //Изменение размеров окна
@@ -108,9 +110,8 @@ public class MapEditorController {
             sliderDragged();
         });
 
-        streetNamesCheckBox.selectedProperty().addListener(e ->
-            map.setNamesVisible(streetNamesCheckBox.isSelected())
-        );
+        //Отображение названий улиц
+        streetNamesCheckBox.selectedProperty().addListener(e -> map.setNamesVisible(streetNamesCheckBox.isSelected()));
 
         //Кнопки сохранить и загрузить
         saveButton.setOnMouseClicked(e -> DAO.writeMapToFile(map, "samara.map"));

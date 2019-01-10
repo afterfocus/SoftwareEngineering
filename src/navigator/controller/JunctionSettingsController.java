@@ -22,14 +22,10 @@ public class JunctionSettingsController {
     private Spinner<Integer> redPhaseSpinner;
     @FXML
     private Spinner<Integer> greenPhaseSpinner;
-    @FXML
-    private Button saveButton;
-    @FXML
-    private Button deleteButton;
-
-    private Alert alert;
 
     private Junction junction;
+    private Alert alert;
+    private ButtonType delete;
 
     /**
      * Инициализация
@@ -38,9 +34,7 @@ public class JunctionSettingsController {
     public void initialize() {
 
         //Инициализация окна подтверждения
-        ButtonType delete = new ButtonType("Удалить");
-        ButtonType cancel = new ButtonType("Отменить");
-        alert = getAlert(delete, cancel);
+        alert = getAlert();
 
         //Кнопка закрыть
         closeButton.setOnMouseClicked(e -> junctionSettings.setVisible(false));
@@ -63,23 +57,6 @@ public class JunctionSettingsController {
         //Длительность фаз
         redPhaseSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 100, 30));
         greenPhaseSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 100, 30));
-
-        //Кнопка сохранить
-        saveButton.setOnMouseClicked(e -> {
-            junction.setTrafficLights(trafficLightsCheckBox.isSelected());
-            junction.setRedPhase(redPhaseSpinner.getValue());
-            junction.setGreenPhase(greenPhaseSpinner.getValue());
-            junctionSettings.setVisible(false);
-        });
-
-        //Кнопка удалить
-        deleteButton.setOnMouseClicked(e -> {
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == delete) {
-                junction.dispose();
-                junctionSettings.setVisible(false);
-            }
-        });
     }
 
     /**
@@ -103,17 +80,41 @@ public class JunctionSettingsController {
     }
 
     /**
+     * Нажатие на кнопку сохранить устанавливает новые значения параметров перекрёстка и закрывает окно настроек
+     */
+    @FXML
+    void save() {
+        junction.setTrafficLights(trafficLightsCheckBox.isSelected());
+        junction.setRedPhase(redPhaseSpinner.getValue());
+        junction.setGreenPhase(greenPhaseSpinner.getValue());
+        junctionSettings.setVisible(false);
+    }
+
+    /**
+     * Нажатие на кнопку удалить удаляет перекрёсток в случае подтверждения удаления
+     */
+    @FXML
+    void delete() {
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == delete) {
+            junction.dispose();
+            junctionSettings.setVisible(false);
+        }
+    }
+
+    /**
      * Инициализация окна подтверждения
-     * @param buttons кнопки подтверждения/отмены
      * @return окно подтверждения
      */
-    private Alert getAlert(ButtonType... buttons) {
+    private Alert getAlert() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Подтверждение");
         alert.setHeaderText("Подтвердите удаление");
         alert.setContentText("Вы действительно хотите удалить перекрёсток?");
         alert.getButtonTypes().clear();
-        alert.getButtonTypes().addAll(buttons);
+        delete = new ButtonType("Удалить");
+        ButtonType cancel = new ButtonType("Отменить");
+        alert.getButtonTypes().addAll(delete, cancel);
         return alert;
     }
 }

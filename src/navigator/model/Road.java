@@ -169,7 +169,7 @@ public class Road {
     }
 
     /**
-     *
+     * Изменить отображение названий улиц
      */
     void setNameLabelVisible(boolean visible) {
         if (visible && nameLabel == null) {
