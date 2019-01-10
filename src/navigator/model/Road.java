@@ -115,7 +115,7 @@ public class Road {
      */
     public void setName(String name) {
         this.name = name;
-        if (map.getLabelType() == LabelType.NAME) notifyLabelTextChanged();
+        if (map.getLabelsType() == LabelType.NAME) notifyLabelTextChanged();
     }
 
     /**
@@ -144,7 +144,7 @@ public class Road {
 
     public void notifyLengthChanged() {
         length = (int) (Math.sqrt(Math.pow(end.getX() - start.getX(), 2) + Math.pow(end.getY() - start.getY(), 2)) / 5) * 5;
-        if (map.getLabelType() != LabelType.NAME) notifyLabelTextChanged();
+        if (map.getLabelsType() != LabelType.NAME) notifyLabelTextChanged();
     }
 
     /**
@@ -299,7 +299,7 @@ public class Road {
      */
     void notifyLabelTextChanged() {
         if (label != null) {
-            switch (map.getLabelType()) {
+            switch (map.getLabelsType()) {
                 case NAME:
                     label.setText(name);
                     break;

@@ -26,7 +26,7 @@
             <Reflection/>
         </effect>
     </Slider>
-    <Button layoutX="45.0" layoutY="14.0" onMouseClicked="#zoomButtonClicked" scaleZ="3.0" text="+"
+    <Button layoutX="45.0" layoutY="14.0" onMouseClicked="#zoomInButtonClicked" scaleZ="3.0" text="+"
             textAlignment="CENTER"/>
     <Button layoutX="46.0" layoutY="127.0" onMouseClicked="#zoomOutButtonClicked" scaleZ="3.0" text="-"/>
     <Label fx:id="scaleLabel" layoutX="176.0" layoutY="13.0" text="200 м" textFill="#ffffffd9"/>

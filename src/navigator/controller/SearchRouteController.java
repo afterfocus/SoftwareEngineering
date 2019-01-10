@@ -37,8 +37,6 @@ public class SearchRouteController {
     private RoadPropertiesController roadPropertiesController = new RoadPropertiesController();
 
     private Map map;
-    private double offsetX = 0;
-    private double offsetY = 0;
     private double scale = 1;
     private double translationX = 0;
     private double translationY = 0;
@@ -56,17 +54,11 @@ public class SearchRouteController {
     public void initialize() {
 
         //Инициализация карты
-        map = new Map(offsetX, offsetY, scale, translationX, translationY, LabelType.NAME, Color.BURLYWOOD);
+        map = new Map(LabelType.NAME, Color.BURLYWOOD);
 
         //Изменение размеров окна
-        mapArea.widthProperty().addListener(e -> {
-            offsetX = mapArea.getWidth() / 2;
-            map.setOffsetX(offsetX);
-        });
-        mapArea.heightProperty().addListener(e -> {
-            offsetY = mapArea.getHeight() / 2;
-            map.setOffsetY(offsetY);
-        });
+        mapArea.widthProperty().addListener(e -> map.setOffsetX(mapArea.getWidth() / 2));
+        mapArea.heightProperty().addListener(e -> map.setOffsetY( mapArea.getHeight() / 2));
 
         //Перемещение карты
         mapArea.setOnMousePressed(e -> {
@@ -125,11 +117,7 @@ public class SearchRouteController {
     }
 
 
-
-
-
-
-    //============================================== View Functions ==============================================
+    //================================== Функции, связанные с элементами управления ===================================
 
     /**
      * Перемещение слайдера масштаба
@@ -155,7 +143,7 @@ public class SearchRouteController {
      * Нажатие на кнопку приближения
      */
     @FXML
-    private void zoomButtonClicked() {
+    private void zoomInButtonClicked() {
         scale += 0.25;
         if (scale > 1.5) scale = 1.5;
 
@@ -188,6 +176,8 @@ public class SearchRouteController {
             scaleLabel.setText(interval + " км");
         }
     }
+
+    //===================================== Функции, связанные с окнами свойств =======================================
 
     /**
      * Отобразить окно свойств перекрёстка
