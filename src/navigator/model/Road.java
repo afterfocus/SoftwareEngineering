@@ -30,13 +30,14 @@ public class Road {
     private Line backwardLine;
     private SpeedLimitSign speedLimitSign;
     private NoWaySign noWaySign;
-    private Text nameLabel;
+    private Text label;
 
     /**
      * Инициализация дороги
-     * @param map ссылка на карту-родителя
+     *
+     * @param map   ссылка на карту-родителя
      * @param start перекрёсток-начало дороги
-     * @param end перекрёсток-конец дороги
+     * @param end   перекрёсток-конец дороги
      */
     Road(Map map, Junction start, Junction end) {
         this.map = map;
@@ -45,16 +46,15 @@ public class Road {
 
         name = "";
         direction = '↔';
-        length = (int)(Math.sqrt(Math.pow(end.getX() - start.getX(), 2) + Math.pow(end.getY() - start.getY(), 2)) / 5) * 5;
         speedLimit = 60;
 
         forwardLine = new Line(start.getCenterX(), start.getCenterY(), end.getCenterX(), end.getCenterY());
         backwardLine = new Line(end.getCenterX(), end.getCenterY(), start.getCenterX(), start.getCenterY());
 
         setRoadSurface(DAO.getRoadSurfaces()[2]);
-        updateTranslate();
-        updateWidth();
-        updateLength();
+        notifyScaleChanged();
+        notifyLengthChanged();
+        notifyLabelVisibilityChanged();
 
         start.addRoad(this);
         end.addRoad(this);
@@ -63,17 +63,14 @@ public class Road {
     /**
      * Десериализация дороги
      */
-    public Road (Map map, Pane mapArea, DropShadow dropShadow, Junction start, Junction end, String name, char direction, int speedLimit, RoadSurface roadSurface) {
+    public Road(Map map, Pane mapArea, Junction start, Junction end, String name, char direction, int speedLimit, RoadSurface roadSurface) {
         this.map = map;
         this.start = start;
         this.end = end;
         this.name = name;
-        length = (int)(Math.sqrt(Math.pow(end.getX() - start.getX(), 2) + Math.pow(end.getY() - start.getY(), 2)) / 5) * 5;
 
         forwardLine = new Line(start.getCenterX(), start.getCenterY(), end.getCenterX(), end.getCenterY());
         backwardLine = new Line(end.getCenterX(), end.getCenterY(), start.getCenterX(), start.getCenterY());
-        forwardLine.setEffect(dropShadow);
-        backwardLine.setEffect(dropShadow);
 
         map.addRoad(this);
         mapArea.getChildren().add(0, forwardLine);
@@ -82,131 +79,12 @@ public class Road {
         setDirection(direction);
         setRoadSurface(roadSurface);
         setSpeedLimit(speedLimit);
-        updateTranslate();
-        updateLength();
-        updateWidth();
+        notifyLengthChanged();
+        notifyScaleChanged();
+        notifyLabelVisibilityChanged();
 
         start.addRoad(this);
         end.addRoad(this);
-    }
-
-    /**
-     * @return название улицы
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Изменить название улицы
-     * @param name новое название улицы
-     */
-    public void setName(String name) {
-        this.name = name;
-        if (nameLabel != null) {
-            nameLabel.setText(name);
-            nameLabel.xProperty().bind(start.centerXProperty().add(end.centerXProperty()).divide(2).subtract(nameLabel.getLayoutBounds().getWidth() / 2));
-        }
-    }
-
-    /**
-     * @return покрытие дороги
-     */
-    public RoadSurface getRoadSurface() {
-        return roadSurface;
-    }
-
-    /**
-     * Изменить покрытие дороги
-     * @param roadSurface новое покрытие
-     */
-    public void setRoadSurface(RoadSurface roadSurface) {
-        this.roadSurface = roadSurface;
-        if (roadSurface.getCoefficient() < 0.01) {
-            forwardLine.setStroke(Color.rgb(25, 25, 25));
-            backwardLine.setStroke(Color.rgb(25, 25, 25));
-
-            if (noWaySign == null) noWaySign = new NoWaySign(this);
-            speedLimitSign = null;
-
-        } else {
-            forwardLine.setStroke(Color.rgb((int) (220 - 120 * roadSurface.getCoefficient()), (int) (170 * roadSurface.getCoefficient() + 50), 0));
-            backwardLine.setStroke(Color.rgb((int) (220 - 120 * roadSurface.getCoefficient()), (int) (170 * roadSurface.getCoefficient() + 50), 0));
-
-            if (noWaySign != null) noWaySign.dispose();
-            noWaySign = null;
-            setSpeedLimit(speedLimit);
-        }
-        forwardLine.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
-        backwardLine.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
-        if (nameLabel != null) nameLabel.yProperty().bind(start.centerYProperty().add(end.centerYProperty()).divide(2).add(speedLimitSign == null && noWaySign == null ? 3 : 24));
-    }
-
-    /**
-     * @return ограничение скорости
-     */
-    public Integer getSpeedLimit() {
-        return speedLimit;
-    }
-
-    /**
-     * Изменить ограничение скорости
-     * @param speedLimit новое ограничение скорости
-     */
-    public void setSpeedLimit(int speedLimit) {
-        this.speedLimit = speedLimit;
-        if (speedLimit == 60) {
-            if (speedLimitSign != null) {
-                speedLimitSign.dispose();
-                speedLimitSign = null;
-            }
-        }
-        else if (roadSurface.getCoefficient() > 0.01) {
-            if (speedLimitSign == null) speedLimitSign = new SpeedLimitSign(this);
-            else speedLimitSign.setSpeed(speedLimit);
-        }
-        if (nameLabel != null) nameLabel.yProperty().bind(start.centerYProperty().add(end.centerYProperty()).divide(2).add(speedLimitSign == null && noWaySign == null ? 3 : 24));
-    }
-
-    /**
-     * Изменить отображение названий улиц
-     */
-    void setNameLabelVisible(boolean visible) {
-        if (visible && nameLabel == null) {
-            nameLabel = new Text(name);
-            nameLabel.setFont(Font.font("Arial", FontWeight.BOLD, 10));
-            nameLabel.setFill(Color.WHITE);
-            nameLabel.setEffect(new DropShadow());
-            nameLabel.xProperty().bind(start.centerXProperty().add(end.centerXProperty()).divide(2).subtract(nameLabel.getLayoutBounds().getWidth() / 2));
-            nameLabel.yProperty().bind(start.centerYProperty().add(end.centerYProperty()).divide(2).add(speedLimitSign == null && noWaySign == null ? 3 : 24));
-            ((Pane) forwardLine.getParent()).getChildren().add(nameLabel);
-            nameLabel.setMouseTransparent(true);
-
-        }
-        else if (nameLabel != null) {
-            ((Pane) nameLabel.getParent()).getChildren().remove(nameLabel);
-            nameLabel = null;
-        }
-    }
-
-    /**
-     * Изменить направление дороги
-     * @param direction новое направление дороги
-     */
-    public void setDirection(char direction) {
-        this.direction = direction;
-        if (direction == '↔') {
-            forwardLine.setVisible(true);
-            backwardLine.setVisible(true);
-        }
-        else if (direction == '→') {
-            forwardLine.setVisible(true);
-            backwardLine.setVisible(false);
-        }
-        else {
-            forwardLine.setVisible(false);
-            backwardLine.setVisible(true);
-        }
     }
 
     /**
@@ -224,10 +102,20 @@ public class Road {
     }
 
     /**
-     * @return длина дороги
+     * @return название улицы
      */
-    public int getLength() {
-        return length;
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Изменить название улицы
+     *
+     * @param name новое название улицы
+     */
+    public void setName(String name) {
+        this.name = name;
+        if (map.getLabelType() == LabelType.NAME) notifyLabelTextChanged();
     }
 
     /**
@@ -235,6 +123,86 @@ public class Road {
      */
     public Character getDirection() {
         return direction;
+    }
+
+    /**
+     * Изменить направление дороги
+     *
+     * @param direction новое направление дороги
+     */
+    public void setDirection(char direction) {
+        this.direction = direction;
+        notifyDirectionChanged();
+    }
+
+    /**
+     * @return длина дороги
+     */
+    public int getLength() {
+        return length;
+    }
+
+    public void notifyLengthChanged() {
+        length = (int) (Math.sqrt(Math.pow(end.getX() - start.getX(), 2) + Math.pow(end.getY() - start.getY(), 2)) / 5) * 5;
+        if (map.getLabelType() != LabelType.NAME) notifyLabelTextChanged();
+    }
+
+    /**
+     * @return ограничение скорости
+     */
+    public Integer getSpeedLimit() {
+        return speedLimit;
+    }
+
+    /**
+     * Изменить ограничение скорости
+     *
+     * @param speedLimit новое ограничение скорости
+     */
+    public void setSpeedLimit(int speedLimit) {
+        this.speedLimit = speedLimit;
+        notifySpeedLimitChanged();
+    }
+
+    /**
+     * @return покрытие дороги
+     */
+    public RoadSurface getRoadSurface() {
+        return roadSurface;
+    }
+
+    /**
+     * Изменить покрытие дороги
+     *
+     * @param roadSurface новое покрытие
+     */
+    public void setRoadSurface(RoadSurface roadSurface) {
+        this.roadSurface = roadSurface;
+        notifyRoadSurfaceChanged();
+    }
+
+
+    //===================================== Методы, связанные с поиском маршрута ======================================
+
+    /**
+     * @return время в пути
+     */
+    private double getWayTime() {
+        return 10;
+    }
+
+    /**
+     * @return расход топлива на путь
+     */
+    private double getWayFuel() {
+        return 0.2;
+    }
+
+
+    //==================================== Методы, связанные с отображением дороги ====================================
+
+    public Map getMap() {
+        return map;
     }
 
     /**
@@ -251,11 +219,108 @@ public class Road {
         return backwardLine;
     }
 
+    private void notifyDirectionChanged() {
+        if (direction == '↔') {
+            forwardLine.setVisible(true);
+            backwardLine.setVisible(true);
+        } else if (direction == '→') {
+            forwardLine.setVisible(true);
+            backwardLine.setVisible(false);
+        } else {
+            forwardLine.setVisible(false);
+            backwardLine.setVisible(true);
+        }
+    }
+
+    private void notifySpeedLimitChanged() {
+        if (speedLimit == 60) {
+            if (speedLimitSign != null) {
+                speedLimitSign.dispose();
+                speedLimitSign = null;
+            }
+        } else if (roadSurface.getCoefficient() > 0.01) {
+            if (speedLimitSign == null) speedLimitSign = new SpeedLimitSign(this);
+            else speedLimitSign.setSpeed(speedLimit);
+        }
+        if (label != null)
+            label.yProperty().bind(start.centerYProperty().add(end.centerYProperty()).divide(2).add(speedLimitSign != null || noWaySign != null ? 24 : 3));
+    }
+
+    private void notifyRoadSurfaceChanged() {
+        if (roadSurface.getCoefficient() < 0.01) {
+            forwardLine.setStroke(Color.rgb(25, 25, 25));
+            backwardLine.setStroke(Color.rgb(25, 25, 25));
+
+            if (noWaySign == null) noWaySign = new NoWaySign(this);
+            if (speedLimitSign != null) {
+                speedLimitSign.dispose();
+                speedLimitSign = null;
+            }
+
+        } else {
+            forwardLine.setStroke(Color.rgb((int) (220 - 120 * roadSurface.getCoefficient()), (int) (170 * roadSurface.getCoefficient() + 50), 0));
+            backwardLine.setStroke(Color.rgb((int) (220 - 120 * roadSurface.getCoefficient()), (int) (170 * roadSurface.getCoefficient() + 50), 0));
+
+            if (noWaySign != null) {
+                noWaySign.dispose();
+                noWaySign = null;
+                notifySpeedLimitChanged();
+            }
+        }
+        forwardLine.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
+        backwardLine.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
+        if (label != null)
+            label.yProperty().bind(start.centerYProperty().add(end.centerYProperty()).divide(2).add(speedLimitSign != null || noWaySign != null ? 24 : 3));
+    }
+
+    /**
+     * Изменить отображение надписей
+     */
+    void notifyLabelVisibilityChanged() {
+        if (map.isLabelsVisible() && label == null) {
+            label = new Text();
+            notifyLabelTextChanged();
+            label.setFont(Font.font("Arial", FontWeight.BOLD,10));
+            label.setFill(Color.WHITE);
+            label.setEffect(new DropShadow());
+            label.xProperty().bind(start.centerXProperty().add(end.centerXProperty()).divide(2).subtract(label.getLayoutBounds().getWidth() / 2));
+            label.yProperty().bind(start.centerYProperty().add(end.centerYProperty()).divide(2).add(speedLimitSign != null || noWaySign != null ? 24 : 3));
+            ((Pane) start.getParent()).getChildren().add(label);
+            label.setMouseTransparent(true);
+
+        } else if (label != null) {
+            ((Pane) label.getParent()).getChildren().remove(label);
+            label = null;
+        }
+    }
+
+    /**
+     * Обновить текст надписи
+     */
+    void notifyLabelTextChanged() {
+        if (label != null) {
+            switch (map.getLabelType()) {
+                case NAME:
+                    label.setText(name);
+                    break;
+                case LENGTH:
+                    label.setText(length + " м");
+                    break;
+                case TIME:
+                    label.setText(getWayTime() + " с");
+                    break;
+                case FUEL:
+                    label.setText(getWayFuel() + " л");
+                    break;
+            }
+            label.xProperty().bind(start.centerXProperty().add(end.centerXProperty()).divide(2).subtract(label.getLayoutBounds().getWidth() / 2));
+        }
+    }
 
     /**
      * Пересчитать экранные координаты дороги
      */
-    public void updateLocation() {
+    public void notifyLocationChanged() {
         forwardLine.setStartX(start.getCenterX());
         forwardLine.setStartY(start.getCenterY());
         forwardLine.setEndX(end.getCenterX());
@@ -264,18 +329,18 @@ public class Road {
         backwardLine.setStartY(end.getCenterY());
         backwardLine.setEndX(start.getCenterX());
         backwardLine.setEndY(start.getCenterY());
+        calcTranslate(forwardLine);
+        calcTranslate(backwardLine);
     }
 
-    void updateWidth() {
+    private void notifyWidthChanged() {
         forwardLine.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
         backwardLine.setStrokeWidth(1 + 3 * map.getScale() + 3 * roadSurface.getCoefficient());
     }
 
-    public void updateLength() {
-        length = (int)(Math.sqrt(Math.pow(end.getX() - start.getX(), 2) + Math.pow(end.getY() - start.getY(), 2)) / 5) * 5;
-    }
-
-    public void updateTranslate(){
+    void notifyScaleChanged() {
+        notifyWidthChanged();
+        notifyLocationChanged();
         calcTranslate(forwardLine);
         calcTranslate(backwardLine);
     }
@@ -287,24 +352,16 @@ public class Road {
         double a = line.getEndY() - line.getStartY();
         double b = line.getEndX() - line.getStartX();
         double c = Math.sqrt(a * a + b * b);
-        line.setTranslateX(-3 * (map.getScale()+1) * a / c);
-        line.setTranslateY(3 * (map.getScale()+1) * b / c);
+        line.setTranslateX(-3 * (map.getScale() + 1) * a / c);
+        line.setTranslateY(3 * (map.getScale() + 1) * b / c);
     }
 
-    /**
-     * Уничтожение объекта
-     */
-    public void dispose() {
-        if (noWaySign != null) noWaySign.dispose();
-        if (speedLimitSign != null) speedLimitSign.dispose();
-        if (nameLabel != null) ((Pane)nameLabel.getParent()).getChildren().remove(nameLabel);
-        start.removeRoad(this);
-        end.removeRoad(this);
-        map.removeRoad(this);
-    }
+
+    //============================================== Утилитарные методы ===============================================
 
     /**
      * Проверка на равенство
+     *
      * @param obj объект для сравнения
      * @return true, если у дорог оба перекрёстка одинаковые
      */
@@ -313,8 +370,7 @@ public class Road {
         if (obj instanceof Road) {
             Road r = (Road) obj;
             return (r.start == start && r.end == end) || (r.start == end && r.end == start);
-        }
-        else return false;
+        } else return false;
     }
 
     /**
@@ -323,5 +379,16 @@ public class Road {
     @Override
     public int hashCode() {
         return start.hashCode() * end.hashCode();
+    }
+
+    /**
+     * Уничтожение объекта
+     */
+    void dispose() {
+        if (noWaySign != null) noWaySign.dispose();
+        if (speedLimitSign != null) speedLimitSign.dispose();
+        if (label != null) ((Pane) label.getParent()).getChildren().remove(label);
+        start.removeRoad(this);
+        end.removeRoad(this);
     }
 }

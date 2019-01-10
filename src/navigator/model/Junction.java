@@ -18,12 +18,12 @@ public class Junction extends Circle {
     private double x;
     private double y;
     private boolean isPicked;
-    private List<Road> roads;
     private boolean isTrafficLights;
     private int redPhase;
     private int greenPhase;
 
     private TrafficLight trafficLight;
+    private List<Road> roads;
 
     /**
      * Инициализация перекрёстка
@@ -72,65 +72,24 @@ public class Junction extends Circle {
     }
 
     /**
-     * Отметить перекрёсток (сбрасывает отметку при повторном вызове)
-     * @return true, если перекрёсток отмечен или false, если перекрёсток уже был отмечен ранее
+     * @return уникальный идентификатор перекрёстка
      */
-    public boolean pick() {
-        if(!isPicked) {
-             isPicked = true;
-             setFill(Color.RED);
-             setRadius(6 * (map.getScale() + 1.5) + 1);
-        }
-        else {
-            isPicked = false;
-            setFill(map.getJunctionColor());
-            setRadius(4.5 * (map.getScale() + 1.5) + 1);
-        }
-        return isPicked;
+    public int getID(){
+        return id;
     }
 
     /**
-     * Пересчитать экранные координаты перекрёстка
+     * @return координата Х мировых координат
      */
-    void updateLocation() {
-        setCenterX((x + map.getTranslationX()) * map.getScale() + map.getOffsetX());
-        setCenterY((y + map.getTranslationY()) * map.getScale() + map.getOffsetY());
+    public double getX() {
+        return x;
     }
 
     /**
-     * Изменить экранные координаты перекрёстка
-     * @param screenX новая экранная координата Х
-     * @param screenY новая экранная координата Y
+     * @return координата Y мировых координат
      */
-    public void setScreenXY(double screenX, double screenY) {
-        setCenterX(screenX);
-        setCenterY(screenY);
-        x = (getCenterX() - map.getOffsetX()) / map.getScale() - map.getTranslationX();
-        y = (getCenterY() - map.getOffsetY()) / map.getScale() - map.getTranslationY();
-    }
-
-    /**
-     * Получить список дорог
-     * @return список дорог, присоединенных к перекрёстку
-     */
-    public List<Road> getRoads() {
-        return roads;
-    }
-
-    /**
-     * Присоеденить дорогу
-     * @param road дорога для присоединения
-     */
-    void addRoad(Road road) {
-        roads.add(road);
-    }
-
-    /**
-     * Удалить дорогу из списка присоединенных дорог
-     * @param road удаляемая дорога
-     */
-    void removeRoad(Road road) {
-        roads.remove(road);
+    public double getY() {
+        return y;
     }
 
     /**
@@ -150,7 +109,7 @@ public class Junction extends Circle {
             if (trafficLight == null) trafficLight = new TrafficLight(this);
         }
         else {
-            if (trafficLight != null) trafficLight.dispose();
+            //if (trafficLight != null) trafficLight.dispose();
             trafficLight = null;
         }
     }
@@ -186,35 +145,81 @@ public class Junction extends Circle {
     }
 
     /**
-     * @return координата Х мировых координат
+     * Присоеденить дорогу
+     * @param road дорога для присоединения
      */
-    public double getX() {
-        return x;
+    void addRoad(Road road) {
+        roads.add(road);
     }
 
     /**
-     * @return координата Y мировых координат
+     * Удалить дорогу из списка присоединенных дорог
+     * @param road удаляемая дорога
      */
-    public double getY() {
-        return y;
+    void removeRoad(Road road) {
+        roads.remove(road);
     }
 
     /**
-     * Удалить себя
+     * Получить список дорог
+     * @return список дорог, присоединенных к перекрёстку
      */
-    public void dispose() {
-        if (trafficLight != null) trafficLight.dispose();
-        Object[] roadList = roads.toArray();
-        for (Object r: roadList) ((Road)r).dispose();
-        map.removeJunction(this);
+    public List<Road> getRoads() {
+        return roads;
+    }
+
+
+    //================================= Методы, связанные с отображением перекрёстка ==================================
+
+    public Map getMap() {
+        return map;
     }
 
     /**
-     * @return уникальный идентификатор перекрёстка
+     * Изменить экранные координаты перекрёстка
+     * @param screenX новая экранная координата Х
+     * @param screenY новая экранная координата Y
      */
-    public int getID(){
-        return id;
+    public void setScreenXY(double screenX, double screenY) {
+        setCenterX(screenX);
+        setCenterY(screenY);
+        x = (getCenterX() - map.getOffsetX()) / map.getScale() - map.getTranslationX();
+        y = (getCenterY() - map.getOffsetY()) / map.getScale() - map.getTranslationY();
     }
+
+    /**
+     * Отметить перекрёсток (сбрасывает отметку при повторном вызове)
+     * @return true, если перекрёсток отмечен или false, если перекрёсток уже был отмечен ранее
+     */
+    public boolean pick() {
+        if(!isPicked) {
+             isPicked = true;
+             setFill(Color.RED);
+             setRadius(6 * (map.getScale() + 1.5) + 1);
+        }
+        else {
+            isPicked = false;
+            setFill(map.getJunctionColor());
+            setRadius(4.5 * (map.getScale() + 1.5) + 1);
+        }
+        return isPicked;
+    }
+
+    void notifyScaleChanged() {
+        setRadius(isPicked ? 6 : 4.5 * (map.getScale() + 1.5) + 1);
+        notifyLocationChanged();
+    }
+
+    /**
+     * Пересчитать экранные координаты перекрёстка
+     */
+    void notifyLocationChanged() {
+        setCenterX((x + map.getTranslationX()) * map.getScale() + map.getOffsetX());
+        setCenterY((y + map.getTranslationY()) * map.getScale() + map.getOffsetY());
+    }
+
+
+    //============================================== Утилитарные методы ===============================================
 
     /**
      * @param obj объект для сравнения
@@ -235,5 +240,13 @@ public class Junction extends Circle {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    /**
+     * Уничтожить обьект
+     */
+    void dispose() {
+        if (trafficLight != null) trafficLight.dispose();
+        for(Object r: roads.toArray()) map.removeRoad((Road)r);
     }
 }

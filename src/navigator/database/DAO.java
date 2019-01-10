@@ -1,10 +1,7 @@
 package navigator.database;
 
 import javafx.scene.control.Alert;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
-import navigator.controller.MapEditorController;
 import navigator.model.Junction;
 import navigator.model.Map;
 import navigator.model.Road;
@@ -19,10 +16,11 @@ public class DAO {
 
     /**
      * Получить названия улиц из БД
+     *
      * @return массив названий улиц
      */
     public static String[] getStreetNames() {
-        return new String[]{ "22 Партсъезда", "Академика Солдатова", "Авроры", "Ботанический пер.", "Гагарина", "Гаражная", "Гая",
+        return new String[]{"22 Партсъезда", "Академика Солдатова", "Авроры", "Ботанический пер.", "Гагарина", "Гаражная", "Гая",
                 "Ерошевского", "Карла Маркса пр.", "Лукачева", "Луначарского", "Маломосковская", "Масленникова пр.", "Мичурина",
                 "Московское шоссе", "Ново-Вокзальная", "Ново-Садовая", "Подшипниковая", "Потапова", "Революционная", "Советской армии", "Стара-Загора",
                 "Ташкентская", "Фадеева"};
@@ -30,10 +28,11 @@ public class DAO {
 
     /**
      * Получить дорожные покрытия из БД
+     *
      * @return массив дорожных покрытий
      */
     public static RoadSurface[] getRoadSurfaces() {
-        return new RoadSurface[] {
+        return new RoadSurface[]{
                 new RoadSurface("Шоссе", 1.0),
                 new RoadSurface("Гладкий асфальт", 0.8),
                 new RoadSurface("Асфальт", 0.7),
@@ -47,16 +46,17 @@ public class DAO {
 
     /**
      * Сохранить карту в файл
-     * @param map карта для сохранения
+     *
+     * @param map      карта для сохранения
      * @param filename имя файла
      */
     public static void writeMapToFile(Map map, String filename) {
-        try(FileOutputStream fos = new FileOutputStream(filename)) {
+        try (FileOutputStream fos = new FileOutputStream(filename)) {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
 
             //сохранение перекрёстков
             oos.writeInt(map.getJunctionList().size());
-            for (Junction j: map.getJunctionList()) {
+            for (Junction j : map.getJunctionList()) {
                 oos.writeInt(j.getID());
                 oos.writeDouble(j.getX());
                 oos.writeDouble(j.getY());
@@ -67,7 +67,7 @@ public class DAO {
 
             //сохранение дорог
             oos.writeInt(map.getRoadList().size());
-            for (Road r: map.getRoadList()) {
+            for (Road r : map.getRoadList()) {
                 oos.writeInt(r.getStart().getID());
                 oos.writeInt(r.getEnd().getID());
                 oos.writeObject(r.getName());
@@ -90,60 +90,28 @@ public class DAO {
 
     /**
      * Загрузить карту из файла
-     * @param controller контроллер для доступа к родительским компонентам
+     *
+     * @param map      контроллер для доступа к родительским компонентам
      * @param filename имя файла
      */
-    public static void readMapFromFile(MapEditorController controller, String filename) {
-        try(FileInputStream fis = new FileInputStream(filename)) {
+    public static void readMapFromFile(Map map, Pane mapArea, String filename) {
+        try (FileInputStream fis = new FileInputStream(filename)) {
             ObjectInputStream ois = new ObjectInputStream(fis);
-
-            Map map = controller.getMap();
-            Pane mapArea = controller.getMapArea();
-            DropShadow dropShadow = controller.getDropShadow();
-
-            map.clear();
-            controller.getMapArea().getChildren().clear();
 
             //Чтение перекрёстков
             int n = ois.readInt();
-            for(int i = 0; i < n; i++) {
-                Junction j = new Junction(map, mapArea, ois.readInt(), ois.readDouble(), ois.readDouble(), ois.readBoolean(), ois.readInt(), ois.readInt());
-
-                //Нажатие на перекрёсток
-                j.setOnMousePressed(event -> {
-                    if (event.getButton() == MouseButton.PRIMARY) controller.setJunctionDragging(true);
-                    else controller.showJunctionSettings(j);
-                });
-
-                //Перемещение перекрёстка
-                j.setOnMouseDragged(e -> {
-                    j.setScreenXY(e.getX(), e.getY());
-                    for (Road r : j.getRoads()) {
-                        r.updateLocation();
-                        r.updateTranslate();
-                        r.updateLength();
-                    }
-                });
-                j.setOnMouseReleased(event -> controller.setJunctionDragging(false));
-            }
+            for (int i = 0; i < n; i++)
+                new Junction(map, mapArea, ois.readInt(), ois.readDouble(), ois.readDouble(),
+                        ois.readBoolean(), ois.readInt(), ois.readInt());
 
             //Чтение дорог
             n = ois.readInt();
-            for(int i = 0; i < n; i++) {
-                Road road = new Road(map, mapArea, dropShadow,
+            for (int i = 0; i < n; i++)
+                new Road(map, mapArea,
                         map.getJunctionById(ois.readInt()),
                         map.getJunctionById(ois.readInt()),
-                        (String)ois.readObject(), ois.readChar(), ois.readInt(),
-                        new RoadSurface((String)ois.readObject(), ois.readDouble()));
-
-                //Нажатие на дорогу
-                road.getForwardLine().setOnMousePressed(event -> {
-                    if (event.getButton() == MouseButton.SECONDARY) controller.showRoadSettings(road);
-                });
-                road.getBackwardLine().setOnMousePressed(event -> {
-                    if (event.getButton() == MouseButton.SECONDARY) controller.showRoadSettings(road);
-                });
-            }
+                        (String) ois.readObject(), ois.readChar(), ois.readInt(),
+                        new RoadSurface((String) ois.readObject(), ois.readDouble()));
 
             //Чтение счетчика
             map.setIdCounter(ois.readInt());

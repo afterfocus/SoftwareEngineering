@@ -5,10 +5,10 @@
 
 <TabPane maxHeight="800" maxWidth="1200" minHeight="300.0" minWidth="300.0" prefHeight="700.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="navigator.controller.MapEditorController">
     <Tab text="Редактор карт">
-        <fx:include source="map_editor.fxml"/>
+        <fx:include source="tabs/map_editor.fxml"/>
     </Tab>
     <Tab text="Поиск маршрута">
-        <fx:include source="search_route.fxml"/>
+        <fx:include source="tabs/search_route.fxml"/>
     </Tab>
     <Tab text="Работа с БД">
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="roadProperties" prefHeight="214.0" prefWidth="255.0" style="-fx-background-color: #FFFFFF;" visible="false" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="navigator.controller.properties.RoadPropertiesController">
+
+    <effect>
+        <DropShadow />
+    </effect>
+
+    <Label alignment="CENTER" prefHeight="31.0" prefWidth="225.0" style="-fx-background-color: #e0e0e0;" text="Дорога" />
+    <Button fx:id="closeButton" layoutX="225.0" prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: #FF0000DD; -fx-background-radius: 0.0;" text="Х" textFill="WHITE">
+        <cursor>
+            <Cursor fx:constant="HAND" />
+        </cursor>
+    </Button>
+
+    <Label layoutX="12.0" layoutY="49.0" text="Улица:" />
+    <Label fx:id="streetNameLabel" layoutX="115.0" layoutY="40.0" prefHeight="34.0" prefWidth="129.0" text="Московское шоссе" wrapText="true" />
+
+    <Label layoutX="12.0" layoutY="85.0" text="Направление:" />
+    <Label fx:id="directionLabel" layoutX="115.0" layoutY="84.0" text="↔">
+      <font>
+         <Font size="15.0" />
+      </font></Label>
+
+    <Label layoutX="12.0" layoutY="113.0" text="Длина:" />
+    <Label fx:id="lengthLabel" layoutX="115.0" layoutY="113.0" text="500 м" />
+
+    <Label layoutX="12.0" layoutY="141.0" text="Огр.скорости:" />
+    <Label fx:id="speedLimitLabel" layoutX="115.0" layoutY="141.0" text="60 км/ч" />
+
+    <Label layoutX="12.0" layoutY="178.0" text="Тип покрытия:" />
+    <Label fx:id="roadSurfaceLabel" layoutX="115.0" layoutY="169.0" prefHeight="34.0" prefWidth="129.0" text="Внутриквартальный проезд (1.0)" wrapText="true" />
+
+</AnchorPane>

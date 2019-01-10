@@ -22,7 +22,8 @@ public class Map {
     private double scale;
     private double translationX;
     private double translationY;
-    private boolean isNamesVisible;
+    private boolean labelsVisible;
+    private LabelType labelType;
 
     private Color junctionColor;
 
@@ -35,7 +36,7 @@ public class Map {
      * @param translationY сдвиг по Y
      * @param junctionColor цвет перекрёстков
      */
-    public Map(double offsetX, double offsetY, double scale, double translationX, double translationY, Color junctionColor) {
+    public Map(double offsetX, double offsetY, double scale, double translationX, double translationY, LabelType labelType, Color junctionColor) {
 
         idCounter = -1;
         junctionList = new LinkedList<>();
@@ -46,8 +47,52 @@ public class Map {
         this.scale = scale;
         this.translationX = translationX;
         this.translationY = translationY;
-
+        this.labelType = labelType;
         this.junctionColor = junctionColor;
+    }
+
+    /**
+     * Получить центровку карты по X
+     * @return координата Х центра
+     */
+    double getOffsetX() {
+        return offsetX;
+    }
+
+    /**
+     * Изменить центровку карты по X
+     * @param offsetX новая координата Х центра
+     */
+    public void setOffsetX(double offsetX) {
+        this.offsetX = offsetX;
+        for (Junction j : junctionList) j.notifyLocationChanged();
+        for (Road r : roadList) r.notifyLocationChanged();
+    }
+
+    /**
+     * Получить центровку карты по Y
+     * @return координата Y центра
+     */
+    double getOffsetY() {
+        return offsetY;
+    }
+
+    /**
+     * Изменить центровку карты по X
+     * @param offsetY новая координата Y центра
+     */
+    public void setOffsetY(double offsetY) {
+        this.offsetY = offsetY;
+        for (Junction j : junctionList) j.notifyLocationChanged();
+        for (Road r : roadList) r.notifyLocationChanged();
+    }
+
+    /**
+     * Получить текущий масштаб
+     * @return масштаб
+     */
+    double getScale() {
+        return scale;
     }
 
     /**
@@ -57,15 +102,24 @@ public class Map {
     public void setScale(double scale) {
         this.scale = scale;
         for (Junction j : junctionList) {
-            j.setRadius(4.5 * (scale + 1.5) + 1);
-            j.updateLocation();
+            j.notifyScaleChanged();
         }
         for (Road r : roadList) {
-            r.updateLocation();
-            r.updateWidth();
-            r.updateTranslate();
+            r.notifyScaleChanged();
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Изменить сдвиг карты
@@ -75,8 +129,8 @@ public class Map {
     public void setTranslation(double translationX, double translationY) {
         this.translationX = translationX;
         this.translationY = translationY;
-        for (Junction j : junctionList) j.updateLocation();
-        for (Road r : roadList) r.updateLocation();
+        for (Junction j : junctionList) j.notifyLocationChanged();
+        for (Road r : roadList) r.notifyLocationChanged();
     }
 
     /**
@@ -109,7 +163,6 @@ public class Map {
         first.pick();
         second.pick();
         Road road = new Road(this, first, second);
-        road.setNameLabelVisible(isNamesVisible);
         if (roadList.add(road)) return road;
         else return null;
     }
@@ -118,7 +171,6 @@ public class Map {
      * Добавить дорогу
      */
     void addRoad(Road road) {
-        road.setNameLabelVisible(isNamesVisible);
         roadList.add(road);
     }
 
@@ -138,49 +190,8 @@ public class Map {
         return roadList;
     }
 
-    /**
-     * Изменить центровку карты по X
-     * @param offsetX новая координата Х центра
-     */
-    public void setOffsetX(double offsetX) {
-        this.offsetX = offsetX;
-        for (Junction j : junctionList) j.updateLocation();
-        for (Road r : roadList) r.updateLocation();
-    }
 
-    /**
-     * Изменить центровку карты по X
-     * @param offsetY новая координата Y центра
-     */
-    public void setOffsetY(double offsetY) {
-        this.offsetY = offsetY;
-        for (Junction j : junctionList) j.updateLocation();
-        for (Road r : roadList) r.updateLocation();
-    }
 
-    /**
-     * Получить центровку карты по X
-     * @return координата Х центра
-     */
-    double getOffsetX() {
-        return offsetX;
-    }
-
-    /**
-     * Получить центровку карты по Y
-     * @return координата Y центра
-     */
-    double getOffsetY() {
-        return offsetY;
-    }
-
-    /**
-     * Получить текущий масштаб
-     * @return масштаб
-     */
-    double getScale() {
-        return scale;
-    }
 
     /**
      * Получить сдвиг по X
@@ -202,19 +213,21 @@ public class Map {
      * Удалить перекрёсток с карты
      * @param junction удаляемый перекрёсток
      */
-    void removeJunction(Junction junction) {
+    public void removeJunction(Junction junction) {
         ((Pane)junction.getParent()).getChildren().remove(junction);
         junctionList.remove(junction);
+        junction.dispose();
     }
 
     /**
      * Удалить дорогу с карты
      * @param road удаляемая дорога
      */
-    void removeRoad(Road road) {
+    public void removeRoad(Road road) {
         ((Pane)road.getForwardLine().getParent()).getChildren().remove(road.getForwardLine());
         ((Pane)road.getBackwardLine().getParent()).getChildren().remove(road.getBackwardLine());
         roadList.remove(road);
+        road.dispose();
     }
 
     /**
@@ -244,10 +257,25 @@ public class Map {
         this.idCounter = idCounter;
     }
 
-    public void setNamesVisible(boolean namesVisible) {
-        isNamesVisible = namesVisible;
-        for (Road r: roadList) r.setNameLabelVisible(isNamesVisible);
+    /**
+     * Изменить отображение надписей дорог
+     * @param labelsVisible true - отобразить надписи
+     */
+    public void setLabelsVisible(boolean labelsVisible) {
+        this.labelsVisible = labelsVisible;
+        for (Road r: roadList) r.notifyLabelVisibilityChanged();
     }
+
+    public void setLabelsType(LabelType labelType) {
+        this.labelType = labelType;
+        for (Road r: roadList) r.notifyLabelTextChanged();
+    }
+
+    boolean isLabelsVisible() {
+        return labelsVisible;
+    }
+
+    LabelType getLabelType() {return labelType;}
 
     /**
      * @return цвет перекрёстков

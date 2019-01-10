@@ -9,8 +9,8 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:id="roadSettings"
-            fx:controller="navigator.controller.RoadSettingsController"
-            layoutX="400.0" layoutY="150.0" prefHeight="243.0" prefWidth="248.0" minHeight="243.0" minWidth="248.0" maxHeight="243.0" maxWidth="248.0" style="-fx-background-color: #FFFFFF;" visible="false">
+            fx:controller="navigator.controller.settings.RoadSettingsController"
+            prefHeight="243.0" prefWidth="248.0" minHeight="243.0" style="-fx-background-color: #FFFFFF;" visible="false">
 
         <effect><DropShadow/></effect>
 

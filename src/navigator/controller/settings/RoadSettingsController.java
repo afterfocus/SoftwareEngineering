@@ -1,4 +1,4 @@
-package navigator.controller;
+package navigator.controller.settings;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -17,15 +17,15 @@ public class RoadSettingsController {
     @FXML
     private Pane roadSettings;
     @FXML
-    private ComboBox<String> streetNameComboBox;
+    private ComboBox<String> streetNameComboBox = new ComboBox<>();
     @FXML
-    private ComboBox<Character> directionComboBox;
+    private ComboBox<Character> directionComboBox = new ComboBox<>();
     @FXML
-    private TextField lengthTextField;
+    private TextField lengthTextField = new TextField();
     @FXML
-    private ComboBox<Integer> speedLimitComboBox;
+    private ComboBox<Integer> speedLimitComboBox = new ComboBox<>();
     @FXML
-    private ComboBox<RoadSurface> roadSurfaceComboBox;
+    private ComboBox<RoadSurface> roadSurfaceComboBox = new ComboBox<>();
     @FXML
     private Button closeButton;
 
@@ -55,22 +55,25 @@ public class RoadSettingsController {
 
     /**
      * Передача дороги для настройки
+     *
      * @param road настраиваемая дорога
      */
-    void setRoad(Road road) {
+    public void setRoad(Road road) {
         this.road = road;
         streetNameComboBox.getSelectionModel().select(road.getName());
         directionComboBox.getSelectionModel().select(road.getDirection());
         lengthTextField.setText("" + road.getLength());
         speedLimitComboBox.getSelectionModel().select(road.getSpeedLimit());
         roadSurfaceComboBox.getSelectionModel().select(road.getRoadSurface());
+        roadSettings.setLayoutX((road.getForwardLine().getStartX() + road.getForwardLine().getEndX()) / 2);
+        roadSettings.setLayoutY((road.getForwardLine().getStartY() + road.getForwardLine().getEndY()) / 2);
     }
 
     /**
      * Нажатие на кнопку сохранить устанавливает новые значения параметров дороги и закрывает окно настроек
      */
     @FXML
-    void save() {
+    private void save() {
         road.setName(streetNameComboBox.getSelectionModel().getSelectedItem());
         road.setDirection(directionComboBox.getSelectionModel().getSelectedItem());
         road.setSpeedLimit(speedLimitComboBox.getSelectionModel().getSelectedItem());
@@ -82,27 +85,25 @@ public class RoadSettingsController {
      * Нажатие на кнопку удалить удаляет дорогу в случае подтверждения удаления
      */
     @FXML
-    void delete() {
+    private void delete() {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == delete) {
+            road.getMap().removeRoad(road);
             roadSettings.setVisible(false);
-            road.dispose();
         }
     }
 
     /**
      * Инициализация окна подтверждения
+     *
      * @return окно подтверждения
      */
     private Alert getAlert() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Подтверждение");
-        alert.setHeaderText("Подтвердите удаление");
-        alert.setContentText("Вы действительно хотите удалить дорогу?");
-        alert.getButtonTypes().clear();
         delete = new ButtonType("Удалить");
         ButtonType cancel = new ButtonType("Отменить");
-        alert.getButtonTypes().addAll(delete, cancel);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Вы действительно хотите удалить дорогу?", delete, cancel);
+        alert.setTitle("Подтверждение");
+        alert.setHeaderText("Подтвердите удаление");
         return alert;
     }
 }

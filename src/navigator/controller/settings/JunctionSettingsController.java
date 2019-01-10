@@ -1,4 +1,4 @@
-package navigator.controller;
+package navigator.controller.settings;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -17,11 +17,11 @@ public class JunctionSettingsController {
     @FXML
     private Button closeButton;
     @FXML
-    private CheckBox trafficLightsCheckBox;
+    private CheckBox trafficLightsCheckBox = new CheckBox();
     @FXML
-    private Spinner<Integer> redPhaseSpinner;
+    private Spinner<Integer> redPhaseSpinner = new Spinner<>();
     @FXML
-    private Spinner<Integer> greenPhaseSpinner;
+    private Spinner<Integer> greenPhaseSpinner = new Spinner<>();
 
     private Junction junction;
     private Alert alert;
@@ -39,16 +39,13 @@ public class JunctionSettingsController {
         //Кнопка закрыть
         closeButton.setOnMouseClicked(e -> junctionSettings.setVisible(false));
 
-        //Признак наличия светофора
+        //Светофор
         trafficLightsCheckBox.selectedProperty().addListener(e -> {
             if(trafficLightsCheckBox.isSelected()) {
                 redPhaseSpinner.setDisable(false);
-                redPhaseSpinner.getValueFactory().setValue(junction.getRedPhase());
                 greenPhaseSpinner.setDisable(false);
-                greenPhaseSpinner.getValueFactory().setValue(junction.getGreenPhase());
             }
             else {
-                trafficLightsCheckBox.setSelected(false);
                 redPhaseSpinner.setDisable(true);
                 greenPhaseSpinner.setDisable(true);
             }
@@ -63,27 +60,29 @@ public class JunctionSettingsController {
      * Передача перекрёстка для настройки
      * @param junction настраиваемый перекрёсток
      */
-    void setJunction(Junction junction) {
+    public void setJunction(Junction junction) {
         this.junction = junction;
         if(junction.isTrafficLights()) {
             trafficLightsCheckBox.setSelected(true);
             redPhaseSpinner.setDisable(false);
-            redPhaseSpinner.getValueFactory().setValue(junction.getRedPhase());
             greenPhaseSpinner.setDisable(false);
-            greenPhaseSpinner.getValueFactory().setValue(junction.getGreenPhase());
         }
         else {
             trafficLightsCheckBox.setSelected(false);
             redPhaseSpinner.setDisable(true);
             greenPhaseSpinner.setDisable(true);
         }
+        redPhaseSpinner.getValueFactory().setValue(junction.getRedPhase());
+        greenPhaseSpinner.getValueFactory().setValue(junction.getGreenPhase());
+        junctionSettings.setLayoutX(junction.getCenterX());
+        junctionSettings.setLayoutY(junction.getCenterY());
     }
 
     /**
      * Нажатие на кнопку сохранить устанавливает новые значения параметров перекрёстка и закрывает окно настроек
      */
     @FXML
-    void save() {
+    private void save() {
         junction.setTrafficLights(trafficLightsCheckBox.isSelected());
         junction.setRedPhase(redPhaseSpinner.getValue());
         junction.setGreenPhase(greenPhaseSpinner.getValue());
@@ -94,10 +93,10 @@ public class JunctionSettingsController {
      * Нажатие на кнопку удалить удаляет перекрёсток в случае подтверждения удаления
      */
     @FXML
-    void delete() {
+    private void delete() {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == delete) {
-            junction.dispose();
+            junction.getMap().removeJunction(junction);
             junctionSettings.setVisible(false);
         }
     }
@@ -107,14 +106,11 @@ public class JunctionSettingsController {
      * @return окно подтверждения
      */
     private Alert getAlert() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Подтверждение");
-        alert.setHeaderText("Подтвердите удаление");
-        alert.setContentText("Вы действительно хотите удалить перекрёсток?");
-        alert.getButtonTypes().clear();
         delete = new ButtonType("Удалить");
         ButtonType cancel = new ButtonType("Отменить");
-        alert.getButtonTypes().addAll(delete, cancel);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Вы действительно хотите удалить перекрёсток?", delete, cancel);
+        alert.setTitle("Подтверждение");
+        alert.setHeaderText("Подтвердите удаление");
         return alert;
     }
 }
