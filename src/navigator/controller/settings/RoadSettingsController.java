@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import navigator.database.DAO;
-import navigator.model.map.Road;
+import navigator.model.Road;
 import navigator.database.RoadSurface;
 
 import java.util.Optional;

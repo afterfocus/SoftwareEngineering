@@ -3,10 +3,10 @@ package navigator.database;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import navigator.model.map.Junction;
-import navigator.model.map.LabelType;
-import navigator.model.map.Map;
-import navigator.model.map.Road;
+import navigator.model.Junction;
+import navigator.model.enums.LabelType;
+import navigator.model.Map;
+import navigator.model.Road;
 
 import java.io.*;
 
@@ -29,10 +29,20 @@ public class DAO {
 
     public static Driver[] getDrivers() {
         return new Driver [] {
-                new Driver(1, "Голов Максим"),
-                new Driver(3, "Иванов Дмитрий"),
-                new Driver(4,"Филатова Евгения"),
-                new Driver(2, "Шепелев Фёдор")
+                new Driver(1, "Голов М.Е."),
+                new Driver(2, "Иванов Д.А."),
+                new Driver(3,"Филатова Е.А."),
+                new Driver(4, "Шепелев Ф.О.")
+        };
+    }
+
+    private static Fuel[] getFuels() {
+        return new Fuel[] {
+                new Fuel(1, "АИ-92", 40.5),
+                new Fuel(2, "АИ-95", 43.6),
+                new Fuel(3, "АИ-98", 47.25),
+                new Fuel(4, "ДТ",  44.65),
+                new Fuel(5, "Метан", 23.5)
         };
     }
 
@@ -45,40 +55,30 @@ public class DAO {
         switch (driverId) {
             case 1: {
                 return new Car[] {
-                        new Car(1, "Datsun On-Do", 165,2,9.4),
-                        new Car(2, "Lada Granta I", 166,2,9.0),
-                        new Car(3, "Lada Kalina I", 160,1,9.8),
-                        new Car(4, "Lada Vesta", 182,1,9.3),
-                        new Car(5, "Lada Vesta CNG", 170,5,6.3),
+                        new Car(1, "Datsun On-Do", 165, getFuels()[1],9.4),
+                        new Car(2, "Lada Granta I", 166, getFuels()[1],9.0),
+                        new Car(3, "Lada Kalina I", 160, getFuels()[0],9.8),
+                        new Car(4, "Lada Vesta", 182, getFuels()[0],9.1),
+                        new Car(5, "Lada Vesta CNG", 170, getFuels()[4],8.3),
                 };
             }
             case 2: {
                 return new Car[] {
-                        new Car(10, "Беларус 892", 34,4,15.5),
-                        new Car(11, "МАЗ 103", 72,4,29),
-                        new Car(12, "Лиаз 525 CNG", 90,5,38),
+                        new Car(10, "Беларус 892", 34, getFuels()[3],15.5),
+                        new Car(11, "МАЗ 103", 72, getFuels()[3],29),
+                        new Car(12, "Лиаз 525 CNG", 90, getFuels()[4],38),
                 };
             }
             case 3: {
                 return new Car[] {
-                        new Car(6, "Toyota Camry 3.5", 220,3,12.5),
-                        new Car(7, "Toyota Land Cruiser 4.0", 180,2,14.7),
-                        new Car(8, "Toyota Tundra II 5.7", 185,2,18.1),
-                        new Car(9, "Volkswagen Tiguan 2.0 TDI", 190,4,7.6),
+                        new Car(6, "Toyota Camry 3.5", 220, getFuels()[2],12.5),
+                        new Car(7, "Toyota Land Cruiser 4.0", 180, getFuels()[1],14.7),
+                        new Car(8, "Toyota Tundra II 5.7", 185, getFuels()[1],18.1),
+                        new Car(9, "Volkswagen Tiguan 2.0 TDI", 190, getFuels()[3],7.6),
                 };
             }
             default: return new Car[] { };
         }
-    }
-
-    public static Fuel[] getFuels() {
-        return new Fuel[] {
-                new Fuel(1, "АИ-92", 40.5),
-                new Fuel(2, "АИ-95", 43.6),
-                new Fuel(3, "АИ-98", 47.25),
-                new Fuel(4, "ДТ",  44.65),
-                new Fuel(5, "Метан", 23.5)
-        };
     }
 
     /**

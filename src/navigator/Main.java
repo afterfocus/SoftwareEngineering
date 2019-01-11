@@ -13,8 +13,8 @@ public class Main extends Application {
 
         Parent root = FXMLLoader.load(getClass().getResource("view/primary_stage.fxml"));
         primaryStage.setTitle("Поиск маршрута");
-        primaryStage.setMinWidth(800);
-        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(900);
+        primaryStage.setMinHeight(675);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }

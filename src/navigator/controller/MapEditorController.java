@@ -11,10 +11,10 @@ import javafx.scene.shape.Line;
 import navigator.controller.settings.JunctionSettingsController;
 import navigator.controller.settings.RoadSettingsController;
 import navigator.database.DAO;
-import navigator.model.map.Junction;
-import navigator.model.map.LabelType;
-import navigator.model.map.Map;
-import navigator.model.map.Road;
+import navigator.model.Junction;
+import navigator.model.enums.LabelType;
+import navigator.model.Map;
+import navigator.model.Road;
 
 /**
  * Контроллер для редактора карт
@@ -31,10 +31,6 @@ public class MapEditorController {
     private ToggleGroup toggleGroup = new ToggleGroup();
     @FXML
     private ToggleGroup radioGroup = new ToggleGroup();
-    @FXML
-    private Button saveButton = new Button();
-    @FXML
-    private Button loadButton = new Button();
 
     @FXML
     private Pane junctionSettings;
@@ -76,11 +72,7 @@ public class MapEditorController {
 
         //Изменение размеров окна
         mapArea.widthProperty().addListener(e -> map.setOffsetX(mapArea.getWidth() / 2));
-        mapArea.heightProperty().addListener(e -> {
-            map.setOffsetY(mapArea.getHeight() / 2);
-            loadButton.setLayoutY(mapArea.getHeight() - 41);
-            saveButton.setLayoutY(mapArea.getHeight() - 84);
-        });
+        mapArea.heightProperty().addListener(e -> map.setOffsetY(mapArea.getHeight() / 2));
 
         //Перемещение карты
         mapArea.setOnMousePressed(e -> {
@@ -137,6 +129,8 @@ public class MapEditorController {
         translationY = 0;
         scale = 1;
         zoomSlider.setValue(1);
+        toggleGroup.selectToggle(null);
+        radioGroup.selectToggle(radioGroup.getToggles().get(1));
 
         map = DAO.readMapFromFile("samara.map", mapArea, junctionColor);
 

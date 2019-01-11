@@ -3,7 +3,7 @@ package navigator.controller.settings;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
-import navigator.model.map.Junction;
+import navigator.model.Junction;
 
 import java.util.Optional;
 

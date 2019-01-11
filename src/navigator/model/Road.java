@@ -1,4 +1,4 @@
-package navigator.model.map;
+package navigator.model;
 
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
@@ -9,8 +9,9 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import navigator.database.DAO;
 import navigator.database.RoadSurface;
-import navigator.model.map.signs.NoWaySign;
-import navigator.model.map.signs.SpeedLimitSign;
+import navigator.model.enums.LabelType;
+import navigator.model.signs.NoWaySign;
+import navigator.model.signs.SpeedLimitSign;
 
 /**
  * Класс дороги
@@ -137,7 +138,7 @@ public class Road {
     }
 
     /**
-     * @return длина дороги
+     * @return длина дороги в метрах
      */
     public int getLength() {
         return length;
@@ -186,17 +187,29 @@ public class Road {
     //===================================== Методы, связанные с поиском маршрута ======================================
 
     /**
-     * @return время в пути
+     * @return расчетная скорость движения по улице
      */
-    private double getWayTime() {
-        return 10;
+    private double getMaxSpeed() {
+        double roadSpeed;
+        if (speedLimit <= 60) roadSpeed = Math.min (60 * roadSurface.getCoefficient(), speedLimit);
+        else roadSpeed = speedLimit * roadSurface.getCoefficient();
+        return Math.min(roadSpeed, map.getCar().getMaxSpeed());
+    }
+
+    /**
+     * @return время в пути в секундах
+     */
+    public double getWayTime() {
+        if (getMaxSpeed() < 1) return -1;
+        else return ((double)length / 1000) / getMaxSpeed() * 60 * 60;
     }
 
     /**
      * @return расход топлива на путь
      */
-    private double getWayFuel() {
-        return 0.2;
+    public double getWayFuel() {
+        if (getMaxSpeed() < 1) return -1;
+        else return (double)length / 100 * (map.getCar().getFuelConsumption((int)getMaxSpeed()));
     }
 
 
@@ -310,10 +323,17 @@ public class Road {
                     label.setText(length + " м");
                     break;
                 case TIME:
-                    label.setText(getWayTime() + " с");
+                    double time = getWayTime();
+                    if (time == -1) label.setText("");
+                    else label.setText(Math.round(time) + " с");
+                    break;
+                case SPEED:
+                    label.setText(Math.round(getMaxSpeed()) + " км/ч");
                     break;
                 case FUEL:
-                    label.setText(getWayFuel() + " л");
+                    double fuel = getWayFuel();
+                    if (fuel == -1) label.setText("");
+                    else label.setText(Math.round(fuel) + " мл");
                     break;
             }
             label.xProperty().bind(start.centerXProperty().add(end.centerXProperty()).divide(2).subtract(label.getLayoutBounds().getWidth() / 2));

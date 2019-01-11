@@ -1,12 +1,10 @@
 package navigator.database;
 
-import java.util.List;
-
 public class Driver {
     private int id;
     private String fullName;
 
-    public Driver(int id, String fullName) {
+    Driver(int id, String fullName) {
         this.id = id;
         this.fullName = fullName;
     }
@@ -15,11 +13,8 @@ public class Driver {
         return id;
     }
 
-    public String getFullName() {
+    @Override
+    public String toString() {
         return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 }

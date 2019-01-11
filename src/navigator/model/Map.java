@@ -1,7 +1,10 @@
-package navigator.model.map;
+package navigator.model;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import navigator.database.Car;
+import navigator.model.enums.LabelType;
+import navigator.model.enums.SearchCriterion;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -16,6 +19,7 @@ public class Map {
     private int idCounter;
     private List<Junction> junctionList;
     private Set<Road> roadList;
+    private RouteSearcher routeSearcher;
 
     private double offsetX;
     private double offsetY;
@@ -25,6 +29,7 @@ public class Map {
     private LabelType labelType;
 
     private Color junctionColor;
+
 
     /**
      * Инициализация карты
@@ -37,6 +42,7 @@ public class Map {
         junctionList = new LinkedList<>();
         roadList = new HashSet<>();
 
+        this.routeSearcher = new RouteSearcher(this);
         this.offsetX = 0;
         this.offsetY = 0;
         this.scale = 1;
@@ -44,6 +50,7 @@ public class Map {
         this.translationY = 0;
         this.labelType = labelType;
         this.junctionColor = junctionColor;
+
     }
 
     /**
@@ -151,6 +158,37 @@ public class Map {
         return null;
     }
 
+    //===================================== Методы, связанные с поисксом маршрута =====================================
+
+    public void setCriterion(SearchCriterion criterion) {
+        routeSearcher.setCriterion(criterion);
+    }
+
+    public Junction getDepartureJunction() {
+        return routeSearcher.getDepartureJunction();
+    }
+
+    public void setDepartureJunction(Junction junction) {
+        routeSearcher.setDepartureJunction(junction);
+    }
+
+    public Junction getArrivalJunction() {
+        return routeSearcher.getArrivalJunction();
+    }
+
+    public void setArrivalJunction(Junction junction) {
+        routeSearcher.setArrivalJunction(junction);
+    }
+
+    Car getCar() {
+        return routeSearcher.getCar();
+    }
+
+    public void setCar(Car car) {
+        routeSearcher.setCar(car);
+        for (Road r: roadList) r.notifyLabelTypeChanged();
+        for (Junction j: junctionList) j.notifyLabelTypeChanged();
+    }
 
     //==================================== Методы, связанные с отображением карты =====================================
 
@@ -249,6 +287,7 @@ public class Map {
     public void setLabelsType(LabelType labelType) {
         this.labelType = labelType;
         for (Road r: roadList) r.notifyLabelTypeChanged();
+        for (Junction j: junctionList) j.notifyLabelTypeChanged();
     }
 
     /**

@@ -1,9 +1,10 @@
-package navigator.model.map;
+package navigator.model;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import navigator.model.map.signs.TrafficLight;
+import navigator.model.enums.LabelType;
+import navigator.model.signs.TrafficLight;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -106,7 +107,7 @@ public class Junction extends Circle {
     public void setTrafficLights(boolean isTrafficLights) {
         this.isTrafficLights = isTrafficLights;
         if (isTrafficLights) {
-            if (trafficLight == null) trafficLight = new TrafficLight(this);
+            if (trafficLight == null) trafficLight = new TrafficLight(this, false);
         }
         else {
             if (trafficLight != null) trafficLight.dispose();
@@ -216,6 +217,10 @@ public class Junction extends Circle {
     void notifyLocationChanged() {
         setCenterX((x + map.getTranslationX()) * map.getScale() + map.getOffsetX());
         setCenterY((y + map.getTranslationY()) * map.getScale() + map.getOffsetY());
+    }
+
+    void notifyLabelTypeChanged() {
+        if (trafficLight != null) trafficLight.setTimeShown(this, map.getLabelsType() == LabelType.TIME);
     }
 
 
