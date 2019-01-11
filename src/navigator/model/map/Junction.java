@@ -109,7 +109,7 @@ public class Junction extends Circle {
             if (trafficLight == null) trafficLight = new TrafficLight(this);
         }
         else {
-            //if (trafficLight != null) trafficLight.dispose();
+            if (trafficLight != null) trafficLight.dispose();
             trafficLight = null;
         }
     }
