@@ -117,8 +117,8 @@ public class MapEditorController {
             }
         });
 
-        addRoadButton.setDisable(true);
         junctionSettingsController.setToggleButton(addRoadButton);
+        addRoadButton.setDisable(true);
 
         fileChooser.setTitle("Выберите файл карты");
         fileChooser.setInitialDirectory(new File("Карты"));
