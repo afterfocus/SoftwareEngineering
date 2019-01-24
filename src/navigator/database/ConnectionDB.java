@@ -5,10 +5,10 @@ import java.util.ArrayList;
 
 public class ConnectionDB {
 
-    private Connection connection;
+    private static Connection connection;
     private static final String nameDB = "test";
 
-    private Connection getConnection() {
+    private static Connection getConnection() {
         if (connection == null) {
             try {
                 Class.forName("org.sqlite.JDBC");
@@ -26,26 +26,39 @@ public class ConnectionDB {
         return connection;
     }
 
-    public void selectFromTable(String nameTable, String parametrsQuery) {
-        String sql = "SELECT" + parametrsQuery + " FROM " + nameTable;
-
+    public static void updateDriver(Driver driver) {
         try {
-            Statement stmt = getConnection().createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-            //Car car = selectAllFromCar(nameTable,parametrsQuery,rs);
+            PreparedStatement statement = getConnection().prepareStatement("UPDATE Driver SET FIO = ? WHERE ID = ?");
+            statement.setString(1, driver.getFullName());
+            statement.setInt(2, driver.getId());
+            statement.executeUpdate();
+            statement.close();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    public ArrayList<Car> selectAllFromCar(String nameTable, String parametrsQuery) throws SQLException {
+    public static void addDriver(Driver driver) throws SQLException {
+        PreparedStatement statement = getConnection().prepareStatement("INSERT INTO Driver VALUES (?)");
+        statement.setString(1, driver.getFullName());
+        statement.execute();
+        statement.close();
+    }
 
-        String sql = "SELECT " + parametrsQuery + " FROM " + nameTable;
+    public static void removeEmployee(int id) throws SQLException {
+        PreparedStatement statement = getConnection().prepareStatement("DELETE FROM EMPLOYEE WHERE ID = ?");
+        statement.setInt(1, id);
+        statement.execute();
+        statement.close();
+    }
+
+
+    public static ArrayList<Car> selectAllFromCar() throws SQLException {
+
         ArrayList<Car> cars = new ArrayList<>();
-
-
         Statement stmt = getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery(sql);
+        ResultSet rs = stmt.executeQuery("SELECT * FROM Car");
+
         while (rs.next()) {
             cars.add(new Car(rs.getInt("id"),
                     rs.getString("model"),
@@ -59,13 +72,12 @@ public class ConnectionDB {
         return cars;
     }
 
-    public ArrayList<Driver> selectAllFromDriver(String nameTable, String parametrsQuery) throws SQLException {
+    public static ArrayList<Driver> selectAllFromDriver() throws SQLException {
 
-        String sql = "SELECT " + parametrsQuery + " FROM " + nameTable;
         ArrayList<Driver> drivers = new ArrayList<>();
 
         Statement stmt = getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery(sql);
+        ResultSet rs = stmt.executeQuery("SELECT * FROM Driver");
         while (rs.next()) {
             drivers.add(new Driver(rs.getInt("id"),
                     rs.getString("fio")
@@ -76,13 +88,12 @@ public class ConnectionDB {
         return drivers;
     }
 
-    public ArrayList<FuelType> selectAllFromFuel(String nameTable, String parametrsQuery) throws SQLException {
+    public static ArrayList<FuelType> selectAllFromFuel() throws SQLException {
 
-        String sql = "SELECT " + parametrsQuery + " FROM " + nameTable;
         ArrayList<FuelType> fuels = new ArrayList<>();
 
         Statement stmt = getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery(sql);
+        ResultSet rs = stmt.executeQuery("SELECT * FROM Fuel");
         while (rs.next()) {
             fuels.add(new FuelType(rs.getInt("id"),
                     rs.getString("type"),
@@ -94,13 +105,12 @@ public class ConnectionDB {
         return fuels;
     }
 
-    public ArrayList<String> selectAllFromStreet(String nameTable, String parametersQuery) throws SQLException {
+    public static ArrayList<String> selectAllFromStreet() throws SQLException {
 
-        String sql = "SELECT " + parametersQuery + " FROM " + nameTable;
         ArrayList<String> streets = new ArrayList<>();
 
         Statement stmt = getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery(sql);
+        ResultSet rs = stmt.executeQuery("SELECT * FROM Street");
         while (rs.next()) {
             streets.add(rs.getString("name"));
         }
@@ -109,13 +119,12 @@ public class ConnectionDB {
         return streets;
     }
 
-    public ArrayList<RoadSurface> selectAllFromSurface(String nameTable, String parametrsQuery) throws SQLException {
+    public static ArrayList<RoadSurface> selectAllFromSurface() throws SQLException {
 
-        String sql = "SELECT " + parametrsQuery + " FROM " + nameTable;
         ArrayList<RoadSurface> surfaces = new ArrayList<>();
 
         Statement stmt = getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery(sql);
+        ResultSet rs = stmt.executeQuery("SELECT * FROM Surface");
         while (rs.next()) {
             surfaces.add(new RoadSurface(rs.getInt("id"),
                     rs.getString("name"),
@@ -127,8 +136,9 @@ public class ConnectionDB {
         return surfaces;
     }
 
+    /*
     public Car getCarByID(String nameTable, String parametrsQuery, int driverID) {
-        String sql = "SELECT " + parametrsQuery + " FROM " + nameTable + "WHERE driver_id=" + driverID;
+        String sql = "SELECT " + parametrsQuery + " FROM " + nameTable + "WHERE driver_id =" + driverID;
         Car car1 = new Car();
         try {
 
@@ -147,7 +157,7 @@ public class ConnectionDB {
             System.out.println(e.getMessage());
         }
         return car1;
-    }
+    }*/
 
 
 //    public Car selectAllFromCar(String nameTable, String parametrsQuery) {
@@ -175,7 +185,7 @@ public class ConnectionDB {
 //    }
 
 
-    public void createTable() {
+    public static void createTable() {
         try {
             Statement stmt = getConnection().createStatement();
             String sql = "CREATE TABLE FUEL (\n" +
@@ -193,7 +203,7 @@ public class ConnectionDB {
         System.out.println("Table created successfully");
     }
 
-    public void insertSQL() {
+    public static void insertSQL() {
         try {
             Connection con = getConnection();
             Statement stmt = con.createStatement();

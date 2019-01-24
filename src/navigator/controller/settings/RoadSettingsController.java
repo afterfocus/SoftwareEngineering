@@ -49,10 +49,10 @@ public class RoadSettingsController {
 
         //Параметры
         streetNameComboBox.setItems(FXCollections.observableArrayList(""));
-        streetNameComboBox.getItems().addAll(FXCollections.observableArrayList(connectionDB.selectAllFromStreet("Street","*")));
+        streetNameComboBox.getItems().addAll(FXCollections.observableArrayList(connectionDB.selectAllFromStreet()));
         directionComboBox.setItems(FXCollections.observableArrayList('↔', '→', '←'));
         speedLimitComboBox.setItems(FXCollections.observableArrayList(10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110));
-        roadSurfaceComboBox.setItems(FXCollections.observableArrayList(connectionDB.selectAllFromSurface("Surface","*")));
+        roadSurfaceComboBox.setItems(FXCollections.observableArrayList(connectionDB.selectAllFromSurface()));
     }
 
 

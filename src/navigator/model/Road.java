@@ -58,7 +58,7 @@ public class Road {
         backwardLine = new Line(end.getCenterX(), end.getCenterY(), start.getCenterX(), start.getCenterY());
 
         try {
-            setRoadSurface(connectionDB.selectAllFromSurface("Surface","*").get(2));
+            setRoadSurface(connectionDB.selectAllFromSurface().get(2));
             notifyScaleChanged();
             notifyLengthChanged();
             notifyLabelTypeChanged();

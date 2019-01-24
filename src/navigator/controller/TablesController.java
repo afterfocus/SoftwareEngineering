@@ -14,6 +14,7 @@ import navigator.database.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class TablesController {
     @FXML
@@ -49,14 +50,12 @@ public class TablesController {
     @FXML
     private Button deleteResumeButton;
 
-    private ConnectionDB connectionDB = new ConnectionDB();
-
     public void initialize() {
         try {
             initializeCarTable();
 //            initializeCarButtons();
             initializeDriverTable();
-            // initializeDriverButtons();
+            initializeDriverButtons();
             initializeFuelTable();
             initializeStreetTable();
 //            initializeSpecialityButtons();
@@ -150,7 +149,7 @@ public class TablesController {
 
         ObservableList<Car> carsData = FXCollections.observableArrayList();
         //ConnectionDB con = new ConnectionDB();
-        ArrayList<Car> cars = connectionDB.selectAllFromCar("Car", "*");
+        ArrayList<Car> cars = ConnectionDB.selectAllFromCar();
         carsData.addAll(cars);
 
         carTableView.setItems(FXCollections.observableList(carsData));
@@ -163,7 +162,7 @@ public class TablesController {
 
         nameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue()));
         nameColumn.setMinWidth(100);
-        ArrayList<String> streets = connectionDB.selectAllFromStreet("Street", "*");
+        ArrayList<String> streets = ConnectionDB.selectAllFromStreet();
 
         streetTableView.setItems(FXCollections.observableList(FXCollections.observableArrayList(streets)));
         streetTableView.getColumns().addAll(getIndexColumn(streetTableView), nameColumn);
@@ -207,87 +206,65 @@ public class TablesController {
 //
     @SuppressWarnings("unchecked")
     private void initializeDriverTable() throws SQLException {
-        TableColumn<Driver, Integer> idColumn = new TableColumn<>("ID");
-        TableColumn<Driver, String> fio = new TableColumn<>("ФИО");
+        TableColumn<Driver, String> fullName = new TableColumn<>("ФИО");
 
-        // Defines how to fill data for each cell.
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        //idColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        idColumn.setMinWidth(20);
-//        phoneColumn.setOnEditCommit((TableColumn.CellEditEvent<Enterprise, String> event) -> {
-//
-//            Enterprise enterprise = event.getTableView().getItems().get(event.getTablePosition().getRow());
-//            String newNumber = event.getNewValue();
-//            enterprise.setPhone(newNumber);
-//            try {
-//                DataBases.updateEnterprise(enterprise);
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        });
-        fio.setCellValueFactory(new PropertyValueFactory<>("fullName"));
-        fio.setCellFactory(TextFieldTableCell.forTableColumn());
-        fio.setMinWidth(200);
-//        nameColumn.setOnEditCommit((TableColumn.CellEditEvent<Driver, String> event) -> {
-//
-//            Driver enterprise = event.getTableView().getItems().get(event.getTablePosition().getRow());
-//            String newName = event.getNewValue();
-//            enterprise.setName(newName);
-//            try {
-//                DataBases.updateEnterprise(enterprise);
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        });
+        fullName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
+        fullName.setCellFactory(TextFieldTableCell.forTableColumn());
+        fullName.setMinWidth(200);
+
+        fullName.setOnEditCommit((TableColumn.CellEditEvent<Driver, String> event) -> {
+
+            Driver driver = event.getTableView().getItems().get(event.getTablePosition().getRow());
+            String newFullName = event.getNewValue();
+            driver.setFullName(newFullName);
+            ConnectionDB.updateDriver(driver);
+        });
 
         ObservableList<Driver> driversData = FXCollections.observableArrayList();
-        ConnectionDB con = new ConnectionDB();
-        ArrayList<Driver> drivers = con.selectAllFromDriver("Driver", "id,fio");
-        for (Driver driver : drivers
-        ) {
-            driversData.add(driver);
-        }
-
+        ArrayList<Driver> drivers = ConnectionDB.selectAllFromDriver();
+        driversData.addAll(drivers);
 
         driverTableView.setItems(FXCollections.observableList(driversData));
-        driverTableView.getColumns().addAll(getIndexColumn(driverTableView), idColumn, fio);
+        driverTableView.getColumns().addAll(getIndexColumn(driverTableView), fullName);
     }
 
-    //    private void initializeDriverButtons() {
-//        addEnterpriseButton.setOnAction(actionEvent -> {
-//            Optional<Enterprise> result = Dialogs.getAddEnterpriseDialog().showAndWait();
-//            result.ifPresent(list -> {
-//                try {
-//                    DataBases.addEnterprise(result.get());
-//                    enterpriseTableView.setItems(FXCollections.observableList(DataBases.getEnterprises()));
-//
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
-//            });
-//        });
-//
-//        deleteEnterpriseButton.setOnAction(actionEvent -> {
-//            int row = enterpriseTableView.getSelectionModel().getSelectedIndex();
-//            if (row != -1) {
-//                Alert alert = Dialogs.getConfirmationAlert("Удалить предприятие?", "Предприятие будет безвозвратно удалено.");
-//                Optional<ButtonType> result = alert.showAndWait();
-//
-//                if (result.get() == ButtonType.OK) {
-//                    try {
-//                        DataBases.removeEnterprise(enterpriseTableView.getItems().get(row).getId());
-//                        enterpriseTableView.getItems().remove(row);
-//                    } catch (SQLException e) {
-//                        if (e.getErrorCode() == 2292) {
-//                            alert = Dialogs.getErrorAlert("Ошибка удаления предприятия", "Невозможно удалить предприятие, связанное с существующей вакансией.");
-//                            alert.showAndWait();
-//                        } else e.printStackTrace();
-//                    }
-//                }
-//            }
-//        });
-//    }
-//
+    private void initializeDriverButtons() {
+        addDriverButton.setOnAction(actionEvent -> {
+            Optional<Driver> result = Dialogs.getAddDriverDialog().showAndWait();
+            result.ifPresent(list -> {
+                try {
+                    ConnectionDB.addDriver(result.get());
+                    driverTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromDriver()));
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+        });
+
+        /*
+        deleteEnterpriseButton.setOnAction(actionEvent -> {
+            int row = enterpriseTableView.getSelectionModel().getSelectedIndex();
+            if (row != -1) {
+                Alert alert = Dialogs.getConfirmationAlert("Удалить предприятие?", "Предприятие будет безвозвратно удалено.");
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.get() == ButtonType.OK) {
+                    try {
+                        DataBases.removeEnterprise(enterpriseTableView.getItems().get(row).getId());
+                        enterpriseTableView.getItems().remove(row);
+                    } catch (SQLException e) {
+                        if (e.getErrorCode() == 2292) {
+                            alert = Dialogs.getErrorAlert("Ошибка удаления предприятия", "Невозможно удалить предприятие, связанное с существующей вакансией.");
+                            alert.showAndWait();
+                        } else e.printStackTrace();
+                    }
+                }
+            }
+        });
+        */
+    }
+
     @SuppressWarnings("unchecked")
     private void initializeFuelTable() throws SQLException {
         TableColumn<FuelType, Integer> idColumn = new TableColumn<>("ID");
@@ -298,7 +275,7 @@ public class TablesController {
         typeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         idColumn.setMinWidth(20);
 
-        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+        typeColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         //typeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         typeColumn.setMinWidth(200);
 
@@ -325,15 +302,8 @@ public class TablesController {
         costColumn.setMinWidth(200);
 
         ObservableList<FuelType> fuelsData = FXCollections.observableArrayList();
-        ConnectionDB con = new ConnectionDB();
-        // ArrayList<Fuel> fuels= new ArrayList<>();
-        FuelType fuel = new FuelType(1, "AI-100", 50);
-//        ArrayList<Fuel> fuels = con.selectAllFromFuel("Fuel", "id,type,cost");
-//        for (Fuel fuel : fuels
-//        ) {
-//            fuelsData.add(fuel);
-//        }
-        fuelsData.add(fuel);
+        ArrayList<FuelType> fuels = ConnectionDB.selectAllFromFuel();
+        fuelsData.addAll(fuels);
 
         fuelTableView.setItems(FXCollections.observableList(fuelsData));
         fuelTableView.getColumns().addAll(getIndexColumn(fuelTableView), idColumn, typeColumn, costColumn);
