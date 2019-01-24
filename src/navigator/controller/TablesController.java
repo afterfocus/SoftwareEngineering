@@ -25,10 +25,6 @@ public class TablesController {
     private TableView<FuelType> fuelTableView;
     @FXML
     private TableView<String> streetTableView;
-    //    @FXML
-//    private TableView<Vacancy> vacancyTableView;
-//    @FXML
-//    private TableView<Resume> resumeTableView;
     @FXML
     private Button addDriverButton;
     @FXML
@@ -69,30 +65,78 @@ public class TablesController {
         }
     }
 
+    /**
+     * Таблица водителей
+     */
     @SuppressWarnings("unchecked")
-    private void initializeCarTable() throws SQLException {
-        TableColumn<Car, Integer> idColumn = new TableColumn<>("id");
+    private void initializeDriverTable() {
+        TableColumn<Driver, String> fullName = new TableColumn<>("ФИО");
+
+        fullName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
+        fullName.setCellFactory(TextFieldTableCell.forTableColumn());
+        fullName.setMinWidth(200);
+
+        fullName.setOnEditCommit((TableColumn.CellEditEvent<Driver, String> event) -> {
+
+            Driver driver = event.getTableView().getItems().get(event.getTablePosition().getRow());
+            String newFullName = event.getNewValue();
+            driver.setFullName(newFullName);
+            ConnectionDB.updateDriver(driver);
+        });
+
+        ObservableList<Driver> driversData = FXCollections.observableArrayList();
+        ArrayList<Driver> drivers = ConnectionDB.selectAllFromDriver();
+        driversData.addAll(drivers);
+
+        driverTableView.setItems(FXCollections.observableList(driversData));
+        driverTableView.getColumns().addAll(getIndexColumn(driverTableView), fullName);
+    }
+
+    /**
+     * Кнопки таблицы водителей
+     */
+    private void initializeDriverButtons() {
+        addDriverButton.setOnAction(actionEvent -> {
+            Optional<Driver> result = Dialogs.getAddDriverDialog().showAndWait();
+            result.ifPresent(list -> {
+                try {
+                    ConnectionDB.addDriver(result.get());
+                    driverTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromDriver()));
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+        });
+
+        deleteDriverButton.setOnAction(actionEvent -> {
+            int row = driverTableView.getSelectionModel().getSelectedIndex();
+            if (row != -1) {
+                Alert alert = Dialogs.getConfirmationAlert("Удалить водителя?", "Водитель будет безвозвратно удален.");
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.get() == ButtonType.OK) {
+                    try {
+                        ConnectionDB.removeDriver(driverTableView.getItems().get(row).getId());
+                        driverTableView.getItems().remove(row);
+                    } catch (SQLException e) {
+                        if (e.getErrorCode() == 2292) {
+                            alert = Dialogs.getErrorAlert("Ошибка удаления водителя", "Невозможно удалить водителя, связанного с существующими автомобилями.");
+                            alert.showAndWait();
+                        } else e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private void initializeCarTable() {
         TableColumn<Car, String> model = new TableColumn<>("Модель");
         TableColumn<Car, Integer> maxSpeed = new TableColumn<>("Максимальная скорость");
         TableColumn<Car, FuelType> fuel = new TableColumn<>("Тип топлива");
         TableColumn<Car, Double> consumption = new TableColumn<>("Расход топлива");
-
-        // Defines how to fill data for each cell.
-//        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-//        //idColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-//        idColumn.setMinWidth(50);
-//        idColumn.setOnEditCommit((TableColumn.CellEditEvent<Car, Integer> event) -> {
-
-//            TablePosition<Car, String> position = event.getTablePosition();
-//            Car employee = event.getTableView().getItems().get(position.getRow());
-//            String newFio = event.getNewValue();
-//            employee.setFio(newFio);
-//            try {
-//                DataBases.updateEmployee(employee);
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-        // });
 
         model.setCellValueFactory(new PropertyValueFactory<>("model"));
         //model.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -153,7 +197,7 @@ public class TablesController {
         carsData.addAll(cars);
 
         carTableView.setItems(FXCollections.observableList(carsData));
-        carTableView.getColumns().addAll(getIndexColumn(carTableView), idColumn, model, maxSpeed, fuel, consumption);
+        carTableView.getColumns().addAll(getIndexColumn(carTableView), model, maxSpeed, fuel, consumption);
     }
 
     @SuppressWarnings("unchecked")
@@ -204,66 +248,7 @@ public class TablesController {
 //    }
 //
 //
-    @SuppressWarnings("unchecked")
-    private void initializeDriverTable() throws SQLException {
-        TableColumn<Driver, String> fullName = new TableColumn<>("ФИО");
 
-        fullName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
-        fullName.setCellFactory(TextFieldTableCell.forTableColumn());
-        fullName.setMinWidth(200);
-
-        fullName.setOnEditCommit((TableColumn.CellEditEvent<Driver, String> event) -> {
-
-            Driver driver = event.getTableView().getItems().get(event.getTablePosition().getRow());
-            String newFullName = event.getNewValue();
-            driver.setFullName(newFullName);
-            ConnectionDB.updateDriver(driver);
-        });
-
-        ObservableList<Driver> driversData = FXCollections.observableArrayList();
-        ArrayList<Driver> drivers = ConnectionDB.selectAllFromDriver();
-        driversData.addAll(drivers);
-
-        driverTableView.setItems(FXCollections.observableList(driversData));
-        driverTableView.getColumns().addAll(getIndexColumn(driverTableView), fullName);
-    }
-
-    private void initializeDriverButtons() {
-        addDriverButton.setOnAction(actionEvent -> {
-            Optional<Driver> result = Dialogs.getAddDriverDialog().showAndWait();
-            result.ifPresent(list -> {
-                try {
-                    ConnectionDB.addDriver(result.get());
-                    driverTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromDriver()));
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            });
-        });
-
-        /*
-        deleteEnterpriseButton.setOnAction(actionEvent -> {
-            int row = enterpriseTableView.getSelectionModel().getSelectedIndex();
-            if (row != -1) {
-                Alert alert = Dialogs.getConfirmationAlert("Удалить предприятие?", "Предприятие будет безвозвратно удалено.");
-                Optional<ButtonType> result = alert.showAndWait();
-
-                if (result.get() == ButtonType.OK) {
-                    try {
-                        DataBases.removeEnterprise(enterpriseTableView.getItems().get(row).getId());
-                        enterpriseTableView.getItems().remove(row);
-                    } catch (SQLException e) {
-                        if (e.getErrorCode() == 2292) {
-                            alert = Dialogs.getErrorAlert("Ошибка удаления предприятия", "Невозможно удалить предприятие, связанное с существующей вакансией.");
-                            alert.showAndWait();
-                        } else e.printStackTrace();
-                    }
-                }
-            }
-        });
-        */
-    }
 
     @SuppressWarnings("unchecked")
     private void initializeFuelTable() throws SQLException {

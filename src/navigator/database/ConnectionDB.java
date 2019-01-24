@@ -45,17 +45,19 @@ public class ConnectionDB {
         statement.close();
     }
 
-    public static void removeEmployee(int id) throws SQLException {
-        PreparedStatement statement = getConnection().prepareStatement("DELETE FROM EMPLOYEE WHERE ID = ?");
+    public static void removeDriver(int id) throws SQLException {
+        PreparedStatement statement = getConnection().prepareStatement("DELETE FROM Driver WHERE ID = ?");
         statement.setInt(1, id);
         statement.execute();
         statement.close();
     }
 
 
-    public static ArrayList<Car> selectAllFromCar() throws SQLException {
+    public static ArrayList<Car> selectAllFromCar() {
 
         ArrayList<Car> cars = new ArrayList<>();
+
+        try{
         Statement stmt = getConnection().createStatement();
         ResultSet rs = stmt.executeQuery("SELECT * FROM Car");
 
@@ -69,22 +71,30 @@ public class ConnectionDB {
         }
         stmt.close();
         rs.close();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
         return cars;
     }
 
-    public static ArrayList<Driver> selectAllFromDriver() throws SQLException {
+    public static ArrayList<Driver> selectAllFromDriver() {
 
         ArrayList<Driver> drivers = new ArrayList<>();
-
-        Statement stmt = getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM Driver");
-        while (rs.next()) {
-            drivers.add(new Driver(rs.getInt("id"),
-                    rs.getString("fio")
-            ));
+        try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Driver");
+            while (rs.next()) {
+                drivers.add(new Driver(rs.getInt("id"),
+                        rs.getString("fio")
+                ));
+            }
+            stmt.close();
+            rs.close();
         }
-        stmt.close();
-        rs.close();
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
         return drivers;
     }
 
