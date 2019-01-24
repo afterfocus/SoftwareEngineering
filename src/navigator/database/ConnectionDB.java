@@ -39,7 +39,7 @@ public class ConnectionDB {
     }
 
     public static void addDriver(Driver driver) throws SQLException {
-        PreparedStatement statement = getConnection().prepareStatement("INSERT INTO Driver VALUES (?)");
+        PreparedStatement statement = getConnection().prepareStatement("INSERT INTO Driver VALUES (null, ?)");
         statement.setString(1, driver.getFullName());
         statement.execute();
         statement.close();
