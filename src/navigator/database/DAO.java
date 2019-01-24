@@ -27,14 +27,6 @@ public class DAO {
                 "Ташкентская", "Фадеева"};
     }
 
-    public static Driver[] getDrivers() {
-        return new Driver [] {
-                new Driver(1, "Голов М.Е."),
-                new Driver(2, "Иванов Д.А."),
-                new Driver(3,"Филатова Е.А."),
-                new Driver(4, "Шепелев Ф.О.")
-        };
-    }
 
     private static FuelType[] getFuels() {
         return new FuelType[] {
@@ -43,6 +35,15 @@ public class DAO {
                 new FuelType(3, "АИ-98", 47.25),
                 new FuelType(4, "ДТ",  44.65),
                 new FuelType(5, "Метан", 23.5)
+        };
+    }
+
+    public static Driver[] getDrivers() {
+        return new Driver [] {
+                new Driver(1, "Голов М.Е."),
+                new Driver(2, "Иванов Д.А."),
+                new Driver(3,"Филатова Е.А."),
+                new Driver(4, "Шепелев Ф.О.")
         };
     }
 
