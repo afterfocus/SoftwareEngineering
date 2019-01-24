@@ -18,9 +18,9 @@ public class RoadPropertiesController {
     @FXML
     private Label lengthLabel;
     @FXML
-    private Label speedLimitLabel;
-    @FXML
     private Label roadSurfaceLabel;
+    @FXML
+    private Label speedLimitLabel;
 
     /**
      * Инициализация
