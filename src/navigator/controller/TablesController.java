@@ -9,6 +9,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.converter.DoubleStringConverter;
+import javafx.util.converter.IntegerStringConverter;
 import navigator.database.*;
 
 import java.sql.Connection;
@@ -48,10 +50,12 @@ public class TablesController {
 
     public void initialize() {
         try {
-            initializeCarTable();
-//            initializeCarButtons();
             initializeDriverTable();
             initializeDriverButtons();
+            initializeCarTable();
+            initializeCarButtons();
+
+
             initializeFuelTable();
             initializeStreetTable();
 //            initializeSpecialityButtons();
@@ -127,65 +131,80 @@ public class TablesController {
         TableColumn<Car, Double> consumption = new TableColumn<>("Расход топлива");
 
         model.setCellValueFactory(new PropertyValueFactory<>("model"));
-        //model.setCellFactory(TextFieldTableCell.forTableColumn());
+        model.setCellFactory(TextFieldTableCell.forTableColumn());
         model.setMinWidth(100);
-        // model.setOnEditCommit((TableColumn.CellEditEvent<Car, String> event) -> {
-
-        //  Car employee = event.getTableView().getItems().get(event.getTablePosition().getRow());
-//            String newNumber = event.getNewValue();
-//            employee.setPhonenumber(newNumber);
-//            try {
-//                DataBases.updateEmployee(employee);
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-        // });
+        model.setOnEditCommit((TableColumn.CellEditEvent<Car, String> event) -> {
+            Car car = event.getTableView().getItems().get(event.getTablePosition().getRow());
+            String newModel = event.getNewValue();
+            car.setModel(newModel);
+            ConnectionDB.updateCar(car);
+        });
 
         maxSpeed.setCellValueFactory(new PropertyValueFactory<>("maxSpeed"));
-        // maxSpeed.setCellFactory(TextFieldTableCell.forTableColumn());
+        maxSpeed.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         maxSpeed.setMinWidth(130);
         maxSpeed.setOnEditCommit((TableColumn.CellEditEvent<Car, Integer> event) -> {
-
-//            Employee employee = event.getTableView().getItems().get(event.getTablePosition().getRow());
-//            String newEmail = event.getNewValue();
-//            employee.setEmail(newEmail);
-//            try {
-//                DataBases.updateEmployee(employee);
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
+            int newMaxSpeed = event.getNewValue();
+            //FIX
+            if (newMaxSpeed > 30 && newMaxSpeed < 260) {
+                Car car = event.getTableView().getItems().get(event.getTablePosition().getRow());
+                car.setMaxSpeed(newMaxSpeed);
+                ConnectionDB.updateCar(car);
+            }
         });
 
         fuel.setCellValueFactory(new PropertyValueFactory<>("fuel"));
-        //fuel.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         fuel.setMinWidth(120);
+        /*
+        FIX
         fuel.setOnEditCommit((TableColumn.CellEditEvent<Car, FuelType> event) -> {
-
-//            Employee employee = event.getTableView().getItems().get(event.getTablePosition().getRow());
-//            try {
-//                int newAge = event.getNewValue();
-//                if (newAge < 14 || newAge > 100) throw new NumberFormatException();
-//                employee.setAge(newAge);
-//                DataBases.updateEmployee(employee);
-//            } catch (NumberFormatException e) {
-//                Alert alert = Dialogs.getErrorAlert("Ошибка редактирования сотрудника", "Введено некорректное значение возраста сотрудника.");
-//                alert.showAndWait();
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-        });
+            Car car = event.getTableView().getItems().get(event.getTablePosition().getRow());
+            String newModel = event.getNewValue();
+            car.setModel(newModel);
+            ConnectionDB.updateCar(car);
+        });*/
 
         consumption.setCellValueFactory(new PropertyValueFactory<>("fuelConsumption"));
-        //fuel.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        consumption.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
         consumption.setMinWidth(100);
-
+        consumption.setOnEditCommit((TableColumn.CellEditEvent<Car, Double> event) -> {
+            double newConsumption = event.getNewValue();
+            //FIX
+            if(newConsumption > 3 && newConsumption < 30) {
+                Car car = event.getTableView().getItems().get(event.getTablePosition().getRow());
+                car.setFuelConsumption(newConsumption);
+                ConnectionDB.updateCar(car);
+            }
+        });
         ObservableList<Car> carsData = FXCollections.observableArrayList();
-        //ConnectionDB con = new ConnectionDB();
         ArrayList<Car> cars = ConnectionDB.selectAllFromCar();
         carsData.addAll(cars);
 
         carTableView.setItems(FXCollections.observableList(carsData));
         carTableView.getColumns().addAll(getIndexColumn(carTableView), model, maxSpeed, fuel, consumption);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void initializeCarButtons() {
+        addCarButton.setOnAction(actionEvent -> {
+            Optional<Car> result = Dialogs.getAddCarDialog().showAndWait();
+            result.ifPresent(list -> {
+              ConnectionDB.addCar(result.get());
+              carTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromCar()));
+            });
+        });
+
+        deleteCarButton.setOnAction(actionEvent -> {
+            int row = carTableView.getSelectionModel().getSelectedIndex();
+            if (row != -1) {
+                Alert alert = Dialogs.getConfirmationAlert("Удалить автомобиль?", "Автомобиль будет безвозвратно удалён.");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK) {
+                    ConnectionDB.removeCar(carTableView.getItems().get(row).getId());
+                    carTableView.getItems().remove(row);
+                }
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -199,44 +218,6 @@ public class TablesController {
         streetTableView.setItems(FXCollections.observableList(FXCollections.observableArrayList(streets)));
         streetTableView.getColumns().addAll(getIndexColumn(streetTableView), nameColumn);
     }
-
-    //    private void initializeCarButtons() {
-//        addCarButton.setOnAction(actionEvent -> {
-//            Optional<Employee> result = Dialogs.getAddEmployeeDialog().showAndWait();
-//            result.ifPresent(list -> {
-//                try {
-//                    DataBases.addEmployee(result.get());
-//                    employeeTableView.setItems(FXCollections.observableList(DataBases.getEmployees()));
-//
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
-//            });
-//        });
-//
-//        deleteEmployeeButton.setOnAction(actionEvent -> {
-//            int row = employeeTableView.getSelectionModel().getSelectedIndex();
-//            if (row != -1) {
-//                Alert alert = Dialogs.getConfirmationAlert("Удалить сотрудника?", "Сотрудник будет безвозвратно удалён.");
-//                Optional<ButtonType> result = alert.showAndWait();
-//
-//                if (result.get() == ButtonType.OK) {
-//                    try {
-//                        DataBases.removeEmployee(employeeTableView.getItems().get(row).getId());
-//                        employeeTableView.getItems().remove(row);
-//                    } catch (SQLException e) {
-//                        if (e.getErrorCode() == 2292) {
-//                            alert = Dialogs.getErrorAlert("Ошибка удаления сотрудника", "Невозможно удалить сотрудника, связанного с существующими резюме.");
-//                            alert.showAndWait();
-//                        } else e.printStackTrace();
-//                    }
-//                }
-//            }
-//        });
-//    }
-//
-//
-
 
     @SuppressWarnings("unchecked")
     private void initializeFuelTable() throws SQLException {

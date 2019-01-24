@@ -82,8 +82,7 @@ public class ConnectionDB {
             statement.execute();
             statement.close();
         } catch (SQLException e) {
-            Alert alert = Dialogs.getErrorAlert("Ошибка удаления водителя", "Невозможно удалить водителя, связанного с существующими автомобилями.");
-            alert.showAndWait();
+            e.printStackTrace();
         }
     }
 
@@ -95,11 +94,9 @@ public class ConnectionDB {
     public static ArrayList<Car> selectAllFromCar() {
 
         ArrayList<Car> cars = new ArrayList<>();
-
         try {
             Statement stmt = getConnection().createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM Car");
-
             while (rs.next()) {
                 cars.add(new Car(rs.getInt("id"),
                         rs.getString("model"),
@@ -114,6 +111,47 @@ public class ConnectionDB {
             e.printStackTrace();
         }
         return cars;
+    }
+
+    public static void addCar(Car car) {
+        try {
+            PreparedStatement statement = getConnection().prepareStatement("INSERT INTO Car VALUES (null, ?, ?, ?, ?)");
+            statement.setString(1, car.getModel());
+            //FIX
+            statement.setInt(2, 1);
+            statement.setDouble(3, car.getFuelConsumption());
+            statement.setInt(4, car.getMaxSpeed());
+            statement.execute();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateCar(Car car) {
+        try {
+            PreparedStatement statement = getConnection().prepareStatement("UPDATE Car SET Model = ?, Max_Speed = ?, Fuel = ?, Consumption = ? WHERE ID = ?");
+            statement.setString(1, car.getModel());
+            statement.setInt(2, car.getMaxSpeed());
+            statement.setInt(3, car.getFuel().getId());
+            statement.setDouble(4, car.getFuelConsumption());
+            statement.setInt(5, car.getId());
+            statement.executeUpdate();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void removeCar(int id) {
+        try {
+            PreparedStatement statement = getConnection().prepareStatement("DELETE FROM Car WHERE ID = ?");
+            statement.setInt(1, id);
+            statement.execute();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 

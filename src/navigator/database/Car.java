@@ -51,6 +51,18 @@ public class Car {
         return 0.7 * fuelConsumption + 0.3 * fuelConsumption * (40 / atSpeed);
     }
 
+    public void setMaxSpeed(int maxSpeed) {
+        this.maxSpeed = maxSpeed;
+    }
+
+    public void setFuel(FuelType fuel) {
+        this.fuel = fuel;
+    }
+
+    public void setFuelConsumption(double fuelConsumption) {
+        this.fuelConsumption = fuelConsumption;
+    }
+
     @Override
     public String toString() {
         return model;
