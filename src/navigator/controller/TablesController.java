@@ -1,6 +1,7 @@
 package navigator.controller;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -150,10 +151,7 @@ public class TablesController {
         ObservableList<Car> carsData = FXCollections.observableArrayList();
         //ConnectionDB con = new ConnectionDB();
         ArrayList<Car> cars = connectionDB.selectAllFromCar("Car", "*");
-        for (Car car : cars
-        ) {
-            carsData.add(car);
-        }
+        carsData.addAll(cars);
 
         carTableView.setItems(FXCollections.observableList(carsData));
         carTableView.getColumns().addAll(getIndexColumn(carTableView), idColumn, model, maxSpeed, fuel, consumption);
@@ -161,22 +159,14 @@ public class TablesController {
 
     @SuppressWarnings("unchecked")
     private void initializeStreetTable() throws SQLException {
-        TableColumn<String, Integer> nameColumn = new TableColumn<>("name");
+        TableColumn<String, String> nameColumn = new TableColumn<>("name");
 
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("model"));
-        //model.setCellFactory(TextFieldTableCell.forTableColumn());
+        nameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue()));
         nameColumn.setMinWidth(100);
-        ObservableList<String> streetsData = FXCollections.observableArrayList();
-        //ConnectionDB con = new ConnectionDB();
         ArrayList<String> streets = connectionDB.selectAllFromStreet("Street", "*");
-        for (String street : streets
-        ) {
-            streetsData.add(street);
-        }
 
-        streetTableView.setItems(FXCollections.observableList(streetsData));
+        streetTableView.setItems(FXCollections.observableList(FXCollections.observableArrayList(streets)));
         streetTableView.getColumns().addAll(getIndexColumn(streetTableView), nameColumn);
-
     }
 
     //    private void initializeCarButtons() {

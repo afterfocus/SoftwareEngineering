@@ -94,9 +94,9 @@ public class ConnectionDB {
         return fuels;
     }
 
-    public ArrayList<String> selectAllFromStreet(String nameTable, String parametrsQuery) throws SQLException {
+    public ArrayList<String> selectAllFromStreet(String nameTable, String parametersQuery) throws SQLException {
 
-        String sql = "SELECT " + parametrsQuery + " FROM " + nameTable;
+        String sql = "SELECT " + parametersQuery + " FROM " + nameTable;
         ArrayList<String> streets = new ArrayList<>();
 
         Statement stmt = getConnection().createStatement();
