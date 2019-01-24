@@ -39,9 +39,9 @@ public class MapEditorController {
     private ToggleButton addRoadButton = new ToggleButton();
 
     @FXML
-    private Pane junctionSettings;
-    @FXML
     private Pane roadSettings;
+    @FXML
+    private Pane junctionSettings;
 
     @FXML
     private JunctionSettingsController junctionSettingsController = new JunctionSettingsController();

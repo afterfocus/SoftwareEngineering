@@ -37,9 +37,9 @@ public class SearchRouteController {
     @FXML
     private Pane junctionProperties;
     @FXML
-    private Pane routePointSelector;
-    @FXML
     private Pane routePane;
+    @FXML
+    private Pane routePointSelector;
     @FXML
     private ComboBox<String> criterionComboBox;
     @FXML

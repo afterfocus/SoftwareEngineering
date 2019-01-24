@@ -25,8 +25,8 @@
     <Button layoutX="46.0" layoutY="127.0" onMouseClicked="#zoomOutButtonClicked" scaleZ="3.0" text="-" />
     <Label fx:id="scaleLabel" layoutX="176.0" layoutY="13.0" text="200 м" textFill="#ffffffd9" />
     <Separator layoutX="95.0" layoutY="35.0" prefWidth="200.0" />
-    <Separator layoutX="92.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0" />
     <Separator layoutX="292.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0" />
+    <Separator layoutX="92.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0" />
 
     <AnchorPane prefWidth="190.0" style="-fx-background-color: #131720E3; -fx-border-width: 1.0; -fx-border-color: #FFFFFF40;" AnchorPane.bottomAnchor="-1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="-1.0">
         <ToggleButton fx:id="addRoadButton" layoutX="13.0" layoutY="56.0" prefHeight="32.0" prefWidth="165.0" text="Добавить дорогу" userData="addRoad">
