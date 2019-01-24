@@ -8,6 +8,7 @@ import navigator.model.enums.JunctionType;
 import navigator.model.enums.LabelType;
 import navigator.model.enums.SearchCriterion;
 
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;

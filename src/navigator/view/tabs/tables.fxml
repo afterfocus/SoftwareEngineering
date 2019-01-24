@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.Button?>
+<AnchorPane prefHeight="462.0" prefWidth="712.0" xmlns="http://javafx.com/javafx/8.0.121"
+            xmlns:fx="http://javafx.com/fxml/1" style="-fx-background-color: #191E27;"
+            fx:controller="navigator.controller.TablesController">
+    <TabPane prefHeight="474.0" prefWidth="712.0" tabClosingPolicy="UNAVAILABLE">
+        <Tab text="Водители">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="443.0" prefWidth="712.0">
+                <TableView fx:id="driverTableView" editable="true" prefHeight="410.0" prefWidth="712.0">
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                </TableView>
+                <Button fx:id="addDriverButton" layoutX="14.0" layoutY="420.0" mnemonicParsing="false"
+                        text="Добавить водителя"/>
+                <Button fx:id="deleteDriverButton" layoutX="160.0" layoutY="420.0" mnemonicParsing="false"
+                        text="Удалить водителя"/>
+            </AnchorPane>
+        </Tab>
+        <Tab text="Автомобили">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="443.0" prefWidth="712.0">
+                <TableView fx:id="carTableView" editable="true" prefHeight="410.0" prefWidth="712.0">
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                </TableView>
+                <Button fx:id="addCarButton" layoutX="14.0" layoutY="420.0" mnemonicParsing="false"
+                        text="Добавить автомобиль"/>
+                <Button fx:id="deleteCarButton" layoutX="169.0" layoutY="420.0" mnemonicParsing="false"
+                        text="Удалить автомобиль"/>
+            </AnchorPane>
+        </Tab>
+        <Tab text="Виды топлива">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="443.0" prefWidth="712.0">
+                <TableView fx:id="fuelTableView" editable="true" prefHeight="410.0" prefWidth="712.0">
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                </TableView>
+                <Button fx:id="addFuelButton" layoutX="14.0" layoutY="420.0" mnemonicParsing="false"
+                        text="Добавить топливо"/>
+                <Button fx:id="deleteFuelButton" layoutX="169.0" layoutY="420.0" mnemonicParsing="false"
+                        text="Удалить топливо"/>
+            </AnchorPane>
+        </Tab>
+        <Tab text="Названия улиц">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="443.0" prefWidth="712.0">
+                <TableView fx:id="streetTableView" editable="true" prefHeight="410.0" prefWidth="712.0">
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                </TableView>
+                <Button fx:id="addStreetButton" layoutX="14.0" layoutY="420.0" mnemonicParsing="false"
+                        text="Добавить топливо"/>
+                <Button fx:id="deleteStreetButton" layoutX="169.0" layoutY="420.0" mnemonicParsing="false"
+                        text="Удалить топливо"/>
+            </AnchorPane>
+        </Tab>
+        <Tab text="Тип покрытия">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="443.0" prefWidth="712.0">
+                <TableView fx:id="surfaceTableView" editable="true" prefHeight="410.0" prefWidth="712.0">
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                </TableView>
+                <Button fx:id="addSurfaceButton" layoutX="14.0" layoutY="420.0" mnemonicParsing="false"
+                        text="Добавить топливо"/>
+                <Button fx:id="deleteSurfaceButton" layoutX="169.0" layoutY="420.0" mnemonicParsing="false"
+                        text="Удалить топливо"/>
+            </AnchorPane>
+        </Tab>
+    <Tab text="Водитель - Автомобиль">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="443.0" prefWidth="712.0">
+            <TableView fx:id="driverCarTableView" editable="true" prefHeight="410.0" prefWidth="712.0">
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
+            </TableView>
+            <Button fx:id="addDriverCarButton" layoutX="14.0" layoutY="420.0" mnemonicParsing="false"
+                    text="Добавить запись"/>
+            <Button fx:id="deleteDriverCarButton" layoutX="169.0" layoutY="420.0" mnemonicParsing="false"
+                    text="Удалить запись"/>
+        </AnchorPane>
+    </Tab>
+</TabPane>
+</AnchorPane>

@@ -3,14 +3,17 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 
-<TabPane prefHeight="800.0" prefWidth="1200.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="navigator.controller.MapEditorController">
+<TabPane prefHeight="600.0" prefWidth="1200.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="navigator.controller.MapEditorController">
     <Tab text="Редактор карт">
         <fx:include source="tabs/map_editor.fxml"/>
     </Tab>
     <Tab text="Поиск маршрута">
         <fx:include source="tabs/search_route.fxml"/>
     </Tab>
+    <Tab text="Работа с БД">
+        <fx:include source="tabs/tables.fxml"/>
+    </Tab>
     <Tab text="Справка">
-        <fx:include source="tabs/about_system.fxml"/>
+        <!--<fx:include source="tabs/tables.fxml"/>-->
     </Tab>
 </TabPane>

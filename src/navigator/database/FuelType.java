@@ -5,7 +5,7 @@ public class FuelType {
     private double price;
     private String name;
 
-    FuelType(int id, String name, double price) {
+   public FuelType(int id, String name, double price) {
         this.id = id;
         this.name = name;
         this.price = price;

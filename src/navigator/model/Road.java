@@ -7,11 +7,14 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import navigator.database.ConnectionDB;
 import navigator.database.DAO;
 import navigator.database.RoadSurface;
 import navigator.model.enums.LabelType;
 import navigator.model.signs.NoWaySign;
 import navigator.model.signs.SpeedLimitSign;
+
+import java.sql.SQLException;
 
 /**
  * Класс дороги
@@ -27,6 +30,7 @@ public class Road {
     private int length;
     private int speedLimit;
     private RoadSurface roadSurface;
+    ConnectionDB connectionDB=new ConnectionDB();
 
     private Line forwardLine;
     private Line backwardLine;
@@ -41,7 +45,7 @@ public class Road {
      * @param start перекрёсток-начало дороги
      * @param end   перекрёсток-конец дороги
      */
-    Road(Map map, Junction start, Junction end) {
+    Road(Map map, Junction start, Junction end)  {
         this.map = map;
         this.start = start;
         this.end = end;
@@ -53,13 +57,18 @@ public class Road {
         forwardLine = new Line(start.getCenterX(), start.getCenterY(), end.getCenterX(), end.getCenterY());
         backwardLine = new Line(end.getCenterX(), end.getCenterY(), start.getCenterX(), start.getCenterY());
 
-        setRoadSurface(DAO.getRoadSurfaces()[2]);
-        notifyScaleChanged();
-        notifyLengthChanged();
-        notifyLabelTypeChanged();
+        try {
+            setRoadSurface(connectionDB.selectAllFromSurface("Surface","*").get(2));
+            notifyScaleChanged();
+            notifyLengthChanged();
+            notifyLabelTypeChanged();
 
-        start.addRoad(this);
-        end.addRoad(this);
+            start.addRoad(this);
+            end.addRoad(this);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
