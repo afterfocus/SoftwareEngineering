@@ -48,8 +48,7 @@ public class TablesController {
     @FXML
     private Button deleteResumeButton;
 
-    ConnectionDB connectionDB = new ConnectionDB();
-    Connection connection = connectionDB.connectionSQLite("test");
+    private ConnectionDB connectionDB = new ConnectionDB();
 
     public void initialize() {
         try {

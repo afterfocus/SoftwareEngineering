@@ -5,20 +5,23 @@ import java.util.ArrayList;
 
 public class ConnectionDB {
 
-    public Connection connectionSQLite(String db) {
-        Connection connection = null;
-        try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:" + db + ".db");
+    private Connection connection;
+    private static final String nameDB = "test";
 
-            System.out.println("DONE " + connection);
-            //return connection;
+    private Connection getConnection() {
+        if (connection == null) {
+            try {
+                Class.forName("org.sqlite.JDBC");
+                connection = DriverManager.getConnection("jdbc:sqlite:" + nameDB + ".db");
 
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            System.out.println(e);
-        } catch (Exception exc) {
-            exc.printStackTrace();
+                System.out.println("DONE " + connection);
+
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+                System.out.println(e);
+            } catch (Exception exc) {
+                exc.printStackTrace();
+            }
         }
         return connection;
     }
@@ -26,9 +29,9 @@ public class ConnectionDB {
     public void selectFromTable(String nameTable, String parametrsQuery) {
         String sql = "SELECT" + parametrsQuery + " FROM " + nameTable;
 
-        try (Connection conn = this.connectionSQLite("test");
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
             //Car car = selectAllFromCar(nameTable,parametrsQuery,rs);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -40,19 +43,19 @@ public class ConnectionDB {
         String sql = "SELECT " + parametrsQuery + " FROM " + nameTable;
         ArrayList<Car> cars = new ArrayList<>();
 
-        Connection conn = this.connectionSQLite("test");
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql) ;
-            while (rs.next()) {
-                cars.add(new Car(rs.getInt("id"),
-                        rs.getString("model"),
-                        rs.getInt("max_speed"),
-                        new FuelType(rs.getInt("fuel"), "AI-95", 46.5),
-                        rs.getDouble("consumption")
-                ));
-            }
-            stmt.close();
-            rs.close();
+
+        Statement stmt = getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery(sql);
+        while (rs.next()) {
+            cars.add(new Car(rs.getInt("id"),
+                    rs.getString("model"),
+                    rs.getInt("max_speed"),
+                    new FuelType(rs.getInt("fuel"), "AI-95", 46.5),
+                    rs.getDouble("consumption")
+            ));
+        }
+        stmt.close();
+        rs.close();
         return cars;
     }
 
@@ -61,14 +64,13 @@ public class ConnectionDB {
         String sql = "SELECT " + parametrsQuery + " FROM " + nameTable;
         ArrayList<Driver> drivers = new ArrayList<>();
 
-       Connection conn = this.connectionSQLite("test");
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                drivers.add(new Driver(rs.getInt("id"),
-                        rs.getString("fio")
-                ));
-            }
+        Statement stmt = getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery(sql);
+        while (rs.next()) {
+            drivers.add(new Driver(rs.getInt("id"),
+                    rs.getString("fio")
+            ));
+        }
         stmt.close();
         rs.close();
         return drivers;
@@ -79,8 +81,7 @@ public class ConnectionDB {
         String sql = "SELECT " + parametrsQuery + " FROM " + nameTable;
         ArrayList<FuelType> fuels = new ArrayList<>();
 
-        Connection conn = this.connectionSQLite("test");
-        Statement stmt = conn.createStatement();
+        Statement stmt = getConnection().createStatement();
         ResultSet rs = stmt.executeQuery(sql);
         while (rs.next()) {
             fuels.add(new FuelType(rs.getInt("id"),
@@ -98,13 +99,10 @@ public class ConnectionDB {
         String sql = "SELECT " + parametrsQuery + " FROM " + nameTable;
         ArrayList<String> streets = new ArrayList<>();
 
-        Connection conn = this.connectionSQLite("test");
-        Statement stmt = conn.createStatement();
+        Statement stmt = getConnection().createStatement();
         ResultSet rs = stmt.executeQuery(sql);
         while (rs.next()) {
-            streets.add(
-                    rs.getString("name")
-            );
+            streets.add(rs.getString("name"));
         }
         stmt.close();
         rs.close();
@@ -116,8 +114,7 @@ public class ConnectionDB {
         String sql = "SELECT " + parametrsQuery + " FROM " + nameTable;
         ArrayList<RoadSurface> surfaces = new ArrayList<>();
 
-        Connection conn = this.connectionSQLite("test");
-        Statement stmt = conn.createStatement();
+        Statement stmt = getConnection().createStatement();
         ResultSet rs = stmt.executeQuery(sql);
         while (rs.next()) {
             surfaces.add(new RoadSurface(rs.getInt("id"),
@@ -133,9 +130,10 @@ public class ConnectionDB {
     public Car getCarByID(String nameTable, String parametrsQuery, int driverID) {
         String sql = "SELECT " + parametrsQuery + " FROM " + nameTable + "WHERE driver_id=" + driverID;
         Car car1 = new Car();
-        try (Connection conn = this.connectionSQLite("test");
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try {
+
+            Statement stmt = getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
 
             Car car = new Car(rs.getInt("id"),
                     rs.getString("model"),
@@ -144,7 +142,6 @@ public class ConnectionDB {
                     rs.getDouble("consumption")
             );
             return car;
-
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -180,8 +177,7 @@ public class ConnectionDB {
 
     public void createTable() {
         try {
-            Connection con = this.connectionSQLite("test");
-            Statement stmt = con.createStatement();
+            Statement stmt = getConnection().createStatement();
             String sql = "CREATE TABLE FUEL (\n" +
                     "    id   INT          PRIMARY KEY\n" +
                     "                      NOT NULL,\n" +
@@ -190,7 +186,6 @@ public class ConnectionDB {
                     ");";
             stmt.executeUpdate(sql);
             stmt.close();
-            con.close();
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
@@ -200,7 +195,7 @@ public class ConnectionDB {
 
     public void insertSQL() {
         try {
-            Connection con = this.connectionSQLite("test");
+            Connection con = getConnection();
             Statement stmt = con.createStatement();
             con.setAutoCommit(false);
             String sql = "INSERT INTO Fuel (id,type,cost)" +
@@ -208,7 +203,7 @@ public class ConnectionDB {
             stmt.executeUpdate(sql);
             stmt.close();
             con.commit();
-            con.close();
+
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
