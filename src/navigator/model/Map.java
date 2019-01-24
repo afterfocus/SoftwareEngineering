@@ -185,10 +185,6 @@ public class Map {
         return routeSearcher.getCriterionValue();
     }
 
-    public Junction getDepartureJunction() {
-        return routeSearcher.getDepartureJunction();
-    }
-
     public boolean setDepartureJunction(Junction junction) {
         boolean wasArrival = false;
         if (routeSearcher.getArrivalJunction() == junction) {
@@ -200,10 +196,6 @@ public class Map {
         routeSearcher.setDepartureJunction(junction);
         junction.setType(JunctionType.DEPARTURE);
         return wasArrival;
-    }
-
-    public Junction getArrivalJunction() {
-        return routeSearcher.getArrivalJunction();
     }
 
     public boolean setArrivalJunction(Junction junction) {

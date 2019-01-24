@@ -5,7 +5,6 @@ import navigator.model.enums.SearchCriterion;
 
 import java.util.Stack;
 
-import static java.lang.Math.min;
 import static java.util.Arrays.fill;
 
 class RouteSearcher {

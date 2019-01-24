@@ -9,8 +9,6 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    static HostServices hostServices;
-
     @Override
     public void start(Stage primaryStage) throws Exception{
 
@@ -20,15 +18,9 @@ public class Main extends Application {
         primaryStage.setMinHeight(675);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
-
-        hostServices = getHostServices();
     }
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    public static HostServices getHostService() {
-        return hostServices;
     }
 }

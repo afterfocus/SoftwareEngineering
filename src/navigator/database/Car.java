@@ -9,13 +9,10 @@ public class Car {
     private String model;
     private int maxSpeed;
     private FuelType fuelType;
-    //Расход топлива для средней скорости движения в 40 км/ч (городские условия)
+    //Расход топлива для средней скорости движения в 45 км/ч (городские условия)
     private double fuelConsumption;
 
-    public Car() {
-    }
-
-    public Car(int id, String model, int maxSpeed, FuelType fuelType, double fuelConsumption) {
+    Car(int id, String model, int maxSpeed, FuelType fuelType, double fuelConsumption) {
         this.id = id;
         this.model = model;
         this.maxSpeed = maxSpeed;
@@ -48,7 +45,7 @@ public class Car {
     }
 
     public double getFuelConsumption(int atSpeed) {
-        return 0.7 * fuelConsumption + 0.3 * fuelConsumption * (40 / atSpeed);
+        return 0.5 * fuelConsumption + 0.5 * fuelConsumption * (45 / atSpeed);
     }
 
     @Override
