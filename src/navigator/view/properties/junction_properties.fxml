@@ -23,9 +23,9 @@
     <Label fx:id="trafficLightsLabel" layoutX="118.0" layoutY="44.0" text="Да" />
 
     <Label layoutX="14.0" layoutY="74.0" text="Красная фаза:" />
-    <Label fx:id="redPhaseLabel" layoutX="118.0" layoutY="76.0" text="30 с" />
+    <Label fx:id="redPhaseLabel" layoutX="118.0" layoutY="74.0" text="30 с" />
 
     <Label layoutX="14.0" layoutY="104.0" text="Зелёная фаза:" />
-    <Label fx:id="greenPhaseLabel" layoutX="118.0" layoutY="108.0" text="30 с" />
+    <Label fx:id="greenPhaseLabel" layoutX="118.0" layoutY="104.0" text="30 с" />
 
 </AnchorPane>

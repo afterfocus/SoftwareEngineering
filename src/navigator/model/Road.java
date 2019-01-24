@@ -186,6 +186,30 @@ public class Road {
 
     //===================================== Методы, связанные с поиском маршрута ======================================
 
+    double getCriterionValue(int from) {
+        if ((start.getID() == from && (direction == '→' || direction == '↔')) || (end.getID() == from && (direction == '←' || direction == '↔'))) {
+            switch (map.getSearchCriterion()) {
+                case TIME: {
+                    int startWaiting = 0, endWaiting = 0;
+                    if (start.isTrafficLights()) startWaiting = (start.getRedPhase() + start.getGreenPhase()) / 4;
+                    if (end.isTrafficLights()) endWaiting = (end.getRedPhase() + end.getGreenPhase()) / 4;
+                    return getWayTime() + startWaiting + endWaiting;
+                }
+                case COST: {
+                    if (getWayAndTrafficLightsFuel() == -1) return -1;
+                    else return getWayAndTrafficLightsFuel() / 1000 * map.getCar().getFuel().getPrice();
+                }
+                case DISTANCE: {
+                    if (getMaxSpeed() < 1) return -1;
+                    else return length;
+                }
+                default:
+                    return -1;
+            }
+        }
+        else return -1;
+    }
+
     /**
      * @return расчетная скорость движения по улице
      */
@@ -199,17 +223,28 @@ public class Road {
     /**
      * @return время в пути в секундах
      */
-    public double getWayTime() {
+    private double getWayTime() {
         if (getMaxSpeed() < 1) return -1;
         else return ((double)length / 1000) / getMaxSpeed() * 60 * 60;
     }
 
     /**
-     * @return расход топлива на путь
+     * @return расход топлива на путь в миллилитрах
      */
-    public double getWayFuel() {
+    private double getWayFuel() {
         if (getMaxSpeed() < 1) return -1;
-        else return (double)length / 100 * (map.getCar().getFuelConsumption((int)getMaxSpeed()));
+        else return (double) length / 100 * (map.getCar().getFuelConsumption((int) getMaxSpeed()));
+    }
+
+    private double getWayAndTrafficLightsFuel() {
+        if (getMaxSpeed() < 1) return -1;
+        else {
+            int startWaiting = 0, endWaiting = 0;
+            if (start.isTrafficLights()) startWaiting = (start.getRedPhase() + start.getGreenPhase()) / 4;
+            if (end.isTrafficLights()) endWaiting = (end.getRedPhase() + end.getGreenPhase()) / 4;
+            double trafficLightsFuel = ((double)(startWaiting + endWaiting)) / 3600 * map.getCar().getFuelConsumption() / 9 * 1000;
+            return getWayFuel() + trafficLightsFuel;
+        }
     }
 
 
@@ -325,7 +360,7 @@ public class Road {
                 case TIME:
                     double time = getWayTime();
                     if (time == -1) label.setText("");
-                    else label.setText(Math.round(time) + " с");
+                    else label.setText(((double)Math.round(time * 10)) / 10 + " с");
                     break;
                 case SPEED:
                     label.setText(Math.round(getMaxSpeed()) + " км/ч");
@@ -333,7 +368,7 @@ public class Road {
                 case FUEL:
                     double fuel = getWayFuel();
                     if (fuel == -1) label.setText("");
-                    else label.setText(Math.round(fuel) + " мл");
+                    else label.setText(((double)Math.round(fuel * 10)) / 10 + " мл");
                     break;
             }
             label.xProperty().bind(start.centerXProperty().add(end.centerXProperty()).divide(2).subtract(label.getLayoutBounds().getWidth() / 2));

@@ -2,7 +2,9 @@ package navigator.model;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import navigator.database.Car;
+import navigator.model.enums.JunctionType;
 import navigator.model.enums.LabelType;
 import navigator.model.enums.SearchCriterion;
 
@@ -30,7 +32,6 @@ public class Map {
 
     private Color junctionColor;
 
-
     /**
      * Инициализация карты
      * @param labelType тип надписей на дорогах
@@ -50,7 +51,6 @@ public class Map {
         this.translationY = 0;
         this.labelType = labelType;
         this.junctionColor = junctionColor;
-
     }
 
     /**
@@ -158,29 +158,68 @@ public class Map {
         return null;
     }
 
+    public Line getLineByJunctionId(int start, int end) {
+        for (Road r: roadList) {
+            if (r.getStart().getID() == start && r.getEnd().getID() == end) return r.getForwardLine();
+            else if (r.getStart().getID() == end && r.getEnd().getID() == start) return r.getBackwardLine();
+        }
+        return null;
+    }
+
+
     //===================================== Методы, связанные с поисксом маршрута =====================================
+
+    public SearchCriterion getSearchCriterion() {
+        return routeSearcher.getSearchCriterion();
+    }
+
+    public int[] getOptimalRoute() {
+        return routeSearcher.getRoute(routeSearcher.getDepartureJunction().getID(), routeSearcher.getArrivalJunction().getID());
+    }
 
     public void setCriterion(SearchCriterion criterion) {
         routeSearcher.setCriterion(criterion);
+    }
+
+    public double getCriterionValue() {
+        return routeSearcher.getCriterionValue();
     }
 
     public Junction getDepartureJunction() {
         return routeSearcher.getDepartureJunction();
     }
 
-    public void setDepartureJunction(Junction junction) {
+    public boolean setDepartureJunction(Junction junction) {
+        boolean wasArrival = false;
+        if (routeSearcher.getArrivalJunction() == junction) {
+            routeSearcher.getArrivalJunction().setType(JunctionType.DEFAULT);
+            routeSearcher.setArrivalJunction(null);
+            wasArrival = true;
+        }
+        if (routeSearcher.getDepartureJunction() != null) routeSearcher.getDepartureJunction().setType(JunctionType.DEFAULT);
         routeSearcher.setDepartureJunction(junction);
+        junction.setType(JunctionType.DEPARTURE);
+        return wasArrival;
     }
 
     public Junction getArrivalJunction() {
         return routeSearcher.getArrivalJunction();
     }
 
-    public void setArrivalJunction(Junction junction) {
+    public boolean setArrivalJunction(Junction junction) {
+        boolean wasDeparture = false;
+        if (routeSearcher.getDepartureJunction() == junction) {
+            routeSearcher.getDepartureJunction().setType(JunctionType.DEFAULT);
+            routeSearcher.setDepartureJunction(null);
+            wasDeparture = true;
+        }
+        if (routeSearcher.getArrivalJunction() != null) routeSearcher.getArrivalJunction().setType(JunctionType.DEFAULT);
         routeSearcher.setArrivalJunction(junction);
+        junction.setType(JunctionType.ARRIVAL);
+        return wasDeparture;
     }
 
-    Car getCar() {
+    public Car getCar() {
         return routeSearcher.getCar();
     }
 

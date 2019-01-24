@@ -10,10 +10,7 @@
     <Tab text="Поиск маршрута">
         <fx:include source="tabs/search_route.fxml"/>
     </Tab>
-    <Tab text="Работа с БД">
-
-    </Tab>
     <Tab text="Справка">
-
+        <fx:include source="tabs/about_system.fxml"/>
     </Tab>
 </TabPane>

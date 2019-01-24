@@ -24,6 +24,7 @@ public class JunctionSettingsController {
     private Spinner<Integer> greenPhaseSpinner = new Spinner<>();
 
     private Junction junction;
+    private ToggleButton toggleButton;
     private Alert alert;
     private ButtonType delete;
 
@@ -52,8 +53,12 @@ public class JunctionSettingsController {
         });
 
         //Длительность фаз
-        redPhaseSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 120, 30));
-        greenPhaseSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 120, 30));
+        redPhaseSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 120, 30, 5));
+        greenPhaseSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 120, 30, 5));
+    }
+
+    public void setToggleButton(ToggleButton toggleButton) {
+        this.toggleButton = toggleButton;
     }
 
     /**
@@ -96,6 +101,7 @@ public class JunctionSettingsController {
     private void delete() {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == delete) {
+            toggleButton.setDisable(junction.getMap().getJunctionList().size() < 3);
             junction.getMap().removeJunction(junction);
             junctionSettings.setVisible(false);
         }

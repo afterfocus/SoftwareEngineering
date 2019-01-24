@@ -29,7 +29,7 @@
     <Separator layoutX="292.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0" />
 
     <AnchorPane prefWidth="190.0" style="-fx-background-color: #131720E3; -fx-border-width: 1.0; -fx-border-color: #FFFFFF40;" AnchorPane.bottomAnchor="-1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="-1.0">
-        <ToggleButton layoutX="13.0" layoutY="56.0" prefWidth="165.0" text="Добавить дорогу" userData="addRoad">
+        <ToggleButton fx:id="addRoadButton" layoutX="13.0" layoutY="56.0" prefHeight="32.0" prefWidth="165.0" text="Добавить дорогу" userData="addRoad">
             <toggleGroup>
                 <ToggleGroup fx:id="toggleGroup" />
             </toggleGroup>
@@ -37,27 +37,32 @@
                 <Cursor fx:constant="HAND" />
             </cursor>
         </ToggleButton>
-        <ToggleButton layoutX="13.0" layoutY="14.0" prefWidth="165.0" text="Добавить перекрёсток" toggleGroup="$toggleGroup" userData="addJunction">
+        <ToggleButton layoutX="13.0" layoutY="14.0" prefHeight="32.0" prefWidth="165.0" text="Добавить перекрёсток" toggleGroup="$toggleGroup" userData="addJunction">
             <cursor>
                 <Cursor fx:constant="HAND" />
             </cursor>
         </ToggleButton>
 
-        <Label layoutX="14.0" layoutY="117.0" text="Отображать подписи:" textFill="WHITE" />
+        <Label layoutX="14.0" layoutY="118.0" text="Отображать подписи:" textFill="WHITE" />
         <RadioButton layoutX="18.0" layoutY="140.0" text="Нет" textFill="WHITE">
             <toggleGroup>
                 <ToggleGroup fx:id="radioGroup" />
             </toggleGroup>
         </RadioButton>
-        <RadioButton selected="true" layoutX="18.0" layoutY="165.0" text="Название улицы" toggleGroup="$radioGroup" textFill="WHITE"/>
-        <RadioButton layoutX="18.0" layoutY="190.0" text="Протяженность" toggleGroup="$radioGroup" textFill="WHITE"/>
+        <RadioButton layoutX="18.0" layoutY="165.0" selected="true" text="Название улицы" textFill="WHITE" toggleGroup="$radioGroup" />
+        <RadioButton layoutX="18.0" layoutY="190.0" text="Протяженность" textFill="WHITE" toggleGroup="$radioGroup" />
 
-        <Button layoutX="13.0" AnchorPane.bottomAnchor="55" onMouseClicked="#saveMap" prefWidth="165.0" text="Сохранить в файл">
+        <Button layoutX="13.0" onMouseClicked="#saveMap" prefHeight="32.0" prefWidth="165.0" text="Сохранить в файл" AnchorPane.bottomAnchor="105">
             <cursor>
                 <Cursor fx:constant="HAND" />
             </cursor>
         </Button>
-        <Button layoutX="13.0" AnchorPane.bottomAnchor="14" onMouseClicked="#loadMap" prefWidth="165.0" text="Загрузить из файла">
+        <Button layoutX="13.0" onMouseClicked="#loadMap" prefHeight="32.0" prefWidth="165.0" text="Загрузить из файла" AnchorPane.bottomAnchor="64">
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </Button>
+        <Button layoutX="13.0" AnchorPane.bottomAnchor="14" prefHeight="32.0" onMouseClicked="#clearMap" prefWidth="165.0" text="Создать новую карту">
             <cursor>
                 <Cursor fx:constant="HAND" />
             </cursor>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -7,13 +8,14 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.effect.Reflection?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
 <AnchorPane minHeight="300.0" minWidth="300.0" prefHeight="700.0" prefWidth="1100.0" style="-fx-background-color: #191E27;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="navigator.controller.SearchRouteController">
 
-    <Pane fx:id="mapArea" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="180.0" AnchorPane.topAnchor="0.0" />
+    <Pane fx:id="mapArea" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="180.0" AnchorPane.topAnchor="0.0" />
 
     <Slider fx:id="zoomSlider" blockIncrement="1.0" layoutX="14.0" layoutY="14.0" majorTickUnit="1.0" max="1.5" min="0.2" minorTickCount="2" onMouseClicked="#sliderClicked" onMouseDragged="#sliderDragged" orientation="VERTICAL" showTickMarks="true" value="1.0">
         <effect>
@@ -27,9 +29,15 @@
     <Separator layoutX="92.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0" />
     <Separator layoutX="292.0" layoutY="27.0" orientation="VERTICAL" prefHeight="10.0" />
 
+    <AnchorPane fx:id="routePane" visible="false" prefHeight="50" prefWidth="280" style="-fx-background-color: #131720E3; -fx-border-width: 1.0; -fx-border-color: #FFFFFF40;" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="210.0">
+        <Label text="Значение критерия:" layoutX="20" layoutY="16" textFill="#ffffffd9" />
+        <Label fx:id="criterionLabel" layoutY="16" layoutX="155" text="1900 м" textFill="#ffffffd9" />
+        <Button onMouseClicked="#clearRouteButtonClicked" AnchorPane.rightAnchor="11" layoutY="11" text="Х"/>
+    </AnchorPane>
+
     <AnchorPane layoutX="904.0" maxWidth="190.0" minWidth="190.0" prefWidth="190.0" style="-fx-background-color: #131720E3; -fx-border-width: 1.0; -fx-border-color: #FFFFFF40;" translateZ="1.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="-1.0">
 
-        <Button layoutX="12.0" layoutY="14.0" onMouseClicked="#loadMap" prefWidth="165.0" text="Загрузить файл карты" />
+        <Button layoutX="12.0" layoutY="14.0" onMouseClicked="#loadMap" prefHeight="32" prefWidth="165.0" text="Загрузить файл карты" />
 
         <Label layoutX="14.0" layoutY="58.0" text="Отображать подписи:" textFill="WHITE" />
         <RadioButton layoutX="18.0" layoutY="78.0" text="Нет" textFill="WHITE">
@@ -64,11 +72,26 @@
         <Label fx:id="fuelTypeLabel" layoutX="75.0" text="АИ-95" textFill="WHITE" AnchorPane.bottomAnchor="92" />
         <Label layoutX="12.0" text="Расход:" textFill="WHITE" AnchorPane.bottomAnchor="76" />
         <Label fx:id="fuelConsumptionLabel" layoutX="65.0" text="15.3 л / 100 км" textFill="WHITE" AnchorPane.bottomAnchor="76" />
-        <Button layoutX="12.0" onMouseClicked="#search" prefHeight="35.0" prefWidth="165.0" text="Найти" AnchorPane.bottomAnchor="14.0" />
+        <Button defaultButton="true" layoutX="12.0" onMouseClicked="#search" prefHeight="35.0" prefWidth="165.0" text="Найти" AnchorPane.bottomAnchor="14.0" />
 
     </AnchorPane>
 
     <fx:include fx:id="junctionProperties" source="../properties/junction_properties.fxml" />
     <fx:include fx:id="roadProperties" source="../properties/road_properties.fxml" />
+
+    <Pane fx:id="routePointSelector" layoutX="200.0" layoutY="200.0" prefHeight="61.0" prefWidth="90.0" style="-fx-background-color: #FFFFFF;" visible="false">
+        <effect>
+            <DropShadow />
+        </effect>
+        <Button fx:id="departureButton" prefHeight="30.0" prefWidth="90.0" style="-fx-background-color: transparent;" text="Отсюда" />
+        <Separator layoutY="30.0" prefWidth="90.0" />
+        <Button fx:id="arrivalButton" layoutY="31.0" prefHeight="30.0" prefWidth="90.0" style="-fx-background-color: transparent;" text="Сюда" />
+        <cursor>
+            <Cursor fx:constant="HAND" />
+        </cursor>
+        <cursor>
+            <Cursor fx:constant="HAND" />
+        </cursor>
+    </Pane>
 
 </AnchorPane>

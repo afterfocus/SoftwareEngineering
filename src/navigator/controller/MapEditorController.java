@@ -8,6 +8,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.stage.FileChooser;
 import navigator.controller.settings.JunctionSettingsController;
 import navigator.controller.settings.RoadSettingsController;
 import navigator.database.DAO;
@@ -15,6 +16,9 @@ import navigator.model.Junction;
 import navigator.model.enums.LabelType;
 import navigator.model.Map;
 import navigator.model.Road;
+
+import java.io.File;
+import java.util.Optional;
 
 /**
  * Контроллер для редактора карт
@@ -31,6 +35,8 @@ public class MapEditorController {
     private ToggleGroup toggleGroup = new ToggleGroup();
     @FXML
     private ToggleGroup radioGroup = new ToggleGroup();
+    @FXML
+    private ToggleButton addRoadButton = new ToggleButton();
 
     @FXML
     private Pane junctionSettings;
@@ -42,20 +48,21 @@ public class MapEditorController {
     @FXML
     private RoadSettingsController roadSettingsController = new RoadSettingsController();
 
+    private final FileChooser fileChooser = new FileChooser();
+
     private Map map;
     private Junction pickedJunction;
 
     private double scale = 1;
     private double translationX = 0;
     private double translationY = 0;
-    private boolean isJunctionDragging = false;
     private double startDraggingX;
     private double startDraggingY;
     private double deltaX;
     private double deltaY;
 
     private DropShadow dropShadow = new DropShadow();
-    private Color junctionColor = Color.BURLYWOOD;
+    private Color junctionColor = Color.web("#ddc18c");
 
     /**
      * Инициализация формы
@@ -83,7 +90,7 @@ public class MapEditorController {
             if (e.getButton() == MouseButton.PRIMARY) closeSettings();
         });
         mapArea.setOnMouseDragged(e -> {
-            if (!isJunctionDragging) {
+            if (e.getTarget() == mapArea) {
                 deltaX = e.getX() - startDraggingX;
                 deltaY = e.getY() - startDraggingY;
                 map.setTranslation(translationX + (deltaX / scale), translationY + (deltaY / scale));
@@ -109,6 +116,15 @@ public class MapEditorController {
                 case "Протяженность": map.setLabelsType(LabelType.LENGTH); break;
             }
         });
+
+        fileChooser.setTitle("Выберите файл карты");
+        fileChooser.setInitialDirectory(new File("Карты"));
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Map Files", "*.map"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
+
+        addRoadButton.setDisable(true);
+        junctionSettingsController.setToggleButton(addRoadButton);
     }
 
     /**
@@ -116,7 +132,8 @@ public class MapEditorController {
      */
     @FXML
     private void saveMap() {
-        DAO.writeMapToFile(map, "samara.map");
+        File file = fileChooser.showSaveDialog(null);
+        if (file != null) DAO.writeMapToFile(map, file);
     }
 
     /**
@@ -124,46 +141,51 @@ public class MapEditorController {
      */
     @FXML
     private void loadMap() {
-        mapArea.getChildren().clear();
-        translationX = 0;
-        translationY = 0;
-        scale = 1;
-        zoomSlider.setValue(1);
-        toggleGroup.selectToggle(null);
-        radioGroup.selectToggle(radioGroup.getToggles().get(1));
 
-        map = DAO.readMapFromFile("samara.map", mapArea, junctionColor);
+        File file = fileChooser.showOpenDialog(null);
+        if (file != null) {
 
-        for (Junction j : map.getJunctionList()) {
+            mapArea.getChildren().clear();
+            translationX = 0;
+            translationY = 0;
+            scale = 1;
+            zoomSlider.setValue(1);
+            updateScaleLabel();
+            toggleGroup.selectToggle(null);
+            radioGroup.selectToggle(radioGroup.getToggles().get(1));
 
-            //Нажатие на перекрёсток
-            j.setOnMousePressed(event -> {
-                if (event.getButton() == MouseButton.PRIMARY) isJunctionDragging = true;
-                else showJunctionSettings(j);
-            });
+            map = DAO.readMapFromFile(file, mapArea, junctionColor);
 
-            //Перемещение перекрёстка
-            j.setOnMouseDragged(e -> {
-                j.setScreenXY(e.getX(), e.getY());
-                for (Road r : j.getRoads()) {
-                    r.notifyLengthChanged();
-                    r.notifyLocationChanged();
-                }
-            });
-            j.setOnMouseReleased(event -> isJunctionDragging = false);
-        }
+            for (Junction j : map.getJunctionList()) {
 
-        for (Road r : map.getRoadList()) {
-            r.getForwardLine().setEffect(dropShadow);
-            r.getBackwardLine().setEffect(dropShadow);
+                //Нажатие на перекрёсток
+                j.setOnMousePressed(event -> {
+                    if (event.getButton() == MouseButton.SECONDARY) showJunctionSettings(j);
+                });
 
-            //Нажатие на дорогу
-            r.getForwardLine().setOnMousePressed(event -> {
-                if (event.getButton() == MouseButton.SECONDARY) showRoadSettings(r);
-            });
-            r.getBackwardLine().setOnMousePressed(event -> {
-                if (event.getButton() == MouseButton.SECONDARY) showRoadSettings(r);
-            });
+                //Перемещение перекрёстка
+                j.setOnMouseDragged(e -> {
+                    j.setScreenXY(e.getX(), e.getY());
+                    for (Road r : j.getRoads()) {
+                        r.notifyLengthChanged();
+                        r.notifyLocationChanged();
+                    }
+                });
+            }
+
+            for (Road r : map.getRoadList()) {
+                r.getForwardLine().setEffect(dropShadow);
+                r.getBackwardLine().setEffect(dropShadow);
+
+                //Нажатие на дорогу
+                r.getForwardLine().setOnMousePressed(event -> {
+                    if (event.getButton() == MouseButton.SECONDARY) showRoadSettings(r);
+                });
+                r.getBackwardLine().setOnMousePressed(event -> {
+                    if (event.getButton() == MouseButton.SECONDARY) showRoadSettings(r);
+                });
+            }
+            addRoadButton.setDisable(!(map.getJunctionList().size() > 1));
         }
     }
 
@@ -234,8 +256,7 @@ public class MapEditorController {
 
                                 //Нажатие на перекрёсток
                                 junction.setOnMousePressed(event -> {
-                                    if (event.getButton() == MouseButton.PRIMARY) isJunctionDragging = true;
-                                    else showJunctionSettings(junction);
+                                    if (event.getButton() == MouseButton.SECONDARY) showJunctionSettings(junction);
                                 });
 
                                 //Перемещение перекрёстка
@@ -246,9 +267,8 @@ public class MapEditorController {
                                         r.notifyLengthChanged();
                                     }
                                 });
-                                junction.setOnMouseReleased(event -> isJunctionDragging = false);
-
                                 mapArea.getChildren().add(junction);
+                                addRoadButton.setDisable(!(map.getJunctionList().size() > 1));
                             }
                         });
                         break;
@@ -318,6 +338,31 @@ public class MapEditorController {
             scaleLabel.setText(interval + " км");
         }
     }
+
+    @FXML
+    private void clearMap() {
+        ButtonType create = new ButtonType("Создать");
+        ButtonType cancel = new ButtonType("Отменить");
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Вы действительно хотите создать новую карту?", create, cancel);
+        alert.setTitle("Подтверждение");
+        alert.setHeaderText("Все несохраненные данные будут потеряны");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == create) {
+            mapArea.getChildren().clear();
+            map = new Map(LabelType.NAME, junctionColor);
+            map.setOffsetX(mapArea.getWidth() / 2);
+            map.setOffsetY(mapArea.getHeight() / 2);
+            translationX = 0;
+            translationY = 0;
+            scale = 1;
+            zoomSlider.setValue(1);
+            updateScaleLabel();
+            toggleGroup.selectToggle(null);
+            radioGroup.selectToggle(radioGroup.getToggles().get(1));
+            addRoadButton.setDisable(true);
+        }
+    }
+
 
     //====================================== Функции, связанные с меню настроек =======================================
 

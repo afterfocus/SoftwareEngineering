@@ -9,6 +9,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import navigator.model.Junction;
+import navigator.model.enums.LabelType;
 
 /**
  * Класс светофора
@@ -17,13 +18,13 @@ public class TrafficLight extends Rectangle {
     private Circle red;
     private Circle yellow;
     private Circle green;
-    private Text time;
+    private Text label;
 
     /**
      * Инициализация светофора
      * @param junction перекрёсток для установки светофора
      */
-    public TrafficLight(Junction junction, boolean isTimeShown) {
+    public TrafficLight(Junction junction, LabelType labelType) {
 
         super(12, 26, Color.rgb(25,25,25));
         setArcHeight(6);
@@ -41,39 +42,46 @@ public class TrafficLight extends Rectangle {
         green.centerXProperty().bind(xProperty().add(6));
         green.centerYProperty().bind(yProperty().add(20));
 
-        if(isTimeShown) {
-            double averageTime = (double) (junction.getRedPhase() + junction.getGreenPhase()) / 2;
-            time = new Text(Math.round(averageTime * 10) / 10 + " с");
-            time.setFont(Font.font("Arial", FontWeight.BOLD, 10));
-            time.setFill(Color.WHITE);
-            time.setEffect(new DropShadow());
-            time.xProperty().bind(xProperty());
-            time.yProperty().bind(yProperty().subtract(3));
-            time.setMouseTransparent(true);
-            ((Pane) junction.getParent()).getChildren().addAll(this, red, yellow, green, time);
+        if(labelType == LabelType.TIME || labelType == LabelType.FUEL) {
+            String text;
+            if (labelType == LabelType.TIME) text = ((double)Math.round((junction.getRedPhase() + junction.getGreenPhase()) / 2 * 10)) / 10 + " с";
+            else text = ((double)Math.round(((double)((junction.getRedPhase() + junction.getGreenPhase()) / 2)) / 3.6 * junction.getMap().getCar().getFuelConsumption() / 9 * 10)) / 10 + " мл";
+            label = new Text(text);
+            label.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+            label.setFill(Color.WHITE);
+            label.setEffect(new DropShadow());
+            label.xProperty().bind(xProperty());
+            label.yProperty().bind(yProperty().subtract(3));
+            label.setMouseTransparent(true);
+            ((Pane) junction.getParent()).getChildren().addAll(this, red, yellow, green, label);
         }
         else ((Pane) junction.getParent()).getChildren().addAll(this, red, yellow, green);
-
     }
 
-    public void setTimeShown(Junction junction, boolean isTimeShown) {
-        if (isTimeShown) {
-            if (time == null) {
-                double averageTime = (double) (junction.getRedPhase() + junction.getGreenPhase()) / 2;
-                time = new Text(Math.round(averageTime * 10) / 10 + " с");
-                time.setFont(Font.font("Arial", FontWeight.BOLD, 10));
-                time.setFill(Color.WHITE);
-                time.setEffect(new DropShadow());
-                time.xProperty().bind(xProperty());
-                time.yProperty().bind(yProperty().subtract(3));
-                time.setMouseTransparent(true);
-                ((Pane) getParent()).getChildren().add(time);
+    public void setLabelType(Junction junction, LabelType labelType) {
+        if (labelType == LabelType.TIME || labelType == LabelType.FUEL) {
+            String text;
+            if (label == null) {
+                if (labelType == LabelType.TIME) text = ((double)Math.round((junction.getRedPhase() + junction.getGreenPhase()) / 2 * 10)) / 10 + " с";
+                else text = ((double)Math.round(((double)((junction.getRedPhase() + junction.getGreenPhase()) / 2)) / 3.6 * junction.getMap().getCar().getFuelConsumption() / 9 * 10)) / 10 + " мл";
+                label = new Text(text);
+                label.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+                label.setFill(Color.WHITE);
+                label.setEffect(new DropShadow());
+                label.xProperty().bind(xProperty());
+                label.yProperty().bind(yProperty().subtract(3));
+                label.setMouseTransparent(true);
+                ((Pane) getParent()).getChildren().add(label);
             }
-        }
-        else {
-            if (time != null) {
-                ((Pane) getParent()).getChildren().remove(time);
-                time = null;
+            else {
+                if (labelType == LabelType.TIME) text = ((double)Math.round((junction.getRedPhase() + junction.getGreenPhase()) / 2 * 10)) / 10 + " с";
+                else text = ((double)Math.round(((double)((junction.getRedPhase() + junction.getGreenPhase()) / 2)) / 3.6 * junction.getMap().getCar().getFuelConsumption() / 9 * 10)) / 10 + " мл";
+                label.setText(text);
+            }
+        } else {
+            if (label != null) {
+                ((Pane) getParent()).getChildren().remove(label);
+                label = null;
             }
         }
     }
@@ -82,7 +90,7 @@ public class TrafficLight extends Rectangle {
      * Уничтожение объекта
      */
     public void dispose() {
-        if (time != null) ((Pane) getParent()).getChildren().removeAll(time, red, yellow, green, this);
+        if (label != null) ((Pane) getParent()).getChildren().removeAll(label, red, yellow, green, this);
         else ((Pane) getParent()).getChildren().removeAll( red, yellow, green, this);
     }
 }

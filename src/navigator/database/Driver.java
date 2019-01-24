@@ -4,10 +4,11 @@ public class Driver {
     private int id;
     private String fullName;
 
-    Driver(int id, String fullName) {
+     public Driver(int id, String fullName) {
         this.id = id;
         this.fullName = fullName;
     }
+    public Driver(){}
 
     public int getId() {
         return id;

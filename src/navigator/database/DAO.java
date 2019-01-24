@@ -36,13 +36,13 @@ public class DAO {
         };
     }
 
-    private static Fuel[] getFuels() {
-        return new Fuel[] {
-                new Fuel(1, "АИ-92", 40.5),
-                new Fuel(2, "АИ-95", 43.6),
-                new Fuel(3, "АИ-98", 47.25),
-                new Fuel(4, "ДТ",  44.65),
-                new Fuel(5, "Метан", 23.5)
+    private static FuelType[] getFuels() {
+        return new FuelType[] {
+                new FuelType(1, "АИ-92", 40.5),
+                new FuelType(2, "АИ-95", 43.6),
+                new FuelType(3, "АИ-98", 47.25),
+                new FuelType(4, "ДТ",  44.65),
+                new FuelType(5, "Метан", 23.5)
         };
     }
 
@@ -103,10 +103,10 @@ public class DAO {
      * Сохранить карту в файл
      *
      * @param map      карта для сохранения
-     * @param filename имя файла
+     * @param file     имя файла
      */
-    public static void writeMapToFile(Map map, String filename) {
-        try (FileOutputStream fos = new FileOutputStream(filename)) {
+    public static void writeMapToFile(Map map, File file) {
+        try (FileOutputStream fos = new FileOutputStream(file)) {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
 
             //сохранение перекрёстков
@@ -146,16 +146,16 @@ public class DAO {
     /**
      * Загрузить карту из файла
      *
-     * @param filename имя файла
+     * @param file     файл карты
      * @param mapArea  контейнер для отрисовки карты
      * @param color    цвет перекрёстков
      */
-    public static Map readMapFromFile(String filename, Pane mapArea, Color color) {
+    public static Map readMapFromFile(File file, Pane mapArea, Color color) {
         Map map = new Map(LabelType.NAME, color);
         map.setOffsetX(mapArea.getWidth() / 2);
         map.setOffsetY(mapArea.getHeight() / 2);
 
-        try (FileInputStream fis = new FileInputStream(filename)) {
+        try (FileInputStream fis = new FileInputStream(file)) {
             ObjectInputStream ois = new ObjectInputStream(fis);
 
             //Чтение перекрёстков
@@ -177,9 +177,22 @@ public class DAO {
             map.setIdCounter(ois.readInt());
             ois.close();
 
-        } catch (IOException | ClassNotFoundException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+        }
+        catch (FileNotFoundException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Файл с именем " + file.getName() + " не найден.");
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Не удалось открыть файл");
             alert.show();
+        }
+        catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Файл повреждён.");
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Не удалось открыть файл");
+            alert.show();
+            map = new Map(LabelType.NAME, color);
+            map.setOffsetX(mapArea.getWidth() / 2);
+            map.setOffsetY(mapArea.getHeight() / 2);
+            mapArea.getChildren().clear();
         }
         return map;
     }

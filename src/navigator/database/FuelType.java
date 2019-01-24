@@ -1,11 +1,11 @@
 package navigator.database;
 
-public class Fuel {
+public class FuelType {
     private int id;
     private String name;
     private double price;
 
-    Fuel(int id, String name, double price) {
+    public FuelType(int id, String name, double price) {
         this.id = id;
         this.name = name;
         this.price = price;
