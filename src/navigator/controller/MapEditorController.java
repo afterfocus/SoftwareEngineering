@@ -117,14 +117,14 @@ public class MapEditorController {
             }
         });
 
+        addRoadButton.setDisable(true);
+        junctionSettingsController.setToggleButton(addRoadButton);
+
         fileChooser.setTitle("Выберите файл карты");
         fileChooser.setInitialDirectory(new File("Карты"));
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Map Files", "*.map"),
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
-
-        addRoadButton.setDisable(true);
-        junctionSettingsController.setToggleButton(addRoadButton);
     }
 
     /**
