@@ -1,5 +1,8 @@
 package navigator.database;
 
+import javafx.scene.control.Alert;
+import navigator.controller.Dialogs;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -26,57 +29,9 @@ public class ConnectionDB {
         return connection;
     }
 
-    public static void updateDriver(Driver driver) {
-        try {
-            PreparedStatement statement = getConnection().prepareStatement("UPDATE Driver SET FIO = ? WHERE ID = ?");
-            statement.setString(1, driver.getFullName());
-            statement.setInt(2, driver.getId());
-            statement.executeUpdate();
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void addDriver(Driver driver) throws SQLException {
-        PreparedStatement statement = getConnection().prepareStatement("INSERT INTO Driver VALUES (null, ?)");
-        statement.setString(1, driver.getFullName());
-        statement.execute();
-        statement.close();
-    }
-
-    public static void removeDriver(int id) throws SQLException {
-        PreparedStatement statement = getConnection().prepareStatement("DELETE FROM Driver WHERE ID = ?");
-        statement.setInt(1, id);
-        statement.execute();
-        statement.close();
-    }
 
 
-    public static ArrayList<Car> selectAllFromCar() {
 
-        ArrayList<Car> cars = new ArrayList<>();
-
-        try{
-        Statement stmt = getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM Car");
-
-        while (rs.next()) {
-            cars.add(new Car(rs.getInt("id"),
-                    rs.getString("model"),
-                    rs.getInt("max_speed"),
-                    new FuelType(rs.getInt("fuel"), "AI-95", 46.5),
-                    rs.getDouble("consumption")
-            ));
-        }
-        stmt.close();
-        rs.close();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return cars;
-    }
 
     public static ArrayList<Driver> selectAllFromDriver() {
 
@@ -91,12 +46,77 @@ public class ConnectionDB {
             }
             stmt.close();
             rs.close();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return drivers;
     }
+
+    public static void updateDriver(Driver driver) {
+        try {
+            PreparedStatement statement = getConnection().prepareStatement("UPDATE Driver SET FIO = ? WHERE ID = ?");
+            statement.setString(1, driver.getFullName());
+            statement.setInt(2, driver.getId());
+            statement.executeUpdate();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addDriver(Driver driver) {
+        try {
+            PreparedStatement statement = getConnection().prepareStatement("INSERT INTO Driver VALUES (null, ?)");
+            statement.setString(1, driver.getFullName());
+            statement.execute();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void removeDriver(int id) {
+        try {
+            PreparedStatement statement = getConnection().prepareStatement("DELETE FROM Driver WHERE ID = ?");
+            statement.setInt(1, id);
+            statement.execute();
+            statement.close();
+        } catch (SQLException e) {
+            Alert alert = Dialogs.getErrorAlert("Ошибка удаления водителя", "Невозможно удалить водителя, связанного с существующими автомобилями.");
+            alert.showAndWait();
+        }
+    }
+
+
+
+
+
+
+    public static ArrayList<Car> selectAllFromCar() {
+
+        ArrayList<Car> cars = new ArrayList<>();
+
+        try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Car");
+
+            while (rs.next()) {
+                cars.add(new Car(rs.getInt("id"),
+                        rs.getString("model"),
+                        rs.getInt("max_speed"),
+                        new FuelType(rs.getInt("fuel"), "AI-95", 46.5),
+                        rs.getDouble("consumption")
+                ));
+            }
+            stmt.close();
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return cars;
+    }
+
+
 
     public static ArrayList<FuelType> selectAllFromFuel() throws SQLException {
 

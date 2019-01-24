@@ -99,13 +99,8 @@ public class TablesController {
         addDriverButton.setOnAction(actionEvent -> {
             Optional<Driver> result = Dialogs.getAddDriverDialog().showAndWait();
             result.ifPresent(list -> {
-                try {
-                    ConnectionDB.addDriver(result.get());
-                    driverTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromDriver()));
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                ConnectionDB.addDriver(result.get());
+                driverTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromDriver()));
             });
         });
 
@@ -116,15 +111,8 @@ public class TablesController {
                 Optional<ButtonType> result = alert.showAndWait();
 
                 if (result.get() == ButtonType.OK) {
-                    try {
-                        ConnectionDB.removeDriver(driverTableView.getItems().get(row).getId());
-                        driverTableView.getItems().remove(row);
-                    } catch (SQLException e) {
-                        if (e.getErrorCode() == 2292) {
-                            alert = Dialogs.getErrorAlert("Ошибка удаления водителя", "Невозможно удалить водителя, связанного с существующими автомобилями.");
-                            alert.showAndWait();
-                        } else e.printStackTrace();
-                    }
+                    ConnectionDB.removeDriver(driverTableView.getItems().get(row).getId());
+                    driverTableView.getItems().remove(row);
                 }
             }
         });
