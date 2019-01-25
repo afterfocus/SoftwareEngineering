@@ -31,7 +31,6 @@ public class ConnectionDB {
         return connection;
     }
 
-
     /**
      * Получить всех водителей
      *
@@ -60,16 +59,22 @@ public class ConnectionDB {
      * Редактировать водителя
      *
      * @param driver редактированный водитель
+     * @return true, если водитель изменен успешно
      */
-    public static void updateDriver(Driver driver) {
+    public static boolean updateDriver(Driver driver) {
         try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet drivers = stmt.executeQuery("SELECT fio FROM DRIVER");
+            if (checkDriversDuplicate(driver, stmt, drivers)) return false;
             PreparedStatement statement = getConnection().prepareStatement("UPDATE Driver SET FIO = ? WHERE ID = ?");
             statement.setString(1, driver.getFullName());
             statement.setInt(2, driver.getId());
             statement.executeUpdate();
             statement.close();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -77,16 +82,37 @@ public class ConnectionDB {
      * Добавить водителя
      *
      * @param driver водитель для добавления
+     * @return true, если водитель добавлен успешно
      */
-    public static void addDriver(Driver driver) {
+    public static boolean addDriver(Driver driver) {
         try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet drivers = stmt.executeQuery("SELECT fio FROM DRIVER");
+            if (checkDriversDuplicate(driver, stmt, drivers)) return false;
             PreparedStatement statement = getConnection().prepareStatement("INSERT INTO Driver VALUES (null, ?)");
             statement.setString(1, driver.getFullName());
             statement.execute();
             statement.close();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
+    }
+
+    /**
+     * Проверка водителя на наличие дубликата
+     * @return true, если дубликат найден
+     */
+    private static boolean checkDriversDuplicate(Driver driver, Statement stmt, ResultSet drivers) throws SQLException {
+        while (drivers.next()) {
+            if (driver.getFullName().equals(drivers.getString("fio"))) {
+                drivers.close();
+                stmt.close();
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

@@ -53,17 +53,10 @@ public class TablesController {
         initializeDriverButtons();
         initializeCarTable();
         initializeCarButtons();
-
-
         initializeFuelTable();
-
-
+        //initializeFuelButtons();
         initializeStreetTable();
         initializeStreetButtons();
-//            initializeVacancyTable();
-//            initializeVacancyButtons();
-//            initializeResumeTable();
-//            initializeResumeButtons();
     }
 
     /**
@@ -78,11 +71,14 @@ public class TablesController {
         fullName.setMinWidth(200);
 
         fullName.setOnEditCommit((TableColumn.CellEditEvent<Driver, String> event) -> {
-
             Driver driver = event.getTableView().getItems().get(event.getTablePosition().getRow());
             String newFullName = event.getNewValue();
             driver.setFullName(newFullName);
-            ConnectionDB.updateDriver(driver);
+            if(!ConnectionDB.updateDriver(driver)){
+                Alert alertError = DialogsController.getErrorAlert("Ошибка редактирования","Водитель с такими данными уже существует!");
+                alertError.showAndWait();
+            }
+            driverTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromDriver()));
         });
         driverTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromDriver()));
         driverTableView.getColumns().addAll(getIndexColumn(driverTableView), fullName);
@@ -95,8 +91,11 @@ public class TablesController {
         addDriverButton.setOnAction(actionEvent -> {
             Optional<Driver> result = DialogsController.getAddDriverDialog().showAndWait();
             result.ifPresent(list -> {
-                ConnectionDB.addDriver(result.get());
-                driverTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromDriver()));
+                if(ConnectionDB.addDriver(result.get())) driverTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromDriver()));
+                else {
+                    Alert alertError = DialogsController.getErrorAlert("Ошибка добавления водителя","Водитель с такими данными уже существует!");
+                    alertError.showAndWait();
+                }
             });
         });
 
@@ -139,11 +138,15 @@ public class TablesController {
         maxSpeed.setMinWidth(130);
         maxSpeed.setOnEditCommit((TableColumn.CellEditEvent<Car, Integer> event) -> {
             int newMaxSpeed = event.getNewValue();
-            // FIXME: 25/01/2019 
+            // FIXME: 25/01/2019
             if (newMaxSpeed > 30 && newMaxSpeed < 260) {
                 Car car = event.getTableView().getItems().get(event.getTablePosition().getRow());
                 car.setMaxSpeed(newMaxSpeed);
                 ConnectionDB.updateCar(car);
+            } else {
+                Alert alert = DialogsController.getErrorAlert("Ошибка редактирования автомобиля", "Введено некорректное значение максимальной скорости.");
+                alert.showAndWait();
+                carTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromCar()));
             }
         });
 
@@ -161,14 +164,17 @@ public class TablesController {
         consumption.setMinWidth(100);
         consumption.setOnEditCommit((TableColumn.CellEditEvent<Car, Double> event) -> {
             double newConsumption = event.getNewValue();
+            Car car = event.getTableView().getItems().get(event.getTablePosition().getRow());
             // FIXME: 25/01/2019 
             if (newConsumption > 3 && newConsumption < 30) {
-                Car car = event.getTableView().getItems().get(event.getTablePosition().getRow());
                 car.setFuelConsumption(newConsumption);
                 ConnectionDB.updateCar(car);
+            } else {
+                Alert alert = DialogsController.getErrorAlert("Ошибка редактирования автомобиля", "Введено некорректное значение расхода топлива.");
+                alert.showAndWait();
+                carTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromCar()));
             }
         });
-
         carTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromCar()));
         carTableView.getColumns().addAll(getIndexColumn(carTableView), model, maxSpeed, fuel, consumption);
     }
@@ -246,6 +252,9 @@ public class TablesController {
         });
     }
 
+    /**
+     * Таблица типов топлива
+     */
     @SuppressWarnings("unchecked")
     private void initializeFuelTable() {
         TableColumn<FuelType, String> name = new TableColumn<>("Название");
@@ -264,17 +273,45 @@ public class TablesController {
         cost.setMinWidth(200);
         cost.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
         cost.setOnEditCommit((TableColumn.CellEditEvent<FuelType, Double> event) -> {
-            FuelType fuelType = event.getTableView().getItems().get(event.getTablePosition().getRow());
-            fuelType.setCost(event.getNewValue());
-            ConnectionDB.updateFuel(fuelType);
+            double newCost = event.getNewValue();
+            // FIXME: 25/01/2019 Интервал допустимых значений
+            if (newCost > 10 && newCost < 100) {
+                FuelType fuelType = event.getTableView().getItems().get(event.getTablePosition().getRow());
+                fuelType.setCost(newCost);
+                ConnectionDB.updateFuel(fuelType);
+            } else {
+                Alert alert = DialogsController.getErrorAlert("Ошибка редактирования топлива", "Введено некорректное значение стоимости.");
+                alert.showAndWait();
+                fuelTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromFuel()));
+            }
         });
-        ObservableList<FuelType> fuelsData = FXCollections.observableArrayList();
-        ArrayList<FuelType> fuels = ConnectionDB.selectAllFromFuel();
-        fuelsData.addAll(fuels);
-
-        fuelTableView.setItems(FXCollections.observableList(fuelsData));
+        fuelTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromFuel()));
         fuelTableView.getColumns().addAll(getIndexColumn(fuelTableView), name, cost);
     }
+
+    /*
+    @SuppressWarnings("unchecked")
+    private void initializeFuelButtons() {
+        addFuelButton.setOnAction(actionEvent -> {
+            Optional<FuelType> result = DialogsController.getAddFuelDialog().showAndWait();
+            result.ifPresent(list -> {
+                ConnectionDB.addFuel(result.get());
+                fuelTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromFuel()));
+            });
+        });
+
+        deleteCarButton.setOnAction(actionEvent -> {
+            int row = carTableView.getSelectionModel().getSelectedIndex();
+            if (row != -1) {
+                Alert alert = DialogsController.getConfirmationAlert("Удалить автомобиль?", "Автомобиль будет безвозвратно удалён.");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK) {
+                    ConnectionDB.removeCar(carTableView.getItems().get(row).getId());
+                    carTableView.getItems().remove(row);
+                }
+            }
+        });
+    }*/
 
 
 //
