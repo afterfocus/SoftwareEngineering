@@ -13,14 +13,14 @@ import navigator.database.FuelType;
 import java.sql.SQLException;
 import java.util.Date;
 
-public class DialogsController {
+class DialogsController {
 
     /**
      * Добавление водителя
      *
-     * @return водитель
+     * @return диалог добавления водителя
      */
-    public static Dialog<Driver> getAddDriverDialog() {
+    static Dialog<Driver> getAddDriverDialog() {
         Dialog<Driver> driverDialog = new Dialog<>();
         driverDialog.setTitle("Добавление водителя");
         driverDialog.setHeaderText("Заполните информацию о сотруднике");
@@ -47,8 +47,7 @@ public class DialogsController {
         driverDialog.getDialogPane().setContent(grid);
 
         driverDialog.setResultConverter(dialogButton -> {
-            if (dialogButton == confirmButton)
-                return new Driver(-1, fioField.getText());
+            if (dialogButton == confirmButton) return new Driver(-1, fioField.getText());
             else return null;
         });
         return driverDialog;
@@ -57,9 +56,9 @@ public class DialogsController {
     /**
      * Добавление автомобиля
      *
-     * @return автомобиль
+     * @return диалог добавления автомобиля
      */
-    public static Dialog<Car> getAddCarDialog() {
+     static Dialog<Car> getAddCarDialog() {
         Dialog<Car> carDialog = new Dialog<>();
         carDialog.setTitle("Добавление автомобиля");
         carDialog.setHeaderText("Заполните информацию об автомобиле");
@@ -75,7 +74,6 @@ public class DialogsController {
 
         TextField modelField = new TextField();
         TextField maxSpeedField = new TextField();
-        // FIXME: 25/01/2019
         ComboBox<FuelType> fuelComboBox = new ComboBox<>(FXCollections.observableList(ConnectionDB.selectAllFromFuel()));
         fuelComboBox.setMinWidth(200);
         TextField fuelConsumptionField = new TextField();
@@ -123,13 +121,12 @@ public class DialogsController {
         return carDialog;
     }
 
-
     /**
      * Добавление названия улицы
      *
-     * @return название улицы
+     * @return диалог добавления названия улицы
      */
-    public static Dialog<String> getAddStreetDialog() {
+    static Dialog<String> getAddStreetDialog() {
         Dialog<String> streetDialog = new Dialog<>();
         streetDialog.setTitle("Добавление названия улицы");
         streetDialog.setHeaderText("Заполните информацию о названии");
@@ -162,6 +159,58 @@ public class DialogsController {
         return streetDialog;
     }
 
+
+    /**
+     * Добавление топлива
+     *
+     * @return диалог добалвения топлива
+     */
+    static Dialog<FuelType> getAddFuelDialog() {
+        Dialog<FuelType> fuelDialog = new Dialog<>();
+        fuelDialog.setTitle("Добавление топлива");
+        fuelDialog.setHeaderText("Заполните информацию о топливе");
+
+        ButtonType confirmButton = new ButtonType("Добавить", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButton = new ButtonType("Отмена", ButtonBar.ButtonData.CANCEL_CLOSE);
+        fuelDialog.getDialogPane().getButtonTypes().addAll(confirmButton, cancelButton);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 100, 10, 10));
+
+        TextField nameField = new TextField();
+        TextField costField = new TextField();
+        nameField.setPromptText("Название топлива");
+        costField.setPromptText("Стоимость за литр");
+
+        grid.add(new Label("Название:"), 0, 0);
+        grid.add(new Label("Стоимость:"), 0, 1);
+        grid.add(nameField, 1, 0);
+        grid.add(costField, 1, 1);
+
+        Node saveButton = fuelDialog.getDialogPane().lookupButton(confirmButton);
+        saveButton.setDisable(true);
+
+        nameField.textProperty().addListener((observable, oldValue, newValue) -> saveButton.setDisable(newValue.trim().isEmpty()));
+        fuelDialog.getDialogPane().setContent(grid);
+
+        fuelDialog.setResultConverter(dialogButton -> {
+            if (dialogButton == confirmButton) {
+                try {
+                    double cost = Double.parseDouble(costField.getText());
+                    // FIXME: 25/01/2019 Интервал стоимости
+                    if (cost < 20 || cost > 100) throw new NumberFormatException();
+                    return new FuelType(-1, nameField.getText(), cost);
+                } catch (NumberFormatException e) {
+                    Alert alert = getErrorAlert("Ошибка добавления топлива", "Введено некорректное значение стоимости.");
+                    alert.showAndWait();
+                    return null;
+                }
+            } else return null;
+        });
+        return fuelDialog;
+    }
 
     /*
         public static Dialog<Speciality> getAddSpecialityDialog() {
@@ -322,7 +371,7 @@ public class DialogsController {
             return dialog;
         }
     */
-    public static Alert getConfirmationAlert(String header, String content) {
+    static Alert getConfirmationAlert(String header, String content) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Подтверждение");
         alert.setHeaderText(header);
@@ -330,7 +379,7 @@ public class DialogsController {
         return alert;
     }
 
-    public static Alert getErrorAlert(String header, String content) {
+    static Alert getErrorAlert(String header, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Ошибка");
         alert.setHeaderText(header);

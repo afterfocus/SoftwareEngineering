@@ -54,7 +54,7 @@ public class TablesController {
         initializeCarTable();
         initializeCarButtons();
         initializeFuelTable();
-        //initializeFuelButtons();
+        initializeFuelButtons();
         initializeStreetTable();
         initializeStreetButtons();
     }
@@ -289,7 +289,7 @@ public class TablesController {
         fuelTableView.getColumns().addAll(getIndexColumn(fuelTableView), name, cost);
     }
 
-    /*
+
     @SuppressWarnings("unchecked")
     private void initializeFuelButtons() {
         addFuelButton.setOnAction(actionEvent -> {
@@ -300,18 +300,19 @@ public class TablesController {
             });
         });
 
-        deleteCarButton.setOnAction(actionEvent -> {
-            int row = carTableView.getSelectionModel().getSelectedIndex();
+        deleteFuelButton.setOnAction(actionEvent -> {
+            int row = fuelTableView.getSelectionModel().getSelectedIndex();
             if (row != -1) {
-                Alert alert = DialogsController.getConfirmationAlert("Удалить автомобиль?", "Автомобиль будет безвозвратно удалён.");
+                Alert alert = DialogsController.getConfirmationAlert("Удалить тип топлива?", "Тип топлива будет безвозвратно удалён.");
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.get() == ButtonType.OK) {
-                    ConnectionDB.removeCar(carTableView.getItems().get(row).getId());
-                    carTableView.getItems().remove(row);
+                    ConnectionDB.removeFuel(fuelTableView.getItems().get(row).getId());
+                    fuelTableView.getItems().remove(row);
+                    carTableView.setItems(FXCollections.observableList(ConnectionDB.selectAllFromCar()));
                 }
             }
         });
-    }*/
+    }
 
 
 //
