@@ -8,13 +8,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import navigator.database.ConnectionDB;
-import navigator.database.DAO;
 import navigator.database.RoadSurface;
 import navigator.model.enums.LabelType;
 import navigator.model.signs.NoWaySign;
 import navigator.model.signs.SpeedLimitSign;
-
-import java.sql.SQLException;
 
 /**
  * Класс дороги
@@ -30,7 +27,6 @@ public class Road {
     private int length;
     private int speedLimit;
     private RoadSurface roadSurface;
-    ConnectionDB connectionDB=new ConnectionDB();
 
     private Line forwardLine;
     private Line backwardLine;
@@ -45,7 +41,7 @@ public class Road {
      * @param start перекрёсток-начало дороги
      * @param end   перекрёсток-конец дороги
      */
-    Road(Map map, Junction start, Junction end)  {
+    Road(Map map, Junction start, Junction end) {
         this.map = map;
         this.start = start;
         this.end = end;
@@ -57,18 +53,13 @@ public class Road {
         forwardLine = new Line(start.getCenterX(), start.getCenterY(), end.getCenterX(), end.getCenterY());
         backwardLine = new Line(end.getCenterX(), end.getCenterY(), start.getCenterX(), start.getCenterY());
 
-        try {
-            setRoadSurface(connectionDB.selectAllFromSurface().get(2));
-            notifyScaleChanged();
-            notifyLengthChanged();
-            notifyLabelTypeChanged();
+        setRoadSurface(ConnectionDB.selectAllFromSurface().get(0));
+        notifyScaleChanged();
+        notifyLengthChanged();
+        notifyLabelTypeChanged();
 
-            start.addRoad(this);
-            end.addRoad(this);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
+        start.addRoad(this);
+        end.addRoad(this);
     }
 
     /**
@@ -206,7 +197,7 @@ public class Road {
                 }
                 case COST: {
                     if (getWayAndTrafficLightsFuel() == -1) return -1;
-                    else return getWayAndTrafficLightsFuel() / 1000 * map.getCar().getFuel().getPrice();
+                    else return getWayAndTrafficLightsFuel() / 1000 * map.getCar().getFuel().getCost();
                 }
                 case DISTANCE: {
                     if (getMaxSpeed() < 1) return -1;
@@ -215,8 +206,7 @@ public class Road {
                 default:
                     return -1;
             }
-        }
-        else return -1;
+        } else return -1;
     }
 
     /**
@@ -224,7 +214,7 @@ public class Road {
      */
     private double getMaxSpeed() {
         double roadSpeed;
-        if (speedLimit <= 60) roadSpeed = Math.min (60 * roadSurface.getCoefficient(), speedLimit);
+        if (speedLimit <= 60) roadSpeed = Math.min(60 * roadSurface.getCoefficient(), speedLimit);
         else roadSpeed = speedLimit * roadSurface.getCoefficient();
         return Math.min(roadSpeed, map.getCar().getMaxSpeed());
     }
@@ -234,7 +224,7 @@ public class Road {
      */
     private double getWayTime() {
         if (getMaxSpeed() < 1) return -1;
-        else return ((double)length / 1000) / getMaxSpeed() * 60 * 60;
+        else return ((double) length / 1000) / getMaxSpeed() * 60 * 60;
     }
 
     /**
@@ -251,7 +241,7 @@ public class Road {
             int startWaiting = 0, endWaiting = 0;
             if (start.isTrafficLights()) startWaiting = (start.getRedPhase() + start.getGreenPhase()) / 4;
             if (end.isTrafficLights()) endWaiting = (end.getRedPhase() + end.getGreenPhase()) / 4;
-            double trafficLightsFuel = ((double)(startWaiting + endWaiting)) / 3600 * map.getCar().getFuelConsumption() / 9 * 1000;
+            double trafficLightsFuel = ((double) (startWaiting + endWaiting)) / 3600 * map.getCar().getFuelConsumption() / 9 * 1000;
             return getWayFuel() + trafficLightsFuel;
         }
     }
@@ -336,7 +326,7 @@ public class Road {
      */
     void notifyLabelTypeChanged() {
         if (map.getLabelsType() != LabelType.NONE) {
-            if(label == null) {
+            if (label == null) {
                 label = new Text();
                 notifyLabelTextChanged();
                 label.setFont(Font.font("Arial", FontWeight.BOLD, 10));
@@ -346,8 +336,7 @@ public class Road {
                 label.yProperty().bind(start.centerYProperty().add(end.centerYProperty()).divide(2).add(speedLimitSign != null || noWaySign != null ? 24 : 3));
                 ((Pane) start.getParent()).getChildren().add(label);
                 label.setMouseTransparent(true);
-            }
-            else notifyLabelTextChanged();
+            } else notifyLabelTextChanged();
         } else if (label != null) {
             ((Pane) label.getParent()).getChildren().remove(label);
             label = null;
@@ -369,7 +358,7 @@ public class Road {
                 case TIME:
                     double time = getWayTime();
                     if (time == -1) label.setText("");
-                    else label.setText(((double)Math.round(time * 10)) / 10 + " с");
+                    else label.setText(((double) Math.round(time * 10)) / 10 + " с");
                     break;
                 case SPEED:
                     label.setText(Math.round(getMaxSpeed()) + " км/ч");
@@ -377,7 +366,7 @@ public class Road {
                 case FUEL:
                     double fuel = getWayFuel();
                     if (fuel == -1) label.setText("");
-                    else label.setText(((double)Math.round(fuel * 10)) / 10 + " мл");
+                    else label.setText(((double) Math.round(fuel * 10)) / 10 + " мл");
                     break;
             }
             label.xProperty().bind(start.centerXProperty().add(end.centerXProperty()).divide(2).subtract(label.getLayoutBounds().getWidth() / 2));

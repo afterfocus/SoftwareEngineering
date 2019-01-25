@@ -48,8 +48,8 @@
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                     </columnResizePolicy>
                 </TableView>
-                <Button fx:id="addStreetButton" defaultButton="true" layoutX="15.0" prefHeight="30" prefWidth="200" AnchorPane.bottomAnchor="10"  text="Добавить топливо" />
-                <Button fx:id="deleteStreetButton" layoutX="230.0" prefHeight="30" prefWidth="200" AnchorPane.bottomAnchor="10"  text="Удалить топливо" />
+                <Button fx:id="addStreetButton" defaultButton="true" layoutX="15.0" prefHeight="30" prefWidth="200" AnchorPane.bottomAnchor="10"  text="Добавить название" />
+                <Button fx:id="deleteStreetButton" layoutX="230.0" prefHeight="30" prefWidth="200" AnchorPane.bottomAnchor="10"  text="Удалить название" />
             </AnchorPane>
         </Tab>
         <Tab text="Тип покрытия">
@@ -59,8 +59,8 @@
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                     </columnResizePolicy>
                 </TableView>
-                <Button fx:id="addSurfaceButton" defaultButton="true" layoutX="15.0" prefHeight="30" prefWidth="200" AnchorPane.bottomAnchor="10"  mnemonicParsing="false" text="Добавить топливо" />
-                <Button fx:id="deleteSurfaceButton" layoutX="230.0" prefHeight="30" prefWidth="200" AnchorPane.bottomAnchor="10"  text="Удалить топливо" />
+                <Button fx:id="addSurfaceButton" defaultButton="true" layoutX="15.0" prefHeight="30" prefWidth="200" AnchorPane.bottomAnchor="10"  mnemonicParsing="false" text="Добавить покрытие" />
+                <Button fx:id="deleteSurfaceButton" layoutX="230.0" prefHeight="30" prefWidth="200" AnchorPane.bottomAnchor="10"  text="Удалить покрытие" />
             </AnchorPane>
         </Tab>
         <Tab text="Водитель - Автомобиль">
@@ -70,8 +70,8 @@
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                     </columnResizePolicy>
                 </TableView>
-                <Button fx:id="addDriverCarButton" defaultButton="true" layoutX="15.0" prefHeight="30" prefWidth="200" AnchorPane.bottomAnchor="10"  mnemonicParsing="false" text="Добавить запись" />
-                <Button fx:id="deleteDriverCarButton" layoutX="230.0" prefHeight="30" prefWidth="200" AnchorPane.bottomAnchor="10"  text="Удалить запись" />
+                <Button fx:id="addDriverCarButton" defaultButton="true" layoutX="15.0" prefHeight="30" prefWidth="200" AnchorPane.bottomAnchor="10"  mnemonicParsing="false" text="Добавить связь" />
+                <Button fx:id="deleteDriverCarButton" layoutX="230.0" prefHeight="30" prefWidth="200" AnchorPane.bottomAnchor="10"  text="Удалить связь" />
             </AnchorPane>
         </Tab>
     </TabPane>
