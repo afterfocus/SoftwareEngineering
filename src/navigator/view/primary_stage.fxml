@@ -3,7 +3,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 
-<TabPane prefHeight="700.0" prefWidth="1000.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="navigator.controller.MapEditorController">
+<TabPane prefHeight="800.0" prefWidth="1150.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="navigator.controller.MapEditorController">
     <Tab text="Редактор карт">
         <fx:include source="tabs/map_editor.fxml"/>
     </Tab>

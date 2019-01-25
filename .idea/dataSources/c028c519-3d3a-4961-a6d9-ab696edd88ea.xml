@@ -11,28 +11,165 @@
     <collation id="3" parent="1" name="BINARY"/>
     <collation id="4" parent="1" name="NOCASE"/>
     <collation id="5" parent="1" name="RTRIM"/>
-    <table id="6" parent="2" name="sqlite_master">
+    <table id="6" parent="2" name="Car"/>
+    <table id="7" parent="2" name="Car_Driver"/>
+    <table id="8" parent="2" name="Driver"/>
+    <table id="9" parent="2" name="Fuel"/>
+    <table id="10" parent="2" name="Street"/>
+    <table id="11" parent="2" name="Surface"/>
+    <table id="12" parent="2" name="sqlite_master">
       <System>1</System>
     </table>
-    <column id="7" parent="6" name="type">
+    <table id="13" parent="2" name="sqlite_sequence">
+      <System>1</System>
+    </table>
+    <column id="14" parent="6" name="id">
+      <Position>1</Position>
+      <DataType>INTEGER|0s</DataType>
+      <SequenceIdentity>1</SequenceIdentity>
+    </column>
+    <column id="15" parent="6" name="model">
+      <Position>2</Position>
+      <DataType>VARCHAR(100)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="16" parent="6" name="fuel">
+      <Position>3</Position>
+      <DataType>INTEGER|0s</DataType>
+    </column>
+    <column id="17" parent="6" name="consumption">
+      <Position>4</Position>
+      <DataType>DOUBLE|0s</DataType>
+    </column>
+    <column id="18" parent="6" name="max_speed">
+      <Position>5</Position>
+      <DataType>INT(10)|0s</DataType>
+    </column>
+    <key id="19" parent="6">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="20" parent="6">
+      <ColNames>fuel</ColNames>
+      <RefTableName>Fuel</RefTableName>
+      <RefColNames>id</RefColNames>
+      <OnDelete>set-null</OnDelete>
+      <OnUpdate>cascade</OnUpdate>
+    </foreign-key>
+    <column id="21" parent="7" name="car_id">
+      <Position>1</Position>
+      <DataType>INT|0s</DataType>
+    </column>
+    <column id="22" parent="7" name="driver_id">
+      <Position>2</Position>
+      <DataType>INT|0s</DataType>
+    </column>
+    <foreign-key id="23" parent="7">
+      <ColNames>car_id</ColNames>
+      <RefTableName>Car</RefTableName>
+      <RefColNames>id</RefColNames>
+      <OnDelete>cascade</OnDelete>
+      <OnUpdate>cascade</OnUpdate>
+    </foreign-key>
+    <foreign-key id="24" parent="7">
+      <ColNames>driver_id</ColNames>
+      <RefTableName>Driver</RefTableName>
+      <RefColNames>id</RefColNames>
+      <OnDelete>cascade</OnDelete>
+      <OnUpdate>cascade</OnUpdate>
+    </foreign-key>
+    <column id="25" parent="8" name="id">
+      <Position>1</Position>
+      <DataType>INTEGER|0s</DataType>
+      <SequenceIdentity>1</SequenceIdentity>
+    </column>
+    <column id="26" parent="8" name="fio">
+      <Position>2</Position>
+      <DataType>VARCHAR(40)|0s</DataType>
+    </column>
+    <key id="27" parent="8">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="28" parent="9" name="id">
+      <Position>1</Position>
+      <DataType>INTEGER|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+    </column>
+    <column id="29" parent="9" name="type">
+      <Position>2</Position>
+      <DataType>VARCHAR(30)|0s</DataType>
+    </column>
+    <column id="30" parent="9" name="cost">
+      <Position>3</Position>
+      <DataType>DOUBLE(20)|0s</DataType>
+    </column>
+    <key id="31" parent="9">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="32" parent="10" name="name">
+      <Position>1</Position>
+      <DataType>VARCHAR(100)|0s</DataType>
+    </column>
+    <index id="33" parent="10" name="sqlite_autoindex_Street_1">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>name</ColNames>
+      <ColumnCollations></ColumnCollations>
+      <Unique>1</Unique>
+    </index>
+    <key id="34" parent="10">
+      <ColNames>name</ColNames>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>sqlite_autoindex_Street_1</UnderlyingIndexName>
+    </key>
+    <key id="35" parent="10">
+      <ColNames>name</ColNames>
+      <UnderlyingIndexName>sqlite_autoindex_Street_1</UnderlyingIndexName>
+    </key>
+    <column id="36" parent="11" name="id">
+      <Position>1</Position>
+      <DataType>INTEGER|0s</DataType>
+      <SequenceIdentity>1</SequenceIdentity>
+    </column>
+    <column id="37" parent="11" name="name">
+      <Position>2</Position>
+      <DataType>VARCHAR(30)|0s</DataType>
+    </column>
+    <column id="38" parent="11" name="coefficient">
+      <Position>3</Position>
+      <DataType>DOUBLE(20)|0s</DataType>
+    </column>
+    <key id="39" parent="11">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="40" parent="12" name="type">
       <Position>1</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="8" parent="6" name="name">
+    <column id="41" parent="12" name="name">
       <Position>2</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="9" parent="6" name="tbl_name">
+    <column id="42" parent="12" name="tbl_name">
       <Position>3</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="10" parent="6" name="rootpage">
+    <column id="43" parent="12" name="rootpage">
       <Position>4</Position>
       <DataType>int|0s</DataType>
     </column>
-    <column id="11" parent="6" name="sql">
+    <column id="44" parent="12" name="sql">
       <Position>5</Position>
       <DataType>text|0s</DataType>
+    </column>
+    <column id="45" parent="13" name="name">
+      <Position>1</Position>
+    </column>
+    <column id="46" parent="13" name="seq">
+      <Position>2</Position>
     </column>
   </database-model>
 </dataSource>

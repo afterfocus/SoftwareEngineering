@@ -8,7 +8,6 @@ public class Driver {
         this.id = id;
         this.fullName = fullName;
     }
-    public Driver(){}
 
     public int getId() {
         return id;

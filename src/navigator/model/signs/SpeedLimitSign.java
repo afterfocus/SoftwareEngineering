@@ -6,7 +6,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import navigator.model.Road;
 
 /**
@@ -32,7 +31,7 @@ public class SpeedLimitSign extends Circle {
         speedLabel = new Label(speed + "");
 
         speedLabel.layoutXProperty().bind(innerCircle.centerXProperty().subtract(speedLabel.widthProperty().divide(2)));
-        speedLabel.layoutYProperty().bind(innerCircle.centerYProperty().subtract(speed < 100 ? 5.66 : 5.357));
+        speedLabel.layoutYProperty().bind(innerCircle.centerYProperty().subtract(speedLabel.heightProperty().divide(2)));
         speedLabel.setFont(Font.font("Arial", FontWeight.BOLD, speed < 100 ? 15 : 13));
 
         ((Pane)road.getForwardLine().getParent()).getChildren().addAll(this, innerCircle, speedLabel);
@@ -49,7 +48,7 @@ public class SpeedLimitSign extends Circle {
     public void setSpeed(int speed) {
         speedLabel.setText(speed + "");
         speedLabel.layoutXProperty().bind(innerCircle.centerXProperty().subtract(speedLabel.widthProperty().divide(2)));
-        speedLabel.layoutYProperty().bind(innerCircle.centerYProperty().subtract(speed < 100 ? 5.66 : 5.357));
+        speedLabel.layoutYProperty().bind(innerCircle.centerYProperty().subtract(speedLabel.heightProperty().divide(2)));
         speedLabel.setFont(Font.font("Arial", FontWeight.BOLD, speed < 100 ? 15 : 13));
     }
 

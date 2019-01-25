@@ -251,42 +251,4 @@ public class ConnectionDB {
 //        }
 //        return car1;
 //    }
-
-
-    public static void createTable() {
-        try {
-            Statement stmt = getConnection().createStatement();
-            String sql = "CREATE TABLE FUEL (\n" +
-                    "    id   INT          PRIMARY KEY\n" +
-                    "                      NOT NULL,\n" +
-                    "    type VARCHAR (30),\n" +
-                    "    cost DOUBLE (20) \n" +
-                    ");";
-            stmt.executeUpdate(sql);
-            stmt.close();
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-        System.out.println("Table created successfully");
-    }
-
-    public static void insertSQL() {
-        try {
-            Connection con = getConnection();
-            Statement stmt = con.createStatement();
-            con.setAutoCommit(false);
-            String sql = "INSERT INTO Fuel (id,type,cost)" +
-                    "VALUES (3,'АИ-92',40.5);";
-            stmt.executeUpdate(sql);
-            stmt.close();
-            con.commit();
-
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-        System.out.println("Records created successfully");
-    }
-
 }
