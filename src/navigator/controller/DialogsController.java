@@ -5,13 +5,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import navigator.database.Car;
-import navigator.database.ConnectionDB;
-import navigator.database.Driver;
-import navigator.database.FuelType;
-
-import java.sql.SQLException;
-import java.util.Date;
+import navigator.database.*;
 
 class DialogsController {
 
@@ -102,8 +96,7 @@ class DialogsController {
                 try {
                     int maxSpeed = Integer.parseInt(maxSpeedField.getText());
                     double fuelConsumption = Double.parseDouble(fuelConsumptionField.getText());
-                    // FIXME: 25/01/2019
-                    if (maxSpeed < 30 || maxSpeed > 260 || fuelConsumption < 3 || fuelConsumption > 30)
+                    if (maxSpeed <= 20 || maxSpeed >= 300 || fuelConsumption <= 3 || fuelConsumption >= 50)
                         throw new NumberFormatException();
                     if (fuelComboBox.getValue() == null) throw new NullPointerException();
                     return new Car(-1, modelField.getText(), maxSpeed, fuelComboBox.getValue(), fuelConsumption);
@@ -199,8 +192,7 @@ class DialogsController {
             if (dialogButton == confirmButton) {
                 try {
                     double cost = Double.parseDouble(costField.getText());
-                    // FIXME: 25/01/2019 Интервал стоимости
-                    if (cost < 20 || cost > 100) throw new NumberFormatException();
+                    if (cost <= 15 || cost >= 100) throw new NumberFormatException();
                     return new FuelType(-1, nameField.getText(), cost);
                 } catch (NumberFormatException e) {
                     Alert alert = getErrorAlert("Ошибка добавления топлива", "Введено некорректное значение стоимости.");
@@ -212,165 +204,101 @@ class DialogsController {
         return fuelDialog;
     }
 
-    /*
-        public static Dialog<Speciality> getAddSpecialityDialog() {
-            Dialog<Speciality> dialog = new Dialog<>();
-            dialog.setTitle("Добавление специальности");
-            dialog.setHeaderText("Заполните информацию о специальности");
+    static Dialog<RoadSurface> getAddSurfaceDialog() {
+        Dialog<RoadSurface> surfaceDialog = new Dialog<>();
+        surfaceDialog.setTitle("Добавление дорожного покрытия");
+        surfaceDialog.setHeaderText("Заполните информацию о покрытии");
 
-            ButtonType confirmButton = new ButtonType("Добавить", ButtonBar.ButtonData.OK_DONE);
-            ButtonType cancelButton = new ButtonType("Отмена", ButtonBar.ButtonData.CANCEL_CLOSE);
-            dialog.getDialogPane().getButtonTypes().addAll(confirmButton, cancelButton);
+        ButtonType confirmButton = new ButtonType("Добавить", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButton = new ButtonType("Отмена", ButtonBar.ButtonData.CANCEL_CLOSE);
+        surfaceDialog.getDialogPane().getButtonTypes().addAll(confirmButton, cancelButton);
 
-            GridPane grid = new GridPane();
-            grid.setHgap(10);
-            grid.setVgap(10);
-            grid.setPadding(new Insets(20, 100, 10, 10));
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 100, 10, 10));
 
-            TextField nameField = new TextField();
-            nameField.setPromptText("Название");
+        TextField nameField = new TextField();
+        TextField coefficientField = new TextField();
+        nameField.setPromptText("Название топлива");
+        coefficientField.setPromptText("Коэффициент торможения");
 
-            grid.add(new Label("Название:"), 0, 0);
-            grid.add(nameField, 1, 0);
-            Node loginButton = dialog.getDialogPane().lookupButton(confirmButton);
-            loginButton.setDisable(true);
+        grid.add(new Label("Название:"), 0, 0);
+        grid.add(new Label("Стоимость:"), 0, 1);
+        grid.add(nameField, 1, 0);
+        grid.add(coefficientField, 1, 1);
 
-            nameField.textProperty().addListener((observable, oldValue, newValue) -> loginButton.setDisable(newValue.trim().isEmpty()));
-            dialog.getDialogPane().setContent(grid);
+        Node saveButton = surfaceDialog.getDialogPane().lookupButton(confirmButton);
+        saveButton.setDisable(true);
 
-            dialog.setResultConverter(dialogButton -> {
-                if (dialogButton == confirmButton)
-                    return new Speciality(-1, nameField.getText());
-                else return null;
-            });
-            return dialog;
-        }
+        nameField.textProperty().addListener((observable, oldValue, newValue) -> saveButton.setDisable(newValue.trim().isEmpty()));
+        surfaceDialog.getDialogPane().setContent(grid);
 
-        public static Dialog<Vacancy> getAddVacancyDialog() {
-            Dialog<Vacancy> dialog = new Dialog<>();
-            try {
-                dialog.setTitle("Добавление вакансии");
-                dialog.setHeaderText("Заполните информацию о вакансии");
+        surfaceDialog.setResultConverter(dialogButton -> {
+            if (dialogButton == confirmButton) {
+                try {
+                    double coefficient = Double.parseDouble(coefficientField.getText());
+                    if (coefficient <= 0 || coefficient > 1) throw new NumberFormatException();
+                    return new RoadSurface(-1, nameField.getText(), coefficient);
+                } catch (NumberFormatException e) {
+                    Alert alert = getErrorAlert("Ошибка добавления дорожного покрытия", "Введено некорректное значение коэффициента торможения.");
+                    alert.showAndWait();
+                    return null;
+                }
+            } else return null;
+        });
+        return surfaceDialog;
+    }
 
-                ButtonType confirmButton = new ButtonType("Добавить", ButtonBar.ButtonData.OK_DONE);
-                ButtonType cancelButton = new ButtonType("Отмена", ButtonBar.ButtonData.CANCEL_CLOSE);
-                dialog.getDialogPane().getButtonTypes().addAll(confirmButton, cancelButton);
+    /**
+     * Добавление связи водитель-автомобиль
+     *
+     * @return диалог добавления связи водитель-автомобиль
+     */
+    static Dialog<DriverCar> getAddDriverCarDialog() {
+        Dialog<DriverCar> driverCarDialog = new Dialog<>();
+        driverCarDialog.setTitle("Добавление связи водитель-автомобиль");
+        driverCarDialog.setHeaderText("Заполните информацию о связи");
 
-                GridPane grid = new GridPane();
-                grid.setHgap(10);
-                grid.setVgap(10);
-                grid.setPadding(new Insets(20, 100, 10, 10));
+        ButtonType confirmButton = new ButtonType("Добавить", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButton = new ButtonType("Отмена", ButtonBar.ButtonData.CANCEL_CLOSE);
+        driverCarDialog.getDialogPane().getButtonTypes().addAll(confirmButton, cancelButton);
 
-                ComboBox<Enterprise> enterpriseComboBox = new ComboBox<>(FXCollections.observableList(DataBases.getEnterprises()));
-                ComboBox<Speciality> specialityComboBox = new ComboBox<>(FXCollections.observableList(DataBases.getSpecialities()));
-                enterpriseComboBox.setMinWidth(150);
-                specialityComboBox.setMinWidth(150);
-                enterpriseComboBox.setPromptText("Предприятие");
-                specialityComboBox.setPromptText("Специальность");
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 100, 10, 10));
 
-                TextField experienceField = new TextField();
-                TextField salaryField = new TextField();
-                experienceField.setPromptText("Опыт работы");
-                salaryField.setPromptText("Зарплата");
+        ComboBox<Driver> driverComboBox = new ComboBox<>(FXCollections.observableList(ConnectionDB.selectAllFromDriver()));
+        driverComboBox.setMinWidth(250);
+        driverComboBox.setPromptText("Водитель");
+        ComboBox<Car> carComboBox = new ComboBox<>(FXCollections.observableList(ConnectionDB.selectAllFromCar()));
+        carComboBox.setMinWidth(250);
+        carComboBox.setPromptText("Автомобиль");
 
-                grid.add(new Label("Предприятие:"), 0, 0);
-                grid.add(new Label("Специальность:"), 0, 1);
-                grid.add(new Label("Требуемый опыт работы:"), 0, 2);
-                grid.add(new Label("Зарплата:"), 0, 3);
-                grid.add(enterpriseComboBox, 1, 0);
-                grid.add(specialityComboBox, 1, 1);
-                grid.add(experienceField, 1, 2);
-                grid.add(salaryField, 1, 3);
+        grid.add(new Label("Водитель:"), 0, 0);
+        grid.add(new Label("Автомобиль:"), 0, 1);
+        grid.add(driverComboBox, 1, 0);
+        grid.add(carComboBox, 1, 1);
 
-                dialog.getDialogPane().setContent(grid);
-                dialog.setResultConverter(dialogButton -> {
-                    if (dialogButton == confirmButton) {
-                        try {
-                            if (enterpriseComboBox.getValue() == null || specialityComboBox.getValue() == null || experienceField.getText().equals("") || salaryField.getText().equals(""))
-                                throw new NullPointerException();
+        driverCarDialog.getDialogPane().setContent(grid);
 
-                            int experience = Integer.parseInt(experienceField.getText());
-                            int salary = Integer.parseInt(salaryField.getText());
-                            if (experience < 0 || experience > 50 || salary < 0) throw new NumberFormatException();
-                            return new Vacancy(-1, enterpriseComboBox.getValue().getId(), specialityComboBox.getValue().getId(), experience, salary);
+        driverCarDialog.setResultConverter(dialogButton -> {
+            if (dialogButton == confirmButton) {
+                try {
+                    if (driverComboBox.getValue() == null || carComboBox.getValue() == null) throw new NullPointerException();
+                    return new DriverCar(driverComboBox.getValue(), carComboBox.getValue());
+                } catch (NullPointerException e) {
+                    Alert alert = getErrorAlert("Ошибка добавления связи", "Не выбран водитель или автомобиль.");
+                    alert.showAndWait();
+                    return null;
+                }
+            } else return null;
+        });
+        return driverCarDialog;
+    }
 
-                        } catch (NullPointerException e) {
-                            Alert alert = getErrorAlert("Ошибка добавления вакансии", "Все поля должны быть заполнены.");
-                            alert.showAndWait();
-                            return null;
-                        } catch (NumberFormatException e) {
-                            Alert alert = getErrorAlert("Ошибка добавления вакансии", "Введено некорректное значение зарплаты или требуемого опыта работы.");
-                            alert.showAndWait();
-                            return null;
-                        }
-                    } else return null;
-                });
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return dialog;
-        }
 
-        public static Dialog<Resume> getAddResumeDialog() {
-            Dialog<Resume> dialog = new Dialog<>();
-            dialog.setTitle("Добавление резюме");
-            dialog.setHeaderText("Заполните информацию о резюме");
-
-            ButtonType confirmButton = new ButtonType("Добавить", ButtonBar.ButtonData.OK_DONE);
-            ButtonType cancelButton = new ButtonType("Отмена", ButtonBar.ButtonData.CANCEL_CLOSE);
-            dialog.getDialogPane().getButtonTypes().addAll(confirmButton, cancelButton);
-
-            GridPane grid = new GridPane();
-            grid.setHgap(10);
-            grid.setVgap(10);
-            grid.setPadding(new Insets(20, 100, 10, 10));
-
-            try {
-                ComboBox<Employee> employeeComboBox = new ComboBox<>(FXCollections.observableList(DataBases.getEmployees()));
-                ComboBox<Speciality> specialityComboBox = new ComboBox<>(FXCollections.observableList(DataBases.getSpecialities()));
-                employeeComboBox.setMinWidth(150);
-                specialityComboBox.setMinWidth(150);
-                employeeComboBox.setPromptText("Претендент");
-                specialityComboBox.setPromptText("Специальность");
-
-                TextField experienceField = new TextField();
-                experienceField.setPromptText("Опыт работы");
-
-                grid.add(new Label("Претендент:"), 0, 0);
-                grid.add(new Label("Специальность:"), 0, 1);
-                grid.add(new Label("Опыт работы:"), 0, 2);
-                grid.add(employeeComboBox, 1, 0);
-                grid.add(specialityComboBox, 1, 1);
-                grid.add(experienceField, 1, 2);
-
-                dialog.getDialogPane().setContent(grid);
-                dialog.setResultConverter(dialogButton -> {
-                    if (dialogButton == confirmButton) {
-                        try {
-                            if (employeeComboBox.getValue() == null || specialityComboBox.getValue() == null || experienceField.getText().equals(""))
-                                throw new NullPointerException();
-
-                            int experience = Integer.parseInt(experienceField.getText());
-                            if (experience < 0 || experience > 60) throw new NumberFormatException();
-                            return new Resume(-1, employeeComboBox.getValue().getId(), specialityComboBox.getValue().getId(), experience, new Date());
-
-                        } catch (NullPointerException e) {
-                            Alert alert = getErrorAlert("Ошибка добавления резюме", "Все поля должны быть заполнены.");
-                            alert.showAndWait();
-                            return null;
-                        } catch (NumberFormatException e) {
-                            Alert alert = getErrorAlert("Ошибка добавления резюме", "Введено некорректное значение опыта работы.");
-                            alert.showAndWait();
-                            return null;
-                        }
-                    } else return null;
-                });
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return dialog;
-        }
-    */
     static Alert getConfirmationAlert(String header, String content) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Подтверждение");

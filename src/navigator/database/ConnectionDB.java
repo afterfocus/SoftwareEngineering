@@ -21,11 +21,8 @@ public class ConnectionDB {
 
                 System.out.println("DONE " + connection);
 
-            } catch (ClassNotFoundException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println(e);
-            } catch (Exception exc) {
-                exc.printStackTrace();
             }
         }
         return connection;
@@ -53,6 +50,24 @@ public class ConnectionDB {
             e.printStackTrace();
         }
         return drivers;
+    }
+
+    /**
+     * Получить водителя по идентификатору
+     * @param id идентификатор водителя
+     * @return водитель
+     */
+    private static Driver getDriverById(int id) {
+        Driver driver = null;
+        try {
+            PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM Driver WHERE id = ?");
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+            driver = rs.next() ? new Driver(rs.getInt("id"), rs.getString("fio")) : null;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return driver;
     }
 
     /**
@@ -126,6 +141,11 @@ public class ConnectionDB {
             statement.setInt(1, id);
             statement.execute();
             statement.close();
+
+            statement = getConnection().prepareStatement("DELETE FROM Car_Driver WHERE driver_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -160,11 +180,36 @@ public class ConnectionDB {
     }
 
     /**
+     * Получить автомобиль по идентификатору
+     * @param id идентификатор автомобиля
+     * @return автомобиль
+     */
+    private static Car getCarById(int id) {
+        Car car = null;
+        try {
+            PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM Car WHERE id = ?");
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+            car = rs.next() ? new Car(rs.getInt("id"),
+                    rs.getString("model"),
+                    rs.getInt("max_speed"),
+                    getFuelById(rs.getInt("fuel")),
+                    rs.getDouble("consumption")) : null;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return car;
+    }
+
+    /**
      * Добавить автомобиль
      * @param car автомобиль для добавления
      */
-    public static void addCar(Car car) {
+    public static boolean addCar(Car car) {
         try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet cars = stmt.executeQuery("SELECT model FROM CAR");
+            if (checkCarDuplicate(car, stmt, cars)) return false;
             PreparedStatement statement = getConnection().prepareStatement("INSERT INTO Car VALUES (null, ?, ?, ?, ?)");
             statement.setString(1, car.getModel());
             statement.setInt(2, car.getFuel().getId());
@@ -172,8 +217,10 @@ public class ConnectionDB {
             statement.setInt(4, car.getMaxSpeed());
             statement.execute();
             statement.close();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -182,8 +229,11 @@ public class ConnectionDB {
      *
      * @param car редактированный автомобиль
      */
-    public static void updateCar(Car car) {
+    public static boolean updateCar(Car car) {
         try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet cars = stmt.executeQuery("SELECT model FROM CAR");
+            if (checkCarDuplicate(car, stmt, cars)) return false;
             PreparedStatement statement = getConnection().prepareStatement("UPDATE Car SET Model = ?, Max_Speed = ?, Fuel = ?, Consumption = ? WHERE ID = ?");
             statement.setString(1, car.getModel());
             statement.setInt(2, car.getMaxSpeed());
@@ -192,8 +242,10 @@ public class ConnectionDB {
             statement.setInt(5, car.getId());
             statement.executeUpdate();
             statement.close();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -208,9 +260,29 @@ public class ConnectionDB {
             statement.setInt(1, id);
             statement.execute();
             statement.close();
+
+            statement = getConnection().prepareStatement("DELETE FROM Car_Driver WHERE car_id = ?");
+            statement.setInt(1, id);
+            statement.execute();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Проверка автомобиля на наличие дубликата
+     * @return true, если дубликат найден
+     */
+    private static boolean checkCarDuplicate(Car car, Statement stmt, ResultSet cars) throws SQLException {
+        while (cars.next()) {
+            if (car.getModel().equals(cars.getString("model"))) {
+                cars.close();
+                stmt.close();
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -243,7 +315,7 @@ public class ConnectionDB {
      * @param id идентификатор топлива
      * @return топливо
      */
-    public static FuelType getFuelById(int id) {
+    private static FuelType getFuelById(int id) {
         FuelType fuelType = null;
         try {
             PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM Fuel WHERE id = ?");
@@ -260,15 +332,20 @@ public class ConnectionDB {
      * Добавить топливо
      * @param fuel топливо для добавления
      */
-    public static void addFuel(FuelType fuel) {
+    public static boolean addFuel(FuelType fuel) {
         try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet fuels = stmt.executeQuery("SELECT type FROM Fuel");
+            if (checkFuelDuplicate(fuel, stmt, fuels)) return false;
             PreparedStatement statement = getConnection().prepareStatement("INSERT INTO Fuel VALUES (null, ?, ?)");
             statement.setString(1, fuel.getName());
             statement.setDouble(2, fuel.getCost());
             statement.execute();
             statement.close();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -277,16 +354,21 @@ public class ConnectionDB {
      *
      * @param fuel редактированное топливо
      */
-    public static void updateFuel(FuelType fuel) {
+    public static boolean updateFuel(FuelType fuel) {
         try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet fuels = stmt.executeQuery("SELECT type FROM Fuel");
+            if (checkFuelDuplicate(fuel, stmt, fuels)) return false;
             PreparedStatement statement = getConnection().prepareStatement("UPDATE Fuel SET Type = ?, Cost = ? WHERE ID = ?");
             statement.setString(1, fuel.getName());
             statement.setDouble(2, fuel.getCost());
             statement.setInt(3, fuel.getId());
             statement.executeUpdate();
             statement.close();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -304,6 +386,17 @@ public class ConnectionDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private static boolean checkFuelDuplicate(FuelType fuel, Statement stmt, ResultSet fuels) throws SQLException {
+        while (fuels.next()) {
+            if (fuel.getName().equals(fuels.getString("type"))) {
+                fuels.close();
+                stmt.close();
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -328,6 +421,63 @@ public class ConnectionDB {
             e.printStackTrace();
         }
         return surfaces;
+    }
+
+    public static boolean addSurface(RoadSurface roadSurface) {
+        try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet surfaces = stmt.executeQuery("SELECT name FROM Surface");
+            if (checkSurfaceDuplicate(roadSurface, stmt, surfaces)) return false;
+            PreparedStatement statement = getConnection().prepareStatement("INSERT INTO Surface VALUES (null, ?, ?)");
+            statement.setString(1, roadSurface.getName());
+            statement.setDouble(2, roadSurface.getCoefficient());
+            statement.execute();
+            statement.close();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean updateSurface(RoadSurface roadSurface) {
+        try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet surfaces = stmt.executeQuery("SELECT name FROM Surface");
+            if (checkSurfaceDuplicate(roadSurface, stmt, surfaces)) return false;
+            PreparedStatement statement = getConnection().prepareStatement("UPDATE Surface SET Name = ?, Coefficient = ? WHERE ID = ?");
+            statement.setString(1, roadSurface.getName());
+            statement.setDouble(2, roadSurface.getCoefficient());
+            statement.setInt(3, roadSurface.getId());
+            statement.executeUpdate();
+            statement.close();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void removeSurface(int id) {
+        try {
+            PreparedStatement statement = getConnection().prepareStatement("DELETE FROM Surface WHERE ID = ?");
+            statement.setInt(1, id);
+            statement.execute();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static boolean checkSurfaceDuplicate(RoadSurface surface, Statement stmt, ResultSet surfaces) throws SQLException {
+        while (surfaces.next()) {
+            if (surface.getName().equals(surfaces.getString("name"))) {
+                surfaces.close();
+                stmt.close();
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -355,14 +505,19 @@ public class ConnectionDB {
      * Добавить название улицы
      * @param streetName название для добавления
      */
-    public static void addStreet(String streetName) {
+    public static boolean addStreet(String streetName) {
         try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet names = stmt.executeQuery("SELECT name FROM Street");
+            if (checkStreetDuplicate(streetName, stmt, names)) return false;
             PreparedStatement statement = getConnection().prepareStatement("INSERT INTO Street VALUES (?)");
             statement.setString(1, streetName);
             statement.execute();
             statement.close();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -372,15 +527,20 @@ public class ConnectionDB {
      * @param oldName старое название
      * @param newName новое название
      */
-    public static void updateStreet(String oldName, String newName) {
+    public static boolean updateStreet(String oldName, String newName) {
         try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet names = stmt.executeQuery("SELECT name FROM Street");
+            if (checkStreetDuplicate(newName, stmt, names)) return false;
             PreparedStatement statement = getConnection().prepareStatement("UPDATE Street SET Name = ? WHERE Name = ?");
             statement.setString(1, newName);
             statement.setString(2, oldName);
             statement.executeUpdate();
             statement.close();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -400,51 +560,97 @@ public class ConnectionDB {
         }
     }
 
-    /*
-    public Car getCarByID(String nameTable, String parametrsQuery, int driverID) {
-        String sql = "SELECT " + parametrsQuery + " FROM " + nameTable + "WHERE driver_id =" + driverID;
-        Car car1 = new Car();
-        try {
-
-            Statement stmt = getConnection().createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-
-            Car car = new Car(rs.getInt("id"),
-                    rs.getString("model"),
-                    rs.getInt("max_speed"),
-                    new FuelType(rs.getInt("fuel"), "AI-95", 46.5),
-                    rs.getDouble("consumption")
-            );
-            return car;
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+    private static boolean checkStreetDuplicate(String name, Statement stmt, ResultSet names) throws SQLException {
+        while (names.next()) {
+            if (name.equals(names.getString("name"))) {
+                names.close();
+                stmt.close();
+                return true;
+            }
         }
-        return car1;
-    }*/
+        return false;
+    }
 
+    /**
+     * Получить все связи водитель-автомобиль
+     * @return список связей водитель-автомобиль
+     */
+    public static ArrayList<DriverCar> selectAllFromDriverCar() {
 
-//    public Car selectAllFromCar(String nameTable, String parametrsQuery) {
-//        String sql = "SELECT " + parametrsQuery + " FROM " + nameTable;
-//        Car car1=new Car();
-//        try (Connection conn = this.connectionSQLite("test");
-//             Statement stmt = conn.createStatement();
-//             ResultSet rs = stmt.executeQuery(sql)) {
-//
-//            // loop through the result set
-//            while (rs.next()) {
-//                Car car = new Car(rs.getInt("id"),
-//                        rs.getString("model"),
-//                        rs.getInt("max_speed"),
-//                        new Fuel(rs.getInt("fuel"), "AI-95", 46.5),
-//                        rs.getDouble("consumption")
-//                );
-//                return  car;
-//            }
-//
-//        } catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
-//        return car1;
-//    }
+        ArrayList<DriverCar> driverCars = new ArrayList<>();
+        try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Car_Driver");
+            while (rs.next()) {
+                driverCars.add(new DriverCar(
+                        getDriverById(rs.getInt("driver_id")),
+                        getCarById(rs.getInt("car_id"))));
+            }
+            stmt.close();
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return driverCars;
+    }
+
+    public static boolean addDriverCar(int driverID, int carID) {
+        try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet driverCars = stmt.executeQuery("SELECT * FROM Car_Driver");
+            if (checkDriverCarDuplicate(driverID, carID, stmt, driverCars)) return false;
+            PreparedStatement statement = getConnection().prepareStatement("INSERT INTO Car_Driver VALUES (?, ?)");
+            statement.setInt(1, carID);
+            statement.setInt(2, driverID);
+            statement.execute();
+            statement.close();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public static boolean updateDriverCar(int oldDriverID, int oldCarID, int newDriverID, int newCarID) {
+        try {
+            Statement stmt = getConnection().createStatement();
+            ResultSet driverCars = stmt.executeQuery("SELECT * FROM Car_Driver");
+            if (checkDriverCarDuplicate(newDriverID, newCarID, stmt, driverCars)) return false;
+            PreparedStatement statement = getConnection().prepareStatement("UPDATE Car_Driver SET Car_id = ?, Driver_id = ? WHERE Car_id = ? AND Driver_id = ?");
+            statement.setInt(1, newCarID);
+            statement.setInt(2, newDriverID);
+            statement.setInt(3, oldCarID);
+            statement.setInt(4, oldDriverID);
+            statement.executeUpdate();
+            statement.close();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private static boolean checkDriverCarDuplicate(int driverID, int carID, Statement stmt, ResultSet driverCars) throws SQLException {
+        while (driverCars.next()) {
+            if (driverID == driverCars.getInt("Driver_id") && carID == driverCars.getInt("Car_id")) {
+                driverCars.close();
+                stmt.close();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void removeDriverCar(int driverID, int carID) {
+        try {
+            PreparedStatement statement = getConnection().prepareStatement("DELETE FROM Car_Driver WHERE Car_id = ? AND Driver_id = ?");
+            statement.setInt(1, driverID);
+            statement.setInt(2, carID);
+            statement.execute();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

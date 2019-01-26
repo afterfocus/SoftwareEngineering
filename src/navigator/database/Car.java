@@ -12,8 +12,6 @@ public class Car {
     //Расход топлива для средней скорости движения в 40 км/ч (городские условия)
     private double fuelConsumption;
 
-    public Car() {
-    }
 
     public Car(int id, String model, int maxSpeed, FuelType fuel, double fuelConsumption) {
         this.id = id;
@@ -48,7 +46,7 @@ public class Car {
     }
 
     public double getFuelConsumption(int atSpeed) {
-        return 0.7 * fuelConsumption + 0.3 * fuelConsumption * (40 / atSpeed);
+        return 0.7 * fuelConsumption + 0.3 * fuelConsumption * ((double) 40 / atSpeed);
     }
 
     public void setMaxSpeed(int maxSpeed) {

@@ -339,6 +339,9 @@ public class MapEditorController {
         }
     }
 
+    /**
+     * Очистка карты
+     */
     @FXML
     private void clearMap() {
         ButtonType create = new ButtonType("Создать");
@@ -347,7 +350,7 @@ public class MapEditorController {
         alert.setTitle("Подтверждение");
         alert.setHeaderText("Все несохраненные данные будут потеряны");
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == create) {
+        if (result.isPresent() && result.get() == create) {
             mapArea.getChildren().clear();
             map = new Map(LabelType.NAME, junctionColor);
             map.setOffsetX(mapArea.getWidth() / 2);

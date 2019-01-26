@@ -8,7 +8,6 @@ import navigator.database.ConnectionDB;
 import navigator.model.Road;
 import navigator.database.RoadSurface;
 
-import java.sql.SQLException;
 import java.util.Optional;
 
 /**
@@ -30,7 +29,6 @@ public class RoadSettingsController {
     @FXML
     private Button closeButton;
 
-    ConnectionDB connectionDB=new ConnectionDB();
     private Alert alert;
     private Road road;
     private ButtonType delete;
@@ -39,7 +37,7 @@ public class RoadSettingsController {
      * Инициализация
      */
     @FXML
-    public void initialize() throws SQLException {
+    public void initialize() {
 
         //Инициализация окна подтверждения
         alert = getAlert();
@@ -49,10 +47,10 @@ public class RoadSettingsController {
 
         //Параметры
         streetNameComboBox.setItems(FXCollections.observableArrayList(""));
-        streetNameComboBox.getItems().addAll(FXCollections.observableArrayList(connectionDB.selectAllFromStreet()));
+        streetNameComboBox.getItems().addAll(FXCollections.observableArrayList(ConnectionDB.selectAllFromStreet()));
         directionComboBox.setItems(FXCollections.observableArrayList('↔', '→', '←'));
         speedLimitComboBox.setItems(FXCollections.observableArrayList(10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110));
-        roadSurfaceComboBox.setItems(FXCollections.observableArrayList(connectionDB.selectAllFromSurface()));
+        roadSurfaceComboBox.setItems(FXCollections.observableArrayList(ConnectionDB.selectAllFromSurface()));
     }
 
 
@@ -92,7 +90,7 @@ public class RoadSettingsController {
     @FXML
     private void delete() {
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == delete) {
+        if (result.isPresent() && result.get() == delete) {
             road.getMap().removeRoad(road);
             roadSettings.setVisible(false);
         }

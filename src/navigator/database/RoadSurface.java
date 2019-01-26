@@ -14,7 +14,7 @@ public class RoadSurface {
      * @param name название дорожного покрытия
      * @param decelerationCoefficient коэфиициент торможения
      */
-    RoadSurface(int id, String name, double decelerationCoefficient) {
+    public RoadSurface(int id, String name, double decelerationCoefficient) {
         this.id = id;
         this.name = name;
         this.decelerationCoefficient = decelerationCoefficient;
@@ -27,7 +27,8 @@ public class RoadSurface {
     /**
      * @return название покрытия
      */
-    String getName() {
+    @SuppressWarnings("WeakerAccess")
+    public String getName() {
         return name;
     }
 
@@ -36,6 +37,14 @@ public class RoadSurface {
      */
     public double getCoefficient() {
         return decelerationCoefficient;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDecelerationCoefficient(double decelerationCoefficient) {
+        this.decelerationCoefficient = decelerationCoefficient;
     }
 
     /**

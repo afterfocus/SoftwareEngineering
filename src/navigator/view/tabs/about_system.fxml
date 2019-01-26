@@ -7,10 +7,8 @@
 
 <StackPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="navigator.controller.AboutSystemController">
    <Group>
-      <children>
-         <Label alignment="CENTER" contentDisplay="CENTER" prefWidth="600.0" text="Разработчики системы &quot;Поиск оптимального маршрута по карте города&quot;&#10;&#10;Самарский национальный исследовательский университет&#10;имени академика С.П. Королева &#10;&#10;Группа 6413-020302D&#10;&#10;Голов Максим&#10;Шепелев Фёдор&#10;Филатова Евгения&#10;&#10;&#10;" textAlignment="CENTER" />
+         <Label alignment="CENTER" contentDisplay="CENTER" prefWidth="600.0" text="Разработчики системы &quot;Поиск оптимального маршрута по карте города&quot;&#10;&#10;Самарский национальный исследовательский университет&#10;имени академика С.П. Королева &#10;&#10;Группа 6413-020302D&#10;&#10;Голов Максим&#10;Шепелев Фёдор&#10;Филатова Евгения&#10;&#10;Научный руководитель:&#10;доцент кафедры программных систем&#10;Зеленко Лариса Сергеевна&#10;" textAlignment="CENTER" />
            <Button layoutX="230.0" layoutY="300.0" onMouseClicked="#aboutSystemButtonClicked" prefHeight="35.0" prefWidth="140.0" text="О системе" />
-      </children>
    </Group>
 
 </StackPane>

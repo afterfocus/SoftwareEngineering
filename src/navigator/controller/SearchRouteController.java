@@ -12,6 +12,7 @@ import javafx.stage.FileChooser;
 import navigator.controller.properties.JunctionPropertiesController;
 import navigator.controller.properties.RoadPropertiesController;
 import navigator.database.Car;
+import navigator.database.ConnectionDB;
 import navigator.database.DAO;
 import navigator.database.Driver;
 import navigator.model.Junction;
@@ -151,8 +152,9 @@ public class SearchRouteController {
 
         //Заполнение списков
         criterionComboBox.setItems(FXCollections.observableArrayList("По времени", "По стоимости", "По расстоянию"));
-        driverComboBox.setItems(FXCollections.observableArrayList(DAO.getDrivers()));
-        carComboBox.setItems(FXCollections.observableArrayList(DAO.getCars(DAO.getDrivers()[0].getId())));
+        driverComboBox.setItems(FXCollections.observableArrayList(ConnectionDB.selectAllFromDriver()));
+        // FIXME: 25/01/2019 Автомобили по водителю
+        carComboBox.setItems(FXCollections.observableArrayList(ConnectionDB.selectAllFromCar()));
 
         //Выбор критерия
         criterionComboBox.valueProperty().addListener(e -> {
@@ -175,7 +177,8 @@ public class SearchRouteController {
         //Выбор водителя
         driverComboBox.valueProperty().addListener(e -> {
             Driver driver = driverComboBox.getValue();
-            carComboBox.setItems(FXCollections.observableArrayList(DAO.getCars(driver.getId())));
+            // FIXME: 25/01/2019 Автомобили по водителю
+            carComboBox.setItems(FXCollections.observableArrayList(ConnectionDB.selectAllFromCar()));
             carComboBox.getSelectionModel().select(0);
             map.setCar(carComboBox.getValue());
         });
@@ -224,7 +227,7 @@ public class SearchRouteController {
             criterionComboBox.getSelectionModel().select(0);
 
             map = DAO.readMapFromFile(file, mapArea, junctionColor);
-            map.setCar(DAO.getCars(DAO.getDrivers()[0].getId())[0]);
+            //map.setCar(ConnectionDB.selectAllFromCar().get(0));
             radioGroup.selectToggle(radioGroup.getToggles().get(1));
 
             //Нажатие на перекрёсток
